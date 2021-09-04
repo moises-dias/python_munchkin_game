@@ -17,11 +17,11 @@ screen = pygame.display.set_mode((DEFAULT_WIDTH, DEFAULT_HEIGHT), pygame.RESIZAB
 pygame.display.set_caption("colocar uns meme aqui")
 clock = pygame.time.Clock()
 
-user32 = windll.user32
-ShowWindow = user32.ShowWindow
-def getSDLWindow():
-    return pygame.display.get_wm_info()['window']
-ShowWindow(getSDLWindow(), 3)
+# user32 = windll.user32
+# ShowWindow = user32.ShowWindow
+# def getSDLWindow():
+#     return pygame.display.get_wm_info()['window']
+# ShowWindow(getSDLWindow(), 3)
 
 SCREEN_WIDTH, SCREEN_HEIGHT = pygame.display.get_surface().get_size()
 
@@ -43,11 +43,11 @@ y_limits = [0.25, 0.75]
 
 rects = []
 rects.append(Field(0, 0, int(x_limits[0] * SCREEN_WIDTH), int(y_limits[0] * SCREEN_HEIGHT), RED, 'players'))
-rects.append(Field(0, int(y_limits[0] * SCREEN_HEIGHT), int(x_limits[0] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEIGHT), BLACK, 'equipments'))
-rects.append(Field(0, int(y_limits[1] * SCREEN_HEIGHT), int(x_limits[0] * SCREEN_WIDTH), SCREEN_HEIGHT, GREY, 'hand'))
-rects.append(Field(int(x_limits[0] * SCREEN_WIDTH), 0, SCREEN_WIDTH, int(y_limits[1] * SCREEN_HEIGHT), GREEN, 'table'))
-rects.append(Field(int(x_limits[0] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEIGHT), int(x_limits[1] * SCREEN_WIDTH), SCREEN_HEIGHT, BLUE, 'deck'))
-rects.append(Field(int(x_limits[1] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEIGHT), SCREEN_WIDTH, SCREEN_HEIGHT, PURPLE, 'logs'))
+rects.append(Field(0, int(y_limits[1] * SCREEN_HEIGHT), int(x_limits[0] * SCREEN_WIDTH), (1 - y_limits[1]) * SCREEN_HEIGHT, GREY, 'hand'))
+rects.append(Field(0, int(y_limits[0] * SCREEN_HEIGHT), int(x_limits[0] * SCREEN_WIDTH), int((y_limits[1] - y_limits[0]) * SCREEN_HEIGHT), BLACK, 'equipments'))
+rects.append(Field(int(x_limits[0] * SCREEN_WIDTH), 0, (1 - x_limits[0]) * SCREEN_WIDTH, int(y_limits[1] * SCREEN_HEIGHT), GREEN, 'table'))
+rects.append(Field(int(x_limits[0] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEIGHT), int((x_limits[1] - x_limits[0]) * SCREEN_WIDTH), (1 - y_limits[1]) * SCREEN_HEIGHT, BLUE, 'deck'))
+rects.append(Field(int(x_limits[1] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEIGHT), (1 - x_limits[1]) * SCREEN_WIDTH, (1 - y_limits[1]) * SCREEN_HEIGHT, PURPLE, 'logs'))
 
 im_w = 500
 im_h = 809
@@ -58,12 +58,18 @@ rect_players = pygame.rect.Rect((0, 0, int(x_limits[0] * SCREEN_WIDTH), int(y_li
 rect_logs = pygame.rect.Rect((int(x_limits[1] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEIGHT), SCREEN_WIDTH, SCREEN_HEIGHT))
 rect_deck = pygame.rect.Rect((int(x_limits[0] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEIGHT), int(x_limits[1] * SCREEN_WIDTH), SCREEN_HEIGHT))
 
+rect_equipments = pygame.rect.Rect((0, int(y_limits[0] * SCREEN_HEIGHT), int(x_limits[0] * SCREEN_WIDTH), int((y_limits[1] - y_limits[0]) * SCREEN_HEIGHT)))
+rect_table = pygame.rect.Rect((int(x_limits[0] * SCREEN_WIDTH), 0, (1 - x_limits[0]) * SCREEN_WIDTH, int(y_limits[1] * SCREEN_HEIGHT)))
+rect_hand = pygame.rect.Rect((0, int(y_limits[1] * SCREEN_HEIGHT), int(x_limits[0] * SCREEN_WIDTH), (1 - y_limits[1]) * SCREEN_HEIGHT))
+
+#print(rect_players.x, rect_players.y)
+
 cards = []
 
-cards.append(Card(pygame.transform.scale(my_image.subsurface((0, 0, im_w, im_h)), (scale_x, scale_y)), starting_point, 10, scale_x, scale_y))
-cards.append(Card(pygame.transform.scale(my_image.subsurface((0, im_h, im_w, im_h)), (scale_x, scale_y)), starting_point + 10, 10, scale_x, scale_y))
-cards.append(Card(pygame.transform.scale(my_image.subsurface((im_w, 0, im_w, im_h)), (scale_x, scale_y)), starting_point + 20, 10, scale_x, scale_y))
-cards.append(Card(pygame.transform.scale(my_image.subsurface((im_w, im_h, im_w, im_h)), (scale_x, scale_y)), starting_point + 30, 10, scale_x, scale_y))
+cards.append(Card(pygame.transform.smoothscale(my_image.subsurface((0, 0, im_w, im_h)), (scale_x, scale_y)), starting_point, 10, scale_x, scale_y))
+cards.append(Card(pygame.transform.smoothscale(my_image.subsurface((0, im_h, im_w, im_h)), (scale_x, scale_y)), starting_point + 10, 10, scale_x, scale_y))
+cards.append(Card(pygame.transform.smoothscale(my_image.subsurface((im_w, 0, im_w, im_h)), (scale_x, scale_y)), starting_point + 20, 10, scale_x, scale_y))
+cards.append(Card(pygame.transform.smoothscale(my_image.subsurface((im_w, im_h, im_w, im_h)), (scale_x, scale_y)), starting_point + 30, 10, scale_x, scale_y))
 
 running = True
 max_card_order = 0
@@ -84,13 +90,13 @@ while running:
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:  
                 for card in cards:
-                    card.release()       
+                    card.release(event.pos, rect_equipments, rect_table, rect_hand)
 
         elif event.type == pygame.MOUSEMOTION:
             for card in cards:
                 card.move(event.pos, rect_screen, rect_players, rect_logs, rect_deck)
 
-    #screen.fill(WHITE)
+    screen.fill(WHITE)
 
     cards.sort(key=lambda c: c.get_order())
 
@@ -98,14 +104,20 @@ while running:
         rect.draw(screen)
     for card in cards:
         card.draw(screen)
+    
+    # rect_equipments
+    # rect_table
+    # rect_hand
+
+    # pygame.draw.rect(screen, (0,   255,   170), rect_equipments)
 
     pygame.display.flip()
 
     clock.tick(FPS)
 
-    if not (pygame.mouse.get_focused()): # trocar para mouse.x e y > 1000 ou < 0?
-        for card in cards:
-            card.release()
+    # if not (pygame.mouse.get_focused()): # trocar para mouse.x e y > 1000 ou < 0?
+    #     for card in cards:
+    #         card.release()
 
 
 pygame.quit()
