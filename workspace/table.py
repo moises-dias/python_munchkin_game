@@ -2,8 +2,15 @@ import pygame
 from field import Field
 from card import Card
 
-SCREEN_WIDTH = 1666
+SCREEN_WIDTH = 1580
 SCREEN_HEIGHT = 950
+scale_x = 137
+scale_y = 222
+
+# SCREEN_WIDTH = 1260
+# SCREEN_HEIGHT = 668
+# scale_x = 100
+# scale_y = 162
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -36,10 +43,10 @@ rect_deck = pygame.rect.Rect((int(x_limits[0] * SCREEN_WIDTH), int(y_limits[1] *
 
 cards = []
 
-cards.append(Card(pygame.transform.scale(my_image.subsurface((0, 0, im_w, im_h)), (125, 202)), 500, 10, 125, 202))
-cards.append(Card(pygame.transform.scale(my_image.subsurface((0, im_h, im_w, im_h)), (125, 202)), 550, 10, 125, 202))
-cards.append(Card(pygame.transform.scale(my_image.subsurface((im_w, 0, im_w, im_h)), (125, 202)), 600, 10, 125, 202))
-cards.append(Card(pygame.transform.scale(my_image.subsurface((im_w, im_h, im_w, im_h)), (125, 202)), 650, 10, 125, 202))
+cards.append(Card(pygame.transform.scale(my_image.subsurface((0, 0, im_w, im_h)), (scale_x, scale_y)), 500, 10, scale_x, scale_y))
+cards.append(Card(pygame.transform.scale(my_image.subsurface((0, im_h, im_w, im_h)), (scale_x, scale_y)), 550, 10, scale_x, scale_y))
+cards.append(Card(pygame.transform.scale(my_image.subsurface((im_w, 0, im_w, im_h)), (scale_x, scale_y)), 600, 10, scale_x, scale_y))
+cards.append(Card(pygame.transform.scale(my_image.subsurface((im_w, im_h, im_w, im_h)), (scale_x, scale_y)), 650, 10, scale_x, scale_y))
 
 
 
