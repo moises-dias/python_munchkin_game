@@ -1,16 +1,39 @@
 import pygame
 from field import Field
 from card import Card
+# from pygame.locals  import *
+from ctypes import windll
 
-SCREEN_WIDTH = 1580
-SCREEN_HEIGHT = 950
-scale_x = 137
-scale_y = 222
+DEFAULT_WIDTH = 1580
+DEFAULT_HEIGHT = 950
+DEFAULT_SCALE_X = 137
+DEFAULT_SCALE_Y = 222
+DEFAULT_STARTING_POINT = 800
 
-# SCREEN_WIDTH = 1260
-# SCREEN_HEIGHT = 668
-# scale_x = 100
-# scale_y = 162
+# SCREEN_WIDTH = 1580
+# SCREEN_HEIGHT = 950
+# scale_x = 137
+# scale_y = 222
+
+FPS = 30
+
+pygame.init()
+screen = pygame.display.set_mode((DEFAULT_WIDTH, DEFAULT_HEIGHT), pygame.RESIZABLE)
+pygame.display.set_caption("colocar uns meme aqui")
+clock = pygame.time.Clock()
+
+user32 = windll.user32
+ShowWindow = user32.ShowWindow
+def getSDLWindow():
+    return pygame.display.get_wm_info()['window']
+ShowWindow(getSDLWindow(), 3)
+
+SCREEN_WIDTH, SCREEN_HEIGHT = pygame.display.get_surface().get_size()
+
+scale_x = int(DEFAULT_SCALE_X * SCREEN_WIDTH / DEFAULT_WIDTH)
+scale_y = int(DEFAULT_SCALE_Y * SCREEN_HEIGHT / DEFAULT_HEIGHT)
+
+starting_point = DEFAULT_STARTING_POINT * SCREEN_WIDTH / DEFAULT_WIDTH
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -22,6 +45,7 @@ PURPLE = (255, 0, 255)
 
 x_limits = [0.4, 0.8]
 y_limits = [0.25, 0.75]
+
 
 rects = []
 rects.append(Field(0, 0, int(x_limits[0] * SCREEN_WIDTH), int(y_limits[0] * SCREEN_HEIGHT), RED, 'players'))
@@ -43,19 +67,13 @@ rect_deck = pygame.rect.Rect((int(x_limits[0] * SCREEN_WIDTH), int(y_limits[1] *
 
 cards = []
 
-cards.append(Card(pygame.transform.scale(my_image.subsurface((0, 0, im_w, im_h)), (scale_x, scale_y)), 500, 10, scale_x, scale_y))
-cards.append(Card(pygame.transform.scale(my_image.subsurface((0, im_h, im_w, im_h)), (scale_x, scale_y)), 550, 10, scale_x, scale_y))
-cards.append(Card(pygame.transform.scale(my_image.subsurface((im_w, 0, im_w, im_h)), (scale_x, scale_y)), 600, 10, scale_x, scale_y))
-cards.append(Card(pygame.transform.scale(my_image.subsurface((im_w, im_h, im_w, im_h)), (scale_x, scale_y)), 650, 10, scale_x, scale_y))
+cards.append(Card(pygame.transform.scale(my_image.subsurface((0, 0, im_w, im_h)), (scale_x, scale_y)), starting_point, 10, scale_x, scale_y))
+cards.append(Card(pygame.transform.scale(my_image.subsurface((0, im_h, im_w, im_h)), (scale_x, scale_y)), starting_point + 10, 10, scale_x, scale_y))
+cards.append(Card(pygame.transform.scale(my_image.subsurface((im_w, 0, im_w, im_h)), (scale_x, scale_y)), starting_point + 20, 10, scale_x, scale_y))
+cards.append(Card(pygame.transform.scale(my_image.subsurface((im_w, im_h, im_w, im_h)), (scale_x, scale_y)), starting_point + 30, 10, scale_x, scale_y))
 
 
 
-FPS = 30
-
-pygame.init()
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Tracking System")
-clock = pygame.time.Clock()
 
 
 
