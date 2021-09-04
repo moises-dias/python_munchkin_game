@@ -1,10 +1,4 @@
-#server só retorna novas coordenadas se tiver alterações, senao retorna um false só
 import pygame
-
-# w_start = 0
-# h_start = 1
-# w_end = 2
-# h_end = 3
 
 class Card:
     def __init__(self, image, x, y, w, h):

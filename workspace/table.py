@@ -1,19 +1,14 @@
 import pygame
 from field import Field
 from card import Card
-# from pygame.locals  import *
 from ctypes import windll
+# from pygame.locals  import *
 
 DEFAULT_WIDTH = 1580
 DEFAULT_HEIGHT = 950
 DEFAULT_SCALE_X = 137
 DEFAULT_SCALE_Y = 222
 DEFAULT_STARTING_POINT = 800
-
-# SCREEN_WIDTH = 1580
-# SCREEN_HEIGHT = 950
-# scale_x = 137
-# scale_y = 222
 
 FPS = 30
 
@@ -71,11 +66,6 @@ cards.append(Card(pygame.transform.scale(my_image.subsurface((0, 0, im_w, im_h))
 cards.append(Card(pygame.transform.scale(my_image.subsurface((0, im_h, im_w, im_h)), (scale_x, scale_y)), starting_point + 10, 10, scale_x, scale_y))
 cards.append(Card(pygame.transform.scale(my_image.subsurface((im_w, 0, im_w, im_h)), (scale_x, scale_y)), starting_point + 20, 10, scale_x, scale_y))
 cards.append(Card(pygame.transform.scale(my_image.subsurface((im_w, im_h, im_w, im_h)), (scale_x, scale_y)), starting_point + 30, 10, scale_x, scale_y))
-
-
-
-
-
 
 running = True
 
