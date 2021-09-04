@@ -1,6 +1,11 @@
 #server só retorna novas coordenadas se tiver alterações, senao retorna um false só
 import pygame
 
+w_start = 0
+h_start = 1
+w_end = 2
+h_end = 3
+
 class Card:
     def __init__(self, image, x, y, w, h):
         self.image = image
@@ -34,14 +39,14 @@ class Card:
         if self.draging:
             mouse_x = pos[0]
             mouse_y = pos[1]
-            if 0 <= mouse_x + self.offset_x and mouse_x + self.offset_x + self.width <= screen_size[3]:
+            if screen_size[w_start] <= mouse_x + self.offset_x and mouse_x + self.offset_x + self.width <= screen_size[w_end]:
                 self.x = mouse_x + self.offset_x
             else:
                 self.offset_x = self.x - mouse_x
-            if 0 <= mouse_y + self.offset_y and mouse_y + self.offset_y + self.height <= screen_size[2]:
+            if screen_size[h_start] <= mouse_y + self.offset_y and mouse_y + self.offset_y + self.height <= screen_size[h_end]:
                 self.y = mouse_y + self.offset_y
             else:
                 self.offset_y = self.y - mouse_y
 
-    def position(self):
+    def position(self): # trocar para tupla?
         return [self.x, self.y, self.width, self.height]
