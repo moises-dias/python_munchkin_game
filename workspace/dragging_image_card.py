@@ -12,8 +12,6 @@ pygame.display.set_caption("Tracking System")
 clock = pygame.time.Clock()
 running = True
 
-im_x = 0
-im_y = 0
 im_w = 500
 im_h = 809
 
