@@ -17,6 +17,8 @@ class Card:
         self.rect = pygame.rect.Rect((self.x, self.y, self.width, self.height))
         self.order = 0
         self.area = ''
+        self.face = False
+        
 
     def draw(self, win):
         win.blit(self.image, (self.x, self.y))
