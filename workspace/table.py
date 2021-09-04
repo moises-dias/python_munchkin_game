@@ -41,7 +41,6 @@ PURPLE = (255, 0, 255)
 x_limits = [0.4, 0.8]
 y_limits = [0.25, 0.75]
 
-
 rects = []
 rects.append(Field(0, 0, int(x_limits[0] * SCREEN_WIDTH), int(y_limits[0] * SCREEN_HEIGHT), RED, 'players'))
 rects.append(Field(0, int(y_limits[0] * SCREEN_HEIGHT), int(x_limits[0] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEIGHT), BLACK, 'equipments'))
@@ -52,7 +51,6 @@ rects.append(Field(int(x_limits[1] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEI
 
 im_w = 500
 im_h = 809
-
 my_image = pygame.image.load("workspace/teste2.jpeg")
 
 rect_screen = pygame.rect.Rect((0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)) 
