@@ -13,9 +13,16 @@ class Card:
         self.name = ''
         self.type = ''
         self.rect = pygame.rect.Rect((self.x, self.y, self.width, self.height))
+        self.order = 0
 
     def draw(self, win):
         win.blit(self.image, (self.x, self.y))
+    
+    def set_order(self, order):
+        self.order = order
+
+    def get_order(self):
+        return self.order
 
     def click(self, pos):
         if self.rect.collidepoint(pos):
@@ -24,8 +31,10 @@ class Card:
             self.draging = True
             self.offset_x = self.x - mouse_x
             self.offset_y = self.y - mouse_y
+            return True
         else:
             self.draging = False
+            return False
     
     def release(self):
         self.draging = False

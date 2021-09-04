@@ -66,6 +66,7 @@ cards.append(Card(pygame.transform.scale(my_image.subsurface((im_w, 0, im_w, im_
 cards.append(Card(pygame.transform.scale(my_image.subsurface((im_w, im_h, im_w, im_h)), (scale_x, scale_y)), starting_point + 30, 10, scale_x, scale_y))
 
 running = True
+max_card_order = 0
 
 while running:
 
@@ -74,8 +75,11 @@ while running:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:     
-                for card in cards:     
-                    card.click(event.pos)
+                for card in reversed(cards):     
+                    if card.click(event.pos):
+                        max_card_order = max_card_order + 1
+                        card.set_order(max_card_order)
+                        break
 
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:  
@@ -87,6 +91,8 @@ while running:
                 card.move(event.pos, rect_screen, rect_players, rect_logs, rect_deck)
 
     #screen.fill(WHITE)
+
+    cards.sort(key=lambda c: c.get_order())
 
     for rect in rects:
         rect.draw(screen)
