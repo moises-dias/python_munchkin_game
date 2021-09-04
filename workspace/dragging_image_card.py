@@ -19,10 +19,10 @@ im_h = 809
 
 my_image = pygame.image.load("workspace/teste2.jpeg")
 
-screen_size = (0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
-players_size = (int(0.9*SCREEN_WIDTH), int(0.9*SCREEN_HEIGHT), SCREEN_WIDTH, SCREEN_HEIGHT)
-logs_size = (int(0.9*SCREEN_WIDTH), int(0.9*SCREEN_HEIGHT), SCREEN_WIDTH, SCREEN_HEIGHT) 
-deck_size = (int(0.9*SCREEN_WIDTH), int(0.9*SCREEN_HEIGHT), SCREEN_WIDTH, SCREEN_HEIGHT)
+rect_screen = pygame.rect.Rect((0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)) 
+rect_players = pygame.rect.Rect((700, 50, 200, 200))
+rect_logs = pygame.rect.Rect((50, 700, 200, 200))
+rect_deck = pygame.rect.Rect((700, 700, 200, 200))
 
 cards = []
 
@@ -49,7 +49,7 @@ while running:
 
         elif event.type == pygame.MOUSEMOTION:
             for card in cards:
-                card.move(event.pos, screen_size, players_size, logs_size, deck_size)
+                card.move(event.pos, rect_screen, rect_players, rect_logs, rect_deck)
     
     screen.fill(WHITE)
     for card in cards:
@@ -65,9 +65,9 @@ while running:
     #for i in range(100):
     #    screen.blit(test, (randrange(100), randrange(100)))
     
-    pygame.draw.rect(screen, (255,   0,   0), pygame.rect.Rect((700, 50, 200, 200)))
-    pygame.draw.rect(screen, (255,   0,   0), pygame.rect.Rect(50, 700, 200, 200))
-    pygame.draw.rect(screen, (255,   0,   0), pygame.rect.Rect(700, 700, 200, 200))
+    pygame.draw.rect(screen, (255,   0,   0), rect_players)
+    pygame.draw.rect(screen, (255,   0,   0), rect_logs)
+    pygame.draw.rect(screen, (255,   0,   0), rect_deck)
     pygame.display.flip()
     clock.tick(FPS)
     # print(pygame.mouse.get_focused())

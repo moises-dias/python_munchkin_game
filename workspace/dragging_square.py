@@ -32,7 +32,7 @@ pygame.display.set_caption("Tracking System")
 
 # - objects -
 
-rectangle = pygame.rect.Rect(176, 134, 17, 17)
+rectangle = pygame.rect.Rect(176, 134, 50, 50)
 rectangle_draging = False
 
 # - mainloop -
@@ -74,6 +74,15 @@ while running:
     # - draws (without updates) -
 
     screen.fill(WHITE)
+
+    r2 = pygame.rect.Rect((100, 50, 200, 200))
+    pygame.draw.rect(screen, (255,   255,   0), r2)
+    if(r2.contains(rectangle)):
+        print('contains ', end=' ')
+    if(r2.colliderect(rectangle)):
+        print('collide')
+    if(not(r2.contains(rectangle) or r2.colliderect(rectangle))):
+        print('none')
 
     pygame.draw.rect(screen, RED, rectangle)
 
