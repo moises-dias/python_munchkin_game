@@ -12,7 +12,7 @@ class Card:
         self.width = w
         self.height = h
         self.draging = False
-        self.name = ''
+        self.id = 0
         self.type = ''
         self.rect = pygame.rect.Rect((self.x, self.y, self.width, self.height))
         self.order = 0
