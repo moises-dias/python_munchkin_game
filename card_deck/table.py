@@ -53,19 +53,20 @@ rects.append(Field(int(x_limits[1] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEI
 # fazer um método no field que retorna o rect e jogar esses rects abaixo dentro dele
 rect_screen = pygame.rect.Rect((0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)) 
 rect_players = pygame.rect.Rect((0, 0, int(x_limits[0] * SCREEN_WIDTH), int(y_limits[0] * SCREEN_HEIGHT)))
-rect_logs = pygame.rect.Rect((int(x_limits[1] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEIGHT), SCREEN_WIDTH, SCREEN_HEIGHT))
-rect_deck = pygame.rect.Rect((int(x_limits[0] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEIGHT), int(x_limits[1] * SCREEN_WIDTH), SCREEN_HEIGHT))
+rect_logs = pygame.rect.Rect((int(x_limits[1] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEIGHT), (1 - x_limits[1]) * SCREEN_WIDTH, (1 - y_limits[1]) * SCREEN_HEIGHT))
+rect_deck = pygame.rect.Rect((int(x_limits[0] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEIGHT), int((x_limits[1] - x_limits[0]) * SCREEN_WIDTH), (1 - y_limits[1]) * SCREEN_HEIGHT))
 rect_equipments = pygame.rect.Rect((0, int(y_limits[0] * SCREEN_HEIGHT), int(x_limits[0] * SCREEN_WIDTH), int((y_limits[1] - y_limits[0]) * SCREEN_HEIGHT)))
 rect_table = pygame.rect.Rect((int(x_limits[0] * SCREEN_WIDTH), 0, (1 - x_limits[0]) * SCREEN_WIDTH, int(y_limits[1] * SCREEN_HEIGHT)))
 rect_hand = pygame.rect.Rect((0, int(y_limits[1] * SCREEN_HEIGHT), int(x_limits[0] * SCREEN_WIDTH), (1 - y_limits[1]) * SCREEN_HEIGHT))
 
-
-cards_class = Cards(scale_x, scale_y, (500, 500), (700, 500), (900, 500), (1100, 500))
+deck_x = int(x_limits[0] * SCREEN_WIDTH)
+deck_y = int(y_limits[1] * SCREEN_HEIGHT)
+deck_w = int((x_limits[1] - x_limits[0]) * SCREEN_WIDTH)
+deck_h = (1 - y_limits[1]) * SCREEN_HEIGHT
+cards_class = Cards(scale_x, scale_y, (deck_x + 0.01*deck_w, deck_y + 0.03*deck_h), (deck_x + 0.26*deck_w, deck_y + 0.03*deck_h), (deck_x + 0.51*deck_w, deck_y + 0.03*deck_h), (deck_x + 0.76*deck_w, deck_y + 0.03*deck_h))
 cards = cards_class.get_cards()
 
 running = True
-# max_card_order = 0
-
 
 while running:
 
@@ -82,6 +83,7 @@ while running:
 
         elif event.type == pygame.MOUSEMOTION:
             cards_class.move(event.pos, rect_screen, rect_players, rect_logs, rect_deck)
+            # print(event.pos)
 
     for rect in rects:
         rect.draw(screen)
