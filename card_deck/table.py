@@ -2,6 +2,7 @@ import pygame
 from field import Field
 from card import Card
 from ctypes import windll
+from cards import Cards
 # from pygame.locals  import *
 
 DEFAULT_WIDTH = 1580
@@ -51,7 +52,7 @@ rects.append(Field(int(x_limits[1] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEI
 
 im_w = 500
 im_h = 809
-my_image = pygame.image.load("workspace/teste2.jpeg")
+my_image = pygame.image.load("card_deck/images/treasure2.jpeg")
 
 rect_screen = pygame.rect.Rect((0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)) 
 rect_players = pygame.rect.Rect((0, 0, int(x_limits[0] * SCREEN_WIDTH), int(y_limits[0] * SCREEN_HEIGHT)))
@@ -66,13 +67,15 @@ rect_hand = pygame.rect.Rect((0, int(y_limits[1] * SCREEN_HEIGHT), int(x_limits[
 
 cards = []
 
-cards.append(Card(pygame.transform.smoothscale(my_image.subsurface((0, 0, im_w, im_h)), (scale_x, scale_y)), starting_point, 10, scale_x, scale_y))
-cards.append(Card(pygame.transform.smoothscale(my_image.subsurface((0, im_h, im_w, im_h)), (scale_x, scale_y)), starting_point + 10, 10, scale_x, scale_y))
-cards.append(Card(pygame.transform.smoothscale(my_image.subsurface((im_w, 0, im_w, im_h)), (scale_x, scale_y)), starting_point + 20, 10, scale_x, scale_y))
-cards.append(Card(pygame.transform.smoothscale(my_image.subsurface((im_w, im_h, im_w, im_h)), (scale_x, scale_y)), starting_point + 30, 10, scale_x, scale_y))
+cards.append(Card(pygame.transform.smoothscale(my_image.subsurface((0, 0, im_w, im_h)), (scale_x, scale_y)), starting_point, 10, scale_x, scale_y, 0))
+cards.append(Card(pygame.transform.smoothscale(my_image.subsurface((0, im_h, im_w, im_h)), (scale_x, scale_y)), starting_point + 10, 10, scale_x, scale_y, 1))
+cards.append(Card(pygame.transform.smoothscale(my_image.subsurface((im_w, 0, im_w, im_h)), (scale_x, scale_y)), starting_point + 20, 10, scale_x, scale_y, 2))
+cards.append(Card(pygame.transform.smoothscale(my_image.subsurface((im_w, im_h, im_w, im_h)), (scale_x, scale_y)), starting_point + 30, 10, scale_x, scale_y, 3))
 
 running = True
 max_card_order = 0
+
+cards_class = Cards()
 
 while running:
 
@@ -105,6 +108,8 @@ while running:
     for card in cards:
         card.draw(screen)
     
+    # cards_class.draw(screen)
+
     # rect_equipments
     # rect_table
     # rect_hand

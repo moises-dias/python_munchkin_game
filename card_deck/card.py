@@ -1,7 +1,7 @@
 import pygame
 
 class Card:
-    def __init__(self, image, x, y, w, h):
+    def __init__(self, image, x, y, w, h, id):
         self.image = image
         self.x = x
         self.y = y
@@ -12,12 +12,13 @@ class Card:
         self.width = w
         self.height = h
         self.draging = False
-        self.id = 0
+        self.id = id
         self.type = ''
         self.rect = pygame.rect.Rect((self.x, self.y, self.width, self.height))
         self.order = 0
         self.area = ''
         self.face = False
+        self.name = ''
         
 
     def draw(self, win):
@@ -45,7 +46,7 @@ class Card:
     
     def release(self, pos, rect_equipments, rect_table, rect_hand):
         if self.draging:
-            if not(self.rect.collidepoint(pos)):
+            if not(self.rect.collidepoint(pos) and any([rect.collidepoint(pos) for rect in [rect_equipments, rect_table, rect_hand]])):
                 self.x = self.last_x
                 self.rect.x = self.last_x
                 self.y = self.last_y
@@ -78,14 +79,14 @@ class Card:
 
             self.x = mouse_x + self.offset_x
             self.rect.x = mouse_x + self.offset_x
-            if(not(rect_screen.contains(self.rect)) or any([self.rect.colliderect(rect) for rect in [rect_players, rect_logs, rect_deck]])):
+            if(not(rect_screen.contains(self.rect)) ): #or not any([self.rect.colliderect(rect) for rect in [rect_equipments, rect_table, rect_hand]])):
                 self.x = prev_x
                 self.rect.x = prev_x
 
             self.y = mouse_y + self.offset_y
             self.rect.y = mouse_y + self.offset_y
 
-            if(not(rect_screen.contains(self.rect)) or any([self.rect.colliderect(rect) for rect in [rect_players, rect_logs, rect_deck]])):
+            if(not(rect_screen.contains(self.rect)) ):# or not any([self.rect.colliderect(rect) for rect in [rect_equipments, rect_table, rect_hand]])):
                 self.y = prev_y
                 self.rect.y = prev_y
 
