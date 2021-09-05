@@ -50,32 +50,22 @@ rects.append(Field(int(x_limits[0] * SCREEN_WIDTH), 0, (1 - x_limits[0]) * SCREE
 rects.append(Field(int(x_limits[0] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEIGHT), int((x_limits[1] - x_limits[0]) * SCREEN_WIDTH), (1 - y_limits[1]) * SCREEN_HEIGHT, BLUE, 'deck'))
 rects.append(Field(int(x_limits[1] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEIGHT), (1 - x_limits[1]) * SCREEN_WIDTH, (1 - y_limits[1]) * SCREEN_HEIGHT, PURPLE, 'logs'))
 
-im_w = 500
-im_h = 809
-my_image = pygame.image.load("card_deck/images/treasure2.jpeg")
-
+# fazer um método no field que retorna o rect e jogar esses rects abaixo dentro dele
 rect_screen = pygame.rect.Rect((0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)) 
 rect_players = pygame.rect.Rect((0, 0, int(x_limits[0] * SCREEN_WIDTH), int(y_limits[0] * SCREEN_HEIGHT)))
 rect_logs = pygame.rect.Rect((int(x_limits[1] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEIGHT), SCREEN_WIDTH, SCREEN_HEIGHT))
 rect_deck = pygame.rect.Rect((int(x_limits[0] * SCREEN_WIDTH), int(y_limits[1] * SCREEN_HEIGHT), int(x_limits[1] * SCREEN_WIDTH), SCREEN_HEIGHT))
-
 rect_equipments = pygame.rect.Rect((0, int(y_limits[0] * SCREEN_HEIGHT), int(x_limits[0] * SCREEN_WIDTH), int((y_limits[1] - y_limits[0]) * SCREEN_HEIGHT)))
 rect_table = pygame.rect.Rect((int(x_limits[0] * SCREEN_WIDTH), 0, (1 - x_limits[0]) * SCREEN_WIDTH, int(y_limits[1] * SCREEN_HEIGHT)))
 rect_hand = pygame.rect.Rect((0, int(y_limits[1] * SCREEN_HEIGHT), int(x_limits[0] * SCREEN_WIDTH), (1 - y_limits[1]) * SCREEN_HEIGHT))
 
-#print(rect_players.x, rect_players.y)
 
-cards = []
-
-cards.append(Card(pygame.transform.smoothscale(my_image.subsurface((0, 0, im_w, im_h)), (scale_x, scale_y)), starting_point, 10, scale_x, scale_y, 0))
-cards.append(Card(pygame.transform.smoothscale(my_image.subsurface((0, im_h, im_w, im_h)), (scale_x, scale_y)), starting_point + 10, 10, scale_x, scale_y, 1))
-cards.append(Card(pygame.transform.smoothscale(my_image.subsurface((im_w, 0, im_w, im_h)), (scale_x, scale_y)), starting_point + 20, 10, scale_x, scale_y, 2))
-cards.append(Card(pygame.transform.smoothscale(my_image.subsurface((im_w, im_h, im_w, im_h)), (scale_x, scale_y)), starting_point + 30, 10, scale_x, scale_y, 3))
+cards_class = Cards(scale_x, scale_y, (500, 500), (700, 500), (900, 500), (1100, 500))
+cards = cards_class.get_cards()
 
 running = True
-max_card_order = 0
+# max_card_order = 0
 
-cards_class = Cards()
 
 while running:
 
@@ -83,38 +73,20 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:     
-                for card in reversed(cards):     
-                    if card.click(event.pos):
-                        max_card_order = max_card_order + 1
-                        card.set_order(max_card_order)
-                        break
+            if event.button == 1:    
+                cards_class.click(event.pos) 
 
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:  
-                for card in cards:
-                    card.release(event.pos, rect_equipments, rect_table, rect_hand)
+                cards_class.release(event.pos, rect_equipments, rect_table, rect_hand) 
 
         elif event.type == pygame.MOUSEMOTION:
-            for card in cards:
-                card.move(event.pos, rect_screen, rect_players, rect_logs, rect_deck)
-
-    screen.fill(WHITE)
-
-    cards.sort(key=lambda c: c.get_order())
+            cards_class.move(event.pos, rect_screen, rect_players, rect_logs, rect_deck)
 
     for rect in rects:
         rect.draw(screen)
-    for card in cards:
-        card.draw(screen)
     
-    # cards_class.draw(screen)
-
-    # rect_equipments
-    # rect_table
-    # rect_hand
-
-    # pygame.draw.rect(screen, (0,   255,   170), rect_equipments)
+    cards_class.draw(screen)
 
     pygame.display.flip()
 
