@@ -17,13 +17,17 @@ d_2_w = 245
 d_2_h = 351
 door_2 = pygame.image.load("card_deck/images/door2.jpeg")
 
+b_w = 379
+b_h = 584
+back = pygame.image.load("card_deck/images/back.jpg")
+
 max_card_order = 0
 
 class Cards:
     def __init__(self, c_w, c_h, t_pos, d_pos, t_discard_pos, d_discard_pos):
         self.cards = []
-        self.door_back = None
-        self.treasure_back = None
+        self.door_back = Card(pygame.transform.smoothscale(back.subsurface((b_w, 0, b_w, b_h)), (c_w, c_h)),  0,  0,  c_w,  c_h,  -1)
+        self.treasure_back = Card(pygame.transform.smoothscale(back.subsurface((0, 0, b_w, b_h)), (c_w, c_h)),  0,  0,  c_w,  c_h,  -1)
         self.t_pos = t_pos
         self.d_pos = d_pos
         self.t_discard_pos = t_discard_pos
@@ -42,6 +46,8 @@ class Cards:
 
         for card in self.cards:
             win.blit(card.image, (card.x, card.y))
+        win.blit(self.door_back.image, (self.door_back.x, self.door_back.y))
+        win.blit(self.treasure_back.image, (300, self.treasure_back.y))
 
     def get_cards(self):
         return self.cards
