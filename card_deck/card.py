@@ -16,6 +16,7 @@ class Card:
         self.type = type
         self.rect = pygame.rect.Rect((self.x, self.y, self.width, self.height))
         self.order = 0
+        self.last_order = 0 # ff vii last order
         self.area = ''
         self.face = False
         self.name = ''
@@ -39,6 +40,9 @@ class Card:
     def get_type(self):
         return self.type
 
+    def get_draging(self):
+        return self.draging
+
     def reveal(self, pos):
         if self.rect.collidepoint(pos):
             self.face = not self.face
@@ -53,6 +57,7 @@ class Card:
             mouse_y = pos[1]
             self.last_x = self.x
             self.last_y = self.y
+            self.last_order = self.order
             self.draging = True
             self.offset_x = self.x - mouse_x
             self.offset_y = self.y - mouse_y
@@ -90,6 +95,8 @@ class Card:
                 self.rect.x = self.last_x
                 self.y = self.last_y
                 self.rect.y = self.last_y
+                if self.last_order == 0:
+                    self.order = 0
                 self.draging = False
                 return False
             else:

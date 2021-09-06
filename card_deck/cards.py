@@ -24,6 +24,8 @@ back = pygame.image.load("card_deck/images/back.jpg")
 max_card_order = 0
 t_discard = []
 d_discard = []
+t_discard_drag = []
+d_discard_drag = []
 
 class Cards:
     def __init__(self, c_w, c_h, t_pos, d_pos, t_discard_pos, d_discard_pos):
@@ -48,56 +50,90 @@ class Cards:
         global d_discard
         # win.blit(self.door_back.image, (self.d_pos[0], self.d_pos[1]))
         # win.blit(self.treasure_back.image, (self.t_pos[0], self.t_pos[1]))
+        draw_count = 0
         t_draw = 0
         d_draw = 0
+
+        if len(t_discard) > 2:
+            for card in t_discard[-2:]:
+                if not card.get_draging():
+                    win.blit(card.image, (card.x, card.y))
+                    draw_count = draw_count + 1
+        else:
+            for card in t_discard:
+                if not card.get_draging():
+                    win.blit(card.image, (card.x, card.y))
+                    draw_count = draw_count + 1
+        if len(d_discard) > 2:
+            for card in d_discard[-2:]:
+                if not card.get_draging():
+                    win.blit(card.image, (card.x, card.y))
+                    draw_count = draw_count + 1
+        else:
+            for card in d_discard:
+                if not card.get_draging():
+                    win.blit(card.image, (card.x, card.y))
+                    draw_count = draw_count + 1
+
         for card in self.cards:
             if card.get_order() > 0:
                 if card.get_face():
                     win.blit(card.image, (card.x, card.y))
+                    draw_count = draw_count + 1
                 else:
                     if card.get_type() == 'treasure':
                         win.blit(self.treasure_back.image, (card.x, card.y))
+                        draw_count = draw_count + 1
                     else:
                         win.blit(self.door_back.image, (card.x, card.y))
+                        draw_count = draw_count + 1
             elif t_draw < 2 and card.get_type() == 'treasure' and card not in t_discard:
                 win.blit(self.treasure_back.image, (card.x, card.y))
+                draw_count = draw_count + 1
                 t_draw = t_draw + 1
             elif d_draw < 2 and card.get_type() == 'door' and card not in d_discard:
                 win.blit(self.door_back.image, (card.x, card.y))
+                draw_count = draw_count + 1
                 d_draw = d_draw + 1
-        if len(t_discard) > 2:
-            for card in t_discard[-2:]:
-                win.blit(card.image, (card.x, card.y))
-        else:
-            for card in t_discard:
-                win.blit(card.image, (card.x, card.y))
-        if len(d_discard) > 2:
-            for card in d_discard[-2:]:
-                win.blit(card.image, (card.x, card.y))
-        else:
-            for card in d_discard:
-                win.blit(card.image, (card.x, card.y))
+        
+        print(draw_count)
 
     def get_cards(self):
         return self.cards
     
     def click(self, pos):
+        global t_discard
+        global d_discard
+        global t_discard_drag
+        global d_discard_drag
         global max_card_order
         for card in reversed(self.cards):     
             if card.click(pos):
                 max_card_order = max_card_order + 1
                 card.set_order(max_card_order)
+                if card in t_discard:
+                    t_discard.remove(card)
+                    t_discard_drag.append(card)
+                if card in d_discard:
+                    d_discard.remove(card)
+                    d_discard_drag.append(card)
                 break
     
     def release(self, pos, rect_equipments, rect_table, rect_hand):
         global t_discard
         global d_discard
+        global t_discard_drag
+        global d_discard_drag
         for card in self.cards:
-            if card.release(pos, rect_equipments, rect_table, rect_hand):
-                if card in t_discard:
-                    t_discard.remove(card)
-                if card in d_discard:
-                    d_discard.remove(card)
+            if not card.release(pos, rect_equipments, rect_table, rect_hand):
+                if card in t_discard_drag:
+                    t_discard.append(card)
+                if card in d_discard_drag:
+                    d_discard.append(card)
+            if card in t_discard_drag:
+                t_discard_drag.remove(card)
+            if card in d_discard_drag:
+                d_discard_drag.remove(card)
     
     def move(self, pos, rect_screen, rect_players, rect_logs, rect_deck):
         for card in self.cards:
