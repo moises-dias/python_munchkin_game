@@ -1,7 +1,7 @@
 import pygame
 
 class Card:
-    def __init__(self, image, x, y, w, h, id):
+    def __init__(self, image, x, y, w, h, id, type):
         self.image = image
         self.x = x
         self.y = y
@@ -13,7 +13,7 @@ class Card:
         self.height = h
         self.draging = False
         self.id = id
-        self.type = ''
+        self.type = type
         self.rect = pygame.rect.Rect((self.x, self.y, self.width, self.height))
         self.order = 0
         self.area = ''
@@ -30,6 +30,23 @@ class Card:
     def get_order(self):
         return self.order
 
+    def set_face(self, face):
+        self.face = face
+
+    def get_face(self):
+        return self.face
+
+    def get_type(self):
+        return self.type
+
+    def reveal(self, pos):
+        if self.rect.collidepoint(pos):
+            self.face = not self.face
+            print(self.face)
+            return True
+        return False
+
+
     def click(self, pos):
         if self.rect.collidepoint(pos):
             mouse_x = pos[0]
@@ -44,6 +61,28 @@ class Card:
             self.draging = False
             return False
     
+    def focused(self, pos):
+        if self.rect.collidepoint(pos):
+            return True
+        return False
+
+    def discard(self, pos, t_discard_pos, d_discard_pos):
+        if self.rect.collidepoint(pos):
+            if self.type == 'treasure':
+                self.x = t_discard_pos[0]
+                self.rect.x = t_discard_pos[0]
+                self.y = t_discard_pos[1]
+                self.rect.y = t_discard_pos[1]
+            if self.type == 'door':
+                self.x = d_discard_pos[0]
+                self.rect.x = d_discard_pos[0]
+                self.y = d_discard_pos[1]
+                self.rect.y = d_discard_pos[1]
+            self.order = 0
+            self.face = True
+            return True
+        return False
+    
     def release(self, pos, rect_equipments, rect_table, rect_hand):
         if self.draging:
             if not(self.rect.collidepoint(pos) and any([rect.collidepoint(pos) for rect in [rect_equipments, rect_table, rect_hand]])):
@@ -51,6 +90,8 @@ class Card:
                 self.rect.x = self.last_x
                 self.y = self.last_y
                 self.rect.y = self.last_y
+                self.draging = False
+                return False
             else:
                 for rect in [rect_equipments, rect_table, rect_hand]:
                     if (rect.collidepoint(pos) and self.rect.colliderect(rect) and not rect.contains(self.rect)):
@@ -68,6 +109,7 @@ class Card:
                             self.y = self.y - (self.y + self.height - rect.bottom)
                             self.rect.y = self.y - (self.y + self.height - rect.bottom)
             self.draging = False
+            return True
 
     def move(self, pos, rect_screen, rect_players, rect_logs, rect_deck):
         if self.draging:

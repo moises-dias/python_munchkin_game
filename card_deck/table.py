@@ -76,6 +76,8 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:    
                 cards_class.click(event.pos) 
+            if event.button == 3:    
+                cards_class.reveal(event.pos) 
 
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:  
@@ -84,6 +86,10 @@ while running:
         elif event.type == pygame.MOUSEMOTION:
             cards_class.move(event.pos, rect_screen, rect_players, rect_logs, rect_deck)
             # print(event.pos)
+        
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_d:
+                cards_class.discard(pygame.mouse.get_pos())
 
     for rect in rects:
         rect.draw(screen)
