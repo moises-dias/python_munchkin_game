@@ -1,7 +1,7 @@
 import pygame
 
 class Card:
-    def __init__(self, image, x, y, w, h, id, type):
+    def __init__(self, image, x, y, w, h, id, type, im_x, im_y, im_name):
         self.image = image
         self.x = x
         self.y = y
@@ -20,6 +20,9 @@ class Card:
         self.area = ''
         self.face = False
         self.name = ''
+        self.im_x = im_x
+        self.im_y = im_y
+        self.im_name = im_name
         
 
     def draw(self, win):
@@ -39,6 +42,22 @@ class Card:
 
     def get_type(self):
         return self.type
+
+    def get_id(self):
+        return self.id
+
+    def get_im_name(self):
+        return self.im_name
+
+    def get_im_x(self):
+        return self.im_x
+
+    def get_im_y(self):
+        return self.im_y
+
+    def set_x_y(self, pos): # CRIAR UMA NOVA CLASSE EXPANDED CARD? COMO ELA NAO VAI PRECISAR DE MUITA COISA QUE TEM NA CLASSE Card
+        self.x = pos[0]
+        self.y = pos[1]
 
     def get_draging(self):
         return self.draging

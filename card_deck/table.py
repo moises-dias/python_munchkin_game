@@ -18,11 +18,11 @@ screen = pygame.display.set_mode((DEFAULT_WIDTH, DEFAULT_HEIGHT), pygame.RESIZAB
 pygame.display.set_caption("colocar uns meme aqui")
 clock = pygame.time.Clock()
 
-# user32 = windll.user32
-# ShowWindow = user32.ShowWindow
-# def getSDLWindow():
-#     return pygame.display.get_wm_info()['window']
-# ShowWindow(getSDLWindow(), 3)
+user32 = windll.user32
+ShowWindow = user32.ShowWindow
+def getSDLWindow():
+    return pygame.display.get_wm_info()['window']
+ShowWindow(getSDLWindow(), 3)
 
 SCREEN_WIDTH, SCREEN_HEIGHT = pygame.display.get_surface().get_size()
 
@@ -90,6 +90,13 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_d:
                 cards_class.discard(pygame.mouse.get_pos())
+
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_v:
+                cards_class.cancel_expand()
+
+        if pygame.key.get_pressed()[pygame.K_v]: #IMPEDIR CLICK, RELEASE,E DEMAIS FUNCOES ACIMA SE TIVER APERTANDO V
+            cards_class.expand_card(pygame.mouse.get_pos(), SCREEN_WIDTH, SCREEN_HEIGHT)
 
     for rect in rects:
         rect.draw(screen)
