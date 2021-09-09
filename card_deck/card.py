@@ -55,9 +55,9 @@ class Card:
     def get_im_y(self):
         return self.im_y
 
-    def set_x_y(self, pos): # CRIAR UMA NOVA CLASSE EXPANDED CARD? COMO ELA NAO VAI PRECISAR DE MUITA COISA QUE TEM NA CLASSE Card
-        self.x = pos[0]
-        self.y = pos[1]
+    def set_x_y(self, x, y): # CRIAR UMA NOVA CLASSE EXPANDED CARD? COMO ELA NAO VAI PRECISAR DE MUITA COISA QUE TEM NA CLASSE Card
+        self.x = x
+        self.y = y
 
     def get_draging(self):
         return self.draging

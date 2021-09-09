@@ -162,21 +162,36 @@ class Cards:
                 break
 
     def expand_card(self, pos, screen_width, screen_height):
+        card_focused = False
         for card in reversed(self.cards):
             if card.focused(pos):
+                if not card.get_face():
+                    break
+                
+                if pos[0] < screen_width/2:
+                    card_x = pos[0]
+                else:
+                    card_x = pos[0] - self.c_w * 2
+                if pos[1] < screen_height/2:
+                    card_y = pos[1]
+                else:
+                    card_y = pos[1] - self.c_h * 2
                 if not(card.get_id() == self.expanded_card_id):
                     if card.get_im_name() == 'treasure1.jpeg':
-                        self.expanded_card = Card(pygame.transform.smoothscale(treasure_1.subsurface((card.get_im_x(), card.get_im_y(), t_1_w, t_1_h)), (self.c_w * 2, self.c_h * 2)),  pos[0],  pos[1],  self.c_w * 2,  self.c_h * 2,  -1,  '',  0,  0,  '')
+                        self.expanded_card = Card(pygame.transform.smoothscale(treasure_1.subsurface((card.get_im_x(), card.get_im_y(), t_1_w, t_1_h)), (self.c_w * 2, self.c_h * 2)),  card_x,  card_y,  self.c_w * 2,  self.c_h * 2,  -1,  '',  0,  0,  '')
                     if card.get_im_name() == 'treasure2.jpeg':
-                        self.expanded_card = Card(pygame.transform.smoothscale(treasure_2.subsurface((card.get_im_x(), card.get_im_y(), t_2_w, t_2_h)), (self.c_w * 2, self.c_h * 2)),  pos[0],  pos[1],  self.c_w * 2,  self.c_h * 2,  -1,  '',  0,  0,  '')
+                        self.expanded_card = Card(pygame.transform.smoothscale(treasure_2.subsurface((card.get_im_x(), card.get_im_y(), t_2_w, t_2_h)), (self.c_w * 2, self.c_h * 2)),  card_x,  card_y,  self.c_w * 2,  self.c_h * 2,  -1,  '',  0,  0,  '')
                     if card.get_im_name() == 'door1.jpg':
-                        self.expanded_card = Card(pygame.transform.smoothscale(door_1.subsurface((card.get_im_x(), card.get_im_y(), d_1_w, d_1_h)), (self.c_w * 2, self.c_h * 2)),  pos[0],  pos[1],  self.c_w * 2,  self.c_h * 2,  -1,  '',  0,  0,  '')
+                        self.expanded_card = Card(pygame.transform.smoothscale(door_1.subsurface((card.get_im_x(), card.get_im_y(), d_1_w, d_1_h)), (self.c_w * 2, self.c_h * 2)),  card_x,  card_y,  self.c_w * 2,  self.c_h * 2,  -1,  '',  0,  0,  '')
                     if card.get_im_name() == 'door2.jpeg':
-                        self.expanded_card = Card(pygame.transform.smoothscale(door_2.subsurface((card.get_im_x(), card.get_im_y(), d_2_w, d_2_h)), (self.c_w * 2, self.c_h * 2)),  pos[0],  pos[1],  self.c_w * 2,  self.c_h * 2,  -1,  '',  0,  0,  '')
+                        self.expanded_card = Card(pygame.transform.smoothscale(door_2.subsurface((card.get_im_x(), card.get_im_y(), d_2_w, d_2_h)), (self.c_w * 2, self.c_h * 2)),  card_x,  card_y,  self.c_w * 2,  self.c_h * 2,  -1,  '',  0,  0,  '')
                     self.expanded_card_id = card.get_id()
                 else:
-                    self.expanded_card.set_x_y(pos)
+                    self.expanded_card.set_x_y(card_x, card_y)
+                card_focused = True
                 break
+        if not card_focused:
+            self.cancel_expand()
     
     def cancel_expand(self):
         self.expanded_card = None
