@@ -76,7 +76,7 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:    
                 cards_class.click(event.pos) 
-            if event.button == 3:    
+            if event.button == 3 and not pygame.mouse.get_pressed()[0]:    
                 cards_class.reveal(event.pos) 
 
         elif event.type == pygame.MOUSEBUTTONUP:
@@ -84,11 +84,10 @@ while running:
                 cards_class.release(event.pos, rect_equipments, rect_table, rect_hand) 
 
         elif event.type == pygame.MOUSEMOTION:
-            cards_class.move(event.pos, rect_screen, rect_players, rect_logs, rect_deck)
-            # print(event.pos)
+            cards_class.move(event.pos, rect_screen)
         
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_d:
+            if event.key == pygame.K_d and not pygame.mouse.get_pressed()[0]:
                 cards_class.discard(pygame.mouse.get_pos())
 
         elif event.type == pygame.KEYUP:
@@ -106,10 +105,5 @@ while running:
     pygame.display.flip()
 
     clock.tick(FPS)
-
-    # if not (pygame.mouse.get_focused()): # trocar para mouse.x e y > 1000 ou < 0?
-    #     for card in cards:
-    #         card.release()
-
 
 pygame.quit()

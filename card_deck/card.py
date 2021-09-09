@@ -1,7 +1,7 @@
 import pygame
 
 class Card:
-    def __init__(self, image, x, y, w, h, id, type, im_x, im_y, im_name):
+    def __init__(self, image, x, y, id, type, im_x, im_y, im_name):
         self.image = image
         self.x = x
         self.y = y
@@ -9,8 +9,10 @@ class Card:
         self.offset_y = 0
         self.last_x = 0
         self.last_y = 0
-        self.width = w
-        self.height = h
+        self.width = image.get_width()
+        self.height = image.get_height()
+        # self.width = w
+        # self.height = h
         self.draging = False
         self.id = id
         self.type = type
@@ -34,8 +36,8 @@ class Card:
     def get_order(self):
         return self.order
 
-    def set_face(self, face):
-        self.face = face
+    # def set_face(self, face):
+    #     self.face = face
 
     def get_face(self):
         return self.face
@@ -55,15 +57,15 @@ class Card:
     def get_im_y(self):
         return self.im_y
 
-    def set_x_y(self, x, y): # CRIAR UMA NOVA CLASSE EXPANDED CARD? COMO ELA NAO VAI PRECISAR DE MUITA COISA QUE TEM NA CLASSE Card
-        self.x = x
-        self.y = y
+    # def set_x_y(self, x, y):
+    #     self.x = x
+    #     self.y = y
 
     def get_draging(self):
         return self.draging
 
     def reveal(self, pos):
-        if self.rect.collidepoint(pos):
+        if self.rect.collidepoint(pos) and self.order > 0:
             self.face = not self.face
             print(self.face)
             return True
@@ -93,27 +95,21 @@ class Card:
     def discard(self, pos, t_discard_pos, d_discard_pos):
         if self.rect.collidepoint(pos):
             if self.type == 'treasure':
-                self.x = t_discard_pos[0]
-                self.rect.x = t_discard_pos[0]
-                self.y = t_discard_pos[1]
-                self.rect.y = t_discard_pos[1]
+                self.x = self.rect.x = t_discard_pos[0]
+                self.y = self.rect.y = t_discard_pos[1]
             if self.type == 'door':
-                self.x = d_discard_pos[0]
-                self.rect.x = d_discard_pos[0]
-                self.y = d_discard_pos[1]
-                self.rect.y = d_discard_pos[1]
+                self.x = self.rect.x = d_discard_pos[0]
+                self.y = self.rect.y = d_discard_pos[1]
             self.order = 0
             self.face = True
             return True
         return False
     
-    def release(self, pos, rect_equipments, rect_table, rect_hand):
+    def release(self, pos, rect_equipments, rect_table, rect_hand): #colocar return false?
         if self.draging:
             if not(self.rect.collidepoint(pos) and any([rect.collidepoint(pos) for rect in [rect_equipments, rect_table, rect_hand]])):
-                self.x = self.last_x
-                self.rect.x = self.last_x
-                self.y = self.last_y
-                self.rect.y = self.last_y
+                self.x = self.rect.x = self.last_x
+                self.y = self.rect.y = self.last_y
                 if self.last_order == 0:
                     self.order = 0
                 self.draging = False
@@ -123,21 +119,17 @@ class Card:
                     if (rect.collidepoint(pos) and self.rect.colliderect(rect) and not rect.contains(self.rect)):
                         print(rect.top, rect.left, rect.bottom, rect.right)
                         if self.x < rect.right < self.x + self.width: #right collision
-                            self.x = self.x - (self.x + self.width - rect.right)
-                            self.rect.x = self.x - (self.x + self.width - rect.right)
+                            self.x = self.rect.x = self.x - (self.x + self.width - rect.right)
                         if self.x < rect.left < self.x + self.width: #left collision
-                            self.x = rect.left
-                            self.rect.x = rect.left
+                            self.x = self.rect.x = rect.left
                         if self.y < rect.top < self.y + self.height: #top collision
-                            self.y = rect.top
-                            self.rect.y = rect.top
+                            self.y = self.rect.y = rect.top
                         if self.y < rect.bottom < self.y + self.height: #bottom collision
-                            self.y = self.y - (self.y + self.height - rect.bottom)
-                            self.rect.y = self.y - (self.y + self.height - rect.bottom)
+                            self.y = self.rect.y = self.y - (self.y + self.height - rect.bottom)
             self.draging = False
             return True
 
-    def move(self, pos, rect_screen, rect_players, rect_logs, rect_deck):
+    def move(self, pos, rect_screen):
         if self.draging:
             mouse_x = pos[0]
             mouse_y = pos[1]
@@ -145,18 +137,16 @@ class Card:
             prev_x = self.x
             prev_y = self.y
 
-            self.x = mouse_x + self.offset_x
-            self.rect.x = mouse_x + self.offset_x
-            if(not(rect_screen.contains(self.rect)) ): #or not any([self.rect.colliderect(rect) for rect in [rect_equipments, rect_table, rect_hand]])):
-                self.x = prev_x
-                self.rect.x = prev_x
+            self.x = self.rect.x = mouse_x + self.offset_x
+            if(not(rect_screen.contains(self.rect))):
+                self.x = self.rect.x = prev_x
 
-            self.y = mouse_y + self.offset_y
-            self.rect.y = mouse_y + self.offset_y
+            self.y = self.rect.y = mouse_y + self.offset_y
+            if(not(rect_screen.contains(self.rect))):
+                self.y = self.rect.y = prev_y
+            
+            return True
+        return False
 
-            if(not(rect_screen.contains(self.rect)) ):# or not any([self.rect.colliderect(rect) for rect in [rect_equipments, rect_table, rect_hand]])):
-                self.y = prev_y
-                self.rect.y = prev_y
-
-    def position(self): # trocar para tupla?
-        return [self.x, self.y, self.width, self.height]
+    # def position(self): # trocar para tupla?
+    #     return [self.x, self.y, self.width, self.height]
