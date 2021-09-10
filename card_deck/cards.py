@@ -3,6 +3,7 @@ from card import Card
 from default_card import DefaultCard
 import random
 
+# remover essas variaveis e manter apenas o dicionario images
 t_1_w = 245
 t_1_h = 351
 treasure_1 = pygame.image.load("card_deck/images/treasure1.jpeg")
@@ -38,26 +39,26 @@ t_discard_drag = []
 d_discard_drag = []
 
 class Cards:
-    def __init__(self, c_w, c_h, t_pos, d_pos, t_discard_pos, d_discard_pos):
+    def __init__(self, c_w, c_h, treasure_rect):
         self.cards = []
         self.door_back = Card(pygame.transform.smoothscale(back.subsurface((b_w, 0, b_w, b_h)), (c_w, c_h)),  0,  0,  -1, 'back', 0, 0, '')
         self.treasure_back = Card(pygame.transform.smoothscale(back.subsurface((0, 0, b_w, b_h)), (c_w, c_h)),  0,  0,  -1, 'back', 0, 0, '')
         self.back_cards = {'treasure': DefaultCard(pygame.transform.smoothscale(back.subsurface((0, 0, b_w, b_h)), (c_w, c_h)),  0,  0), 
                            'door': DefaultCard(pygame.transform.smoothscale(back.subsurface((b_w, 0, b_w, b_h)), (c_w, c_h)),  0,  0)}
-        self.t_pos = t_pos
-        self.d_pos = d_pos
-        self.t_discard_pos = t_discard_pos
-        self.d_discard_pos = d_discard_pos
         self.expanded_card = None
         self.expanded_card_id = -1
         self.c_w = c_w
         self.c_h = c_h
+        self.t_pos =         (treasure_rect.x + 0.01*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
+        self.d_pos =         (treasure_rect.x + 0.26*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
+        self.t_discard_pos = (treasure_rect.x + 0.51*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
+        self.d_discard_pos = (treasure_rect.x + 0.76*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
 
         for i in range(70):
-            self.cards.append(Card(pygame.transform.smoothscale(treasure_1.subsurface((i%10 * t_1_w, i//10 * t_1_h, t_1_w, t_1_h)), (c_w, c_h)),  t_pos[0],  t_pos[1],  i,  'treasure',  i%10 * t_1_w,  i//10 * t_1_h,  'treasure1'))
-            self.cards.append(Card(pygame.transform.smoothscale(treasure_2.subsurface((i%10 * t_2_w, i//10 * t_2_h, t_2_w, t_2_h)), (c_w, c_h)),  t_pos[0],  t_pos[1],  70 + i,  'treasure',  i%10 * t_2_w,  i//10 * t_2_h,  'treasure2'))
-            self.cards.append(Card(pygame.transform.smoothscale(door_1.subsurface((i%10 * d_1_w, i//10 * d_1_h, d_1_w, d_1_h)), (c_w, c_h)),  d_pos[0],  d_pos[1],  140 + i,  'door',  i%10 * d_1_w,  i//10 * d_1_h,  'door1'))
-            self.cards.append(Card(pygame.transform.smoothscale(door_2.subsurface((i%10 * d_2_w, i//10 * d_2_h, d_2_w, d_2_h)), (c_w, c_h)),  d_pos[0],  d_pos[1],  210 + i,  'door',  i%10 * d_2_w,  i//10 * d_2_h,  'door2'))
+            self.cards.append(Card(pygame.transform.smoothscale(treasure_1.subsurface((i%10 * t_1_w, i//10 * t_1_h, t_1_w, t_1_h)), (c_w, c_h)),  self.t_pos[0],  self.t_pos[1],  i,  'treasure',  i%10 * t_1_w,  i//10 * t_1_h,  'treasure1'))
+            self.cards.append(Card(pygame.transform.smoothscale(treasure_2.subsurface((i%10 * t_2_w, i//10 * t_2_h, t_2_w, t_2_h)), (c_w, c_h)),  self.t_pos[0],  self.t_pos[1],  70 + i,  'treasure',  i%10 * t_2_w,  i//10 * t_2_h,  'treasure2'))
+            self.cards.append(Card(pygame.transform.smoothscale(door_1.subsurface((i%10 * d_1_w, i//10 * d_1_h, d_1_w, d_1_h)), (c_w, c_h)),  self.d_pos[0],  self.d_pos[1],  140 + i,  'door',  i%10 * d_1_w,  i//10 * d_1_h,  'door1'))
+            self.cards.append(Card(pygame.transform.smoothscale(door_2.subsurface((i%10 * d_2_w, i//10 * d_2_h, d_2_w, d_2_h)), (c_w, c_h)),  self.d_pos[0],  self.d_pos[1],  210 + i,  'door',  i%10 * d_2_w,  i//10 * d_2_h,  'door2'))
     
         random.shuffle(self.cards)
 
