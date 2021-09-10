@@ -40,7 +40,6 @@ d_discard_drag = []
 class Cards:
     def __init__(self, c_w, c_h, t_pos, d_pos, t_discard_pos, d_discard_pos):
         self.cards = []
-        # DefaultCard(pygame.transform.smoothscale(image.subsurface((card.get_im_x(), card.get_im_y(), im_w, im_h)), (self.c_w * 2, self.c_h * 2)),  card_x,  card_y)
         self.door_back = Card(pygame.transform.smoothscale(back.subsurface((b_w, 0, b_w, b_h)), (c_w, c_h)),  0,  0,  -1, 'back', 0, 0, '')
         self.treasure_back = Card(pygame.transform.smoothscale(back.subsurface((0, 0, b_w, b_h)), (c_w, c_h)),  0,  0,  -1, 'back', 0, 0, '')
         self.back_cards = {'treasure': DefaultCard(pygame.transform.smoothscale(back.subsurface((0, 0, b_w, b_h)), (c_w, c_h)),  0,  0), 
@@ -62,7 +61,7 @@ class Cards:
     
         random.shuffle(self.cards)
 
-    def draw(self, win): #pq n usar o metodo draw da classe Card?
+    def draw(self, win):
         self.cards.sort(key=lambda c: c.get_order())
         global t_discard
         global d_discard
@@ -74,40 +73,17 @@ class Cards:
                 for card in discard_list[-2:]:
                     if not card.get_draging(): # draging implica order > 0
                         card.draw(win)
-                        # win.blit(card.image, (card.x, card.y))
             else:
                 for card in discard_list:
                     if not card.get_draging():
                         card.draw(win)
-                        # win.blit(card.image, (card.x, card.y))
-        # if len(t_discard) > 2:
-        #     for card in t_discard[-2:]:
-        #         if not card.get_draging():
-        #             win.blit(card.image, (card.x, card.y))
-        # else:
-        #     for card in t_discard:
-        #         if not card.get_draging():
-        #             win.blit(card.image, (card.x, card.y))
-        # if len(d_discard) > 2:
-        #     for card in d_discard[-2:]:
-        #         if not card.get_draging():
-        #             win.blit(card.image, (card.x, card.y))
-        # else:
-        #     for card in d_discard:
-        #         if not card.get_draging():
-        #             win.blit(card.image, (card.x, card.y))
 
         for card in self.cards:
             if card.get_order() > 0:
                 if card.get_face():
                     card.draw(win)
-                    # win.blit(card.image, (card.x, card.y))
                 else:
                     self.back_cards[card.get_type()].draw_at(win, (card.x, card.y))
-                    # if card.get_type() == 'treasure':
-                    #     win.blit(self.treasure_back.image, (card.x, card.y))
-                    # else:
-                    #     win.blit(self.door_back.image, (card.x, card.y))
             elif t_draw < 2 and card.get_type() == 'treasure' and card not in t_discard:
                 self.back_cards['treasure'].draw_at(win, (card.x, card.y))
                 t_draw = t_draw + 1
@@ -115,8 +91,7 @@ class Cards:
                 self.back_cards['door'].draw_at(win, (card.x, card.y))
                 d_draw = d_draw + 1
         if self.expanded_card:
-            # win.blit(self.expanded_card.image, (self.expanded_card.x, self.expanded_card.y))
-            self.expanded_card.draw(win) #criar o metodo draw na expanded_card?
+            self.expanded_card.draw(win)
 
     def get_cards(self):
         return self.cards
@@ -190,14 +165,6 @@ class Cards:
                     im_w = images[im_name]['w']
                     im_h = images[im_name]['h']
                     self.expanded_card = DefaultCard(pygame.transform.smoothscale(image.subsurface((card.get_im_x(), card.get_im_y(), im_w, im_h)), (self.c_w * 2, self.c_h * 2)),  card_x,  card_y)
-                    # if card.get_im_name() == 'treasure1.jpeg':
-                    #     self.expanded_card = DefaultCard(pygame.transform.smoothscale(treasure_1.subsurface((card.get_im_x(), card.get_im_y(), t_1_w, t_1_h)), (self.c_w * 2, self.c_h * 2)),  card_x,  card_y)
-                    # if card.get_im_name() == 'treasure2.jpeg':
-                    #     self.expanded_card = DefaultCard(pygame.transform.smoothscale(treasure_2.subsurface((card.get_im_x(), card.get_im_y(), t_2_w, t_2_h)), (self.c_w * 2, self.c_h * 2)),  card_x,  card_y)
-                    # if card.get_im_name() == 'door1.jpg':
-                    #     self.expanded_card = DefaultCard(pygame.transform.smoothscale(door_1.subsurface((card.get_im_x(), card.get_im_y(), d_1_w, d_1_h)), (self.c_w * 2, self.c_h * 2)),  card_x,  card_y)
-                    # if card.get_im_name() == 'door2.jpeg':
-                    #     self.expanded_card = DefaultCard(pygame.transform.smoothscale(door_2.subsurface((card.get_im_x(), card.get_im_y(), d_2_w, d_2_h)), (self.c_w * 2, self.c_h * 2)),  card_x,  card_y)
                     self.expanded_card_id = card.get_id()
                 else:
                     self.expanded_card.set_x_y(card_x, card_y)
@@ -221,7 +188,3 @@ class Cards:
                     else:
                         d_discard.append(card)
                     break
-                # if card.reveal(pos):
-                #     max_card_order = max_card_order + 1
-                #     card.set_order(max_card_order)
-                #     break

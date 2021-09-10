@@ -11,14 +11,12 @@ class Card:
         self.last_y = 0
         self.width = image.get_width()
         self.height = image.get_height()
-        # self.width = w
-        # self.height = h
         self.draging = False
         self.id = id
         self.type = type
         self.rect = pygame.rect.Rect((self.x, self.y, self.width, self.height))
         self.order = 0
-        self.last_order = 0 # ff vii last order
+        self.last_order = 0
         self.area = ''
         self.face = False
         self.name = ''
@@ -35,9 +33,6 @@ class Card:
 
     def get_order(self):
         return self.order
-
-    # def set_face(self, face):
-    #     self.face = face
 
     def get_face(self):
         return self.face
@@ -57,10 +52,6 @@ class Card:
     def get_im_y(self):
         return self.im_y
 
-    # def set_x_y(self, x, y):
-    #     self.x = x
-    #     self.y = y
-
     def get_draging(self):
         return self.draging
 
@@ -70,7 +61,6 @@ class Card:
             print(self.face)
             return True
         return False
-
 
     def click(self, pos):
         if self.rect.collidepoint(pos):
@@ -105,7 +95,7 @@ class Card:
             return True
         return False
     
-    def release(self, pos, rect_equipments, rect_table, rect_hand): #colocar return false?
+    def release(self, pos, rect_equipments, rect_table, rect_hand):
         if self.draging:
             if not(self.rect.collidepoint(pos) and any([rect.collidepoint(pos) for rect in [rect_equipments, rect_table, rect_hand]])):
                 self.x = self.rect.x = self.last_x
@@ -147,6 +137,3 @@ class Card:
             
             return True
         return False
-
-    # def position(self): # trocar para tupla?
-    #     return [self.x, self.y, self.width, self.height]
