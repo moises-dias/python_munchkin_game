@@ -2,6 +2,7 @@ import pygame
 from card import Card
 from default_card import DefaultCard
 import random
+import json
 
 images = {
     'treasure1': {'image': pygame.image.load("card_deck/images/treasure1.jpeg"), 'w': 245, 'h': 351, 'type': 'treasure'},
@@ -30,6 +31,12 @@ class Cards:
         self.d_pos =         (treasure_rect.x + 0.26*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
         self.t_discard_pos = (treasure_rect.x + 0.51*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
         self.d_discard_pos = (treasure_rect.x + 0.76*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
+
+        # preencher o json card_names
+        # with open('card_deck/card_names.json') as test:
+        #     data = json.load(test)
+        # print(data)
+        # print(type(data))
 
         for i, (img_name, img_attrs) in enumerate(images.items()):
             if img_name == 'back':
