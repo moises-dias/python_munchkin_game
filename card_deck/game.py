@@ -1,7 +1,7 @@
 import pygame
 from ctypes import windll
 from cards import Cards
-from table_test import Table
+from table import Table
 
 DEFAULT_WIDTH = 1580
 DEFAULT_HEIGHT = 950
@@ -25,9 +25,9 @@ SCREEN_WIDTH, SCREEN_HEIGHT = pygame.display.get_surface().get_size()
 scale_x = int(DEFAULT_SCALE_X * SCREEN_WIDTH / DEFAULT_WIDTH)
 scale_y = int(DEFAULT_SCALE_Y * SCREEN_HEIGHT / DEFAULT_HEIGHT)
 
-rects_class = Table(SCREEN_WIDTH, SCREEN_HEIGHT)
+table_class = Table(SCREEN_WIDTH, SCREEN_HEIGHT)
 
-cards_class = Cards(scale_x, scale_y, rects_class.get_rect('deck'))
+cards_class = Cards(scale_x, scale_y, table_class.get_rect('deck'))
 
 running = True
 
@@ -44,10 +44,10 @@ while running:
 
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:  
-                cards_class.release(event.pos, rects_class.get_rect('equipments'), rects_class.get_rect('table'), rects_class.get_rect('hand')) 
+                cards_class.release(event.pos, table_class.get_rect('equipments'), table_class.get_rect('table'), table_class.get_rect('hand')) 
 
         elif event.type == pygame.MOUSEMOTION:
-            cards_class.move(event.pos, rects_class.get_rect('screen'))
+            cards_class.move(event.pos, table_class.get_rect('screen'))
         
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_d and not pygame.mouse.get_pressed()[0]:
@@ -60,7 +60,7 @@ while running:
         if pygame.key.get_pressed()[pygame.K_v]: #IMPEDIR CLICK, RELEASE,E DEMAIS FUNCOES ACIMA SE TIVER APERTANDO V
             cards_class.expand_card(pygame.mouse.get_pos(), SCREEN_WIDTH, SCREEN_HEIGHT)
 
-    rects_class.draw(screen)
+    table_class.draw(screen)
 
     cards_class.draw(screen)
 
