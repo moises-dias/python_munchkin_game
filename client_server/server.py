@@ -21,6 +21,22 @@ print("Waiting for a connection, Server Started")
 
 lock = threading.Lock()
 
+cards = {}
+for i in range(280):
+    cards[i] = {
+            'x': 0.404,
+            'y': 0.7575,
+            'last_x': 0,
+            'last_y': 0,
+            'type': 'treasure',
+            'order': 0,
+            'last_order': 0,
+            'face': False
+    }
+    if i >= 140:
+        cards[i]['x'] = 0.504
+        cards[i]['type'] = 'door'
+
 clients = []
 def threaded_client(conn, player):
     global clients
