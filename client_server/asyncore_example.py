@@ -1,3 +1,5 @@
+# https://stackoverflow.com/questions/3670127/python-socketserver-sending-to-multiple-clients
+
 from __future__ import print_function
 
 import asyncore
