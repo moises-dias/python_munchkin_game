@@ -1,5 +1,5 @@
 import pygame
-from network import Network
+from network2 import Network
 
 width = 500
 height = 500

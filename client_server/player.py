@@ -15,20 +15,23 @@ class Player():
 
     def move(self):
         keys = pygame.key.get_pressed()
-
+        moved = True
         if keys[pygame.K_LEFT]:
             self.x -= self.vel
 
-        if keys[pygame.K_RIGHT]:
+        elif keys[pygame.K_RIGHT]:
             self.x += self.vel
 
-        if keys[pygame.K_UP]:
+        elif keys[pygame.K_UP]:
             self.y -= self.vel
 
-        if keys[pygame.K_DOWN]:
+        elif keys[pygame.K_DOWN]:
             self.y += self.vel
+        else:
+            moved = False
 
         self.update()
-
+        return moved
+        
     def update(self):
         self.rect = (self.x, self.y, self.width, self.height)

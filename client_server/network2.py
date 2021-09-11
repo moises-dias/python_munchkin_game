@@ -24,13 +24,14 @@ class Network:
 
     def send(self, data):
         try:
-            self.client.send(pickle.dumps(letters[randrange(3)]))
+            #self.client.send(pickle.dumps(letters[randrange(3)]))
             ready = select.select([self.client], [], [], 0)
             if ready[0]:
                 data = pickle.loads(self.client.recv(4096))
                 print(data)
             else:
                 print('no data')
+                
             # return pickle.loads(self.client.recv(2048))
         except socket.error as e:
             print(e)
