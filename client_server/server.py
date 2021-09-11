@@ -5,6 +5,7 @@ import pickle
 import time
 from datetime import datetime, timedelta
 from random import randrange
+import threading
 server = "192.168.1.72"
 port = 5555
 
@@ -15,19 +16,26 @@ try:
 except socket.error as e:
     str(e)
 
-s.listen(2)
+s.listen(6)
 print("Waiting for a connection, Server Started")
+
+lock = threading.Lock()
 
 clients = []
 players = [Player(0,0,50,50,(255,0,0)), Player(100,100, 50,50, (0,0,255))]
-
+cards = {
+    'a': {'data': 'foo'},
+    'b': {'data': 'foo'},
+    'c': {'data': 'foo'}
+}
+cards = {k:{'data': randrange(100)} for (k,v) in cards.items()}
+count = 0
 def threaded_client(conn, player):
+    global cards
+    global count
+    global clients
     conn.send(pickle.dumps(players[0]))
-    cards = {
-        'a': {'data': 'foo'},
-        'b': {'data': 'foo'},
-        'c': {'data': 'foo'}
-    }
+
     # to_update = {
     #     'a': datetime.now() - timedelta(minutes=1),
     #     'b': datetime.now() - timedelta(minutes=1),
@@ -35,41 +43,31 @@ def threaded_client(conn, player):
     # }
     to_update = {}
     reply = ""
-    count = 0
+    
     while True:
         try:
             data = pickle.loads(conn.recv(2048))
-            print('recebido ' + data)
-            for c in data:
-                to_update[c] = datetime.now()
+            print('recebido ' + str(data))
+            # for c in data:
+            #     to_update[c] = datetime.now()
             
-            to_update = {k:v for (k,v) in to_update.items() if (datetime.now() - v).seconds == 0}
+            # to_update = {k:v for (k,v) in to_update.items() if (datetime.now() - v).seconds == 0}
 
-            cards = {k:{'data': randrange(100)} for (k,v) in cards.items()}
+            # cards = {k:{'data': randrange(100)} for (k,v) in cards.items()}
 
-            # players[player] = data
-
-            # if not data:
-            #     print("Disconnected")
-            #     break
-            # else:
-            #     if player == 1:
-            #         reply = players[0]
-            #     else:
-            #         reply = players[1]
-
-            #     print("Received: ", data)
-            #     print("Sending : ", reply)
-            # time.sleep(0.2)
-            count = count + 1
-            print(count)
-            # conn.sendall(pickle.dumps({k:v for (k,v) in cards.items() if k in to_update.keys()}))
-
-            for c in clients:
-                c.sendall(pickle.dumps({k:v for (k,v) in cards.items() if k in to_update.keys()}))
+            # # time.sleep(0.2)
+            # count = count + 1
+            # print(count)
+            # # conn.sendall(pickle.dumps({k:v for (k,v) in cards.items() if k in to_update.keys()}))
+            with lock:
+                for i, c in enumerate(clients):
+                    # print('index ' + str(i))
+                    # print(c)
+                    c.sendall(pickle.dumps(data))
             # ready = select.select([conn], [], [], 0)
             # print(ready)
-        except:
+        except Exception as e:
+            print(e)
             break
 
     print("Lost connection")
@@ -79,6 +77,7 @@ currentPlayer = 0
 while True:
     conn, addr = s.accept()
     print("Connected to:", addr)
-    clients.append(conn)
+    with lock:
+        clients.append(conn)
     start_new_thread(threaded_client, (conn, currentPlayer))
     currentPlayer += 1

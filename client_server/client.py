@@ -21,16 +21,18 @@ def main():
     clock = pygame.time.Clock()
 
     while run:
-        clock.tick(3)
+        clock.tick(60)
         # p2 = n.send(p)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                n.send(p)
+        n.receive()
 
         p.move()
-        n.send(p)
 
         redrawWindow(win, p)
 
