@@ -1,4 +1,4 @@
-from field import Field
+from card_deck.field import Field
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)

@@ -1,6 +1,6 @@
 import pygame
-from card import Card
-from default_card import DefaultCard
+from card_deck.card import Card
+from card_deck.default_card import DefaultCard
 import random
 import json
 
@@ -17,9 +17,8 @@ t_discard = []
 d_discard = []
 t_discard_drag = []
 d_discard_drag = []
-
 class Cards:
-    def __init__(self, c_w, c_h, treasure_rect):
+    def __init__(self, screen_width, screen_height, cards_info, c_w, c_h, treasure_rect):
         self.cards = []
         self.back_cards = {'treasure': DefaultCard(pygame.transform.smoothscale(images['back']['image'].subsurface((0, 0, images['back']['w'], images['back']['h'])), (c_w, c_h)),  0,  0), 
                            'door': DefaultCard(pygame.transform.smoothscale(images['back']['image'].subsurface((images['back']['w'], 0, images['back']['w'], images['back']['h'])), (c_w, c_h)),  0,  0)}
@@ -31,6 +30,10 @@ class Cards:
         self.d_pos =         (treasure_rect.x + 0.26*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
         self.t_discard_pos = (treasure_rect.x + 0.51*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
         self.d_discard_pos = (treasure_rect.x + 0.76*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
+
+        #tirar isso, n tem pq ter screen width e height no cards, mas colocar onde?
+        self.screen_width = screen_width
+        self.screen_height = screen_height
 
         # preencher o json card_names
         # with open('card_deck/card_names.json') as test:
@@ -45,17 +48,22 @@ class Cards:
             im_w = img_attrs['w']
             im_h = img_attrs['h']
             im_type = img_attrs['type']
-            if im_type == 'treasure':
-                init_x, init_y = self.t_pos
-            else:
-                init_x, init_y = self.d_pos
+            # if im_type == 'treasure':
+            #     init_x, init_y = self.t_pos
+            # else:
+            #     init_x, init_y = self.d_pos
             for j in range(70):
+                im_idx = (i * 70) + j
+                
+                init_x = cards_info[im_idx]['x'] * screen_width
+                init_y = cards_info[im_idx]['y'] * screen_height
+
                 im_x = j%10 * im_w
                 im_y = j//10 * im_h
-                im_idx = (i * 70) + j
                 self.cards.append(Card(pygame.transform.smoothscale(image.subsurface((im_x, im_y, im_w, im_h)), (c_w, c_h)),  init_x,  init_y,  im_idx,  im_type,  im_x,  im_y,  img_name))
 
-        random.shuffle(self.cards)
+        #comentado para testar o servidor, mas não vai mais ser necessário, shuffle deve ficar no server ao iniciar as cartas
+        # random.shuffle(self.cards)
 
     def draw(self, win):
         self.cards.sort(key=lambda c: c.get_order())
@@ -63,6 +71,11 @@ class Cards:
         global d_discard
         t_draw = 0
         d_draw = 0
+
+        # remover esse for
+        for card in self.cards:
+            card.draw(win)
+        return
 
         for discard_list in [t_discard, d_discard]:
             if len(discard_list) > 2:
@@ -129,7 +142,9 @@ class Cards:
     def move(self, pos, rect_screen):
         for card in self.cards:
             if card.move(pos, rect_screen):
-                break
+                return (card.id, card.x / self.screen_width, card.y / self.screen_height)
+                # break
+        return None
 
     def reveal(self, pos):
         global max_card_order
@@ -184,3 +199,11 @@ class Cards:
                     else:
                         d_discard.append(card)
                     break
+    
+    def update(self, message):
+        #transformar cards num dicionario
+        for c in self.cards:
+            # print(message)
+            if c.id == message[0]:
+                c.x = message[1]['x'] * self.screen_width
+                c.y = message[1]['y'] * self.screen_height
