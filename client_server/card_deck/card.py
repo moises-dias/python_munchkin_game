@@ -74,7 +74,7 @@ class Card:
             self.offset_y = self.y - mouse_y
             return True
         else:
-            self.draging = False
+            self.draging = False #ISSO VAI DAR PROBLEMA QND FOR PRA ONLINE
             return False
     
     def focused(self, pos):
@@ -96,7 +96,7 @@ class Card:
         return False
     
     def release(self, pos, rect_equipments, rect_table, rect_hand):
-        if self.draging:
+        if self.draging: #redundante, ja ta sendo checado ao chamar o release
             if not(self.rect.collidepoint(pos) and any([rect.collidepoint(pos) for rect in [rect_equipments, rect_table, rect_hand]])):
                 self.x = self.rect.x = self.last_x
                 self.y = self.rect.y = self.last_y
@@ -137,3 +137,19 @@ class Card:
             
             return True
         return False
+    
+    def get_info(self, screen_width, screen_height):
+        return {
+                    'id': self.id, 
+                    'data': {
+                        'x': self.x / screen_width,
+                        'y': self.y / screen_height,
+                        'last_x': self.last_x / screen_width,
+                        'last_y': self.last_y / screen_height,
+                        'draging': self.draging,
+                        'type': self.type, #n precisa disso nem aqui nem no servidor
+                        'order': self.order,
+                        'last_order': self.last_order,
+                        'face': self.face
+                    }
+                }

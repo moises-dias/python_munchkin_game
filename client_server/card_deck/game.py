@@ -2,8 +2,27 @@ import pygame
 from ctypes import windll
 from card_deck.cards import Cards
 from card_deck.table import Table
+from threading import Thread
+import time
+cards_class = None
+
+def listen(network):
+    global cards_class
+    print('sleeping...')
+    time.sleep(5)
+    print('awake')
+    while True:
+        print('test')
+        message = network.receive()
+        #usar o mesmo padrao aqui, msg type e msg
+        if message and cards_class:
+            # print('message')
+            if message['message_type'] == 'card_update':
+                # print('card')
+                cards_class.update(message['message'])
 
 def play(network):
+    global cards_class
     # DEFAULT_WIDTH = 1580
     # DEFAULT_HEIGHT = 950
     # DEFAULT_SCALE_X = 137
@@ -39,43 +58,55 @@ def play(network):
     running = True
 
     while running:
-
+        result = None
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            #mudado de elif para if
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:    
-                    cards_class.click(event.pos) 
+                    result = cards_class.click(event.pos) #ok
+                    if result:
+                        print('click')
                 if event.button == 3 and not pygame.mouse.get_pressed()[0]:    
-                    cards_class.reveal(event.pos) 
+                    result = cards_class.reveal(event.pos) #ok
+                    if result:
+                        print('reveal')
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:  
-                    cards_class.release(event.pos, table_class.get_rect('equipments'), table_class.get_rect('table'), table_class.get_rect('hand')) 
+                    result = cards_class.release(event.pos, table_class.get_rect('equipments'), table_class.get_rect('table'), table_class.get_rect('hand')) #ok
+                    if result:
+                        print('release')
 
             elif event.type == pygame.MOUSEMOTION:
-                result = cards_class.move(event.pos, table_class.get_rect('screen'))
+                result = cards_class.move(event.pos, table_class.get_rect('screen')) #ok
                 if result:
-                    network.move(result)
+                    print('move')
             
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_d and not pygame.mouse.get_pressed()[0]:
-                    cards_class.discard(pygame.mouse.get_pos())
+                    result = cards_class.discard(pygame.mouse.get_pos())
+                    if result:
+                        print('discard')
 
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_v:
                     cards_class.cancel_expand()
-                    # network.send(['test'])
             if pygame.key.get_pressed()[pygame.K_v]: #IMPEDIR CLICK, RELEASE,E DEMAIS FUNCOES ACIMA SE TIVER APERTANDO V
                 cards_class.expand_card(pygame.mouse.get_pos(), SCREEN_WIDTH, SCREEN_HEIGHT)
-            # network.send()
+            if result:
+                network.send({'message_type': 'card_update', 'message': result}) #result no formato {'id': X, 'data': Y} sendo Y igual o dicionario no servidor
+            # else:
+            #     print('none')
         # fazer o if else e tratar o que for recebido
-        message = network.receive()
-        if message:
-            # print('message')
-            if message[0] == 'card':
-                # print('card')
-                cards_class.update(message[1])
+        # message = network.receive()
+        # #usar o mesmo padrao aqui, msg type e msg
+        # if message:
+        #     # print('message')
+        #     if message['message_type'] == 'card_update':
+        #         # print('card')
+        #         cards_class.update(message['message'])
 
         table_class.draw(screen)
 

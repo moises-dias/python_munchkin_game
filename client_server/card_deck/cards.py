@@ -60,7 +60,23 @@ class Cards:
 
                 im_x = j%10 * im_w
                 im_y = j//10 * im_h
-                self.cards.append(Card(pygame.transform.smoothscale(image.subsurface((im_x, im_y, im_w, im_h)), (c_w, c_h)),  init_x,  init_y,  im_idx,  im_type,  im_x,  im_y,  img_name))
+
+                c = Card(pygame.transform.smoothscale(image.subsurface((im_x, im_y, im_w, im_h)), (c_w, c_h)),  init_x,  init_y,  im_idx,  im_type,  im_x,  im_y,  img_name)
+                
+                c.last_x = cards_info[im_idx]['last_x'] * self.screen_height
+                c.last_y = cards_info[im_idx]['last_y'] * self.screen_height
+                c.draging = cards_info[im_idx]['draging']
+                c.type = cards_info[im_idx]['type']
+                c.order = 1 #cards_info[im_idx]['order']
+                c.last_order = cards_info[im_idx]['last_order']
+                c.face = cards_info[im_idx]['face']
+                
+                self.cards.append(c)
+                
+
+
+                #dar um random.shuffle na lista la no servidor, e aqui ordenar pela ordem no servidor
+                #mas e qnd o jogo ja tiver começado? ordena como?
 
         #comentado para testar o servidor, mas não vai mais ser necessário, shuffle deve ficar no server ao iniciar as cartas
         # random.shuffle(self.cards)
@@ -72,10 +88,10 @@ class Cards:
         t_draw = 0
         d_draw = 0
 
-        # remover esse for
-        for card in self.cards:
-            card.draw(win)
-        return
+        # # remover esse for
+        # for card in self.cards:
+        #     card.draw(win)
+        # return
 
         for discard_list in [t_discard, d_discard]:
             if len(discard_list) > 2:
@@ -92,6 +108,9 @@ class Cards:
                 if card.get_face():
                     card.draw(win)
                 else:
+                    # print('begin')
+                    # print(card.get_type())
+                    # print('end')
                     self.back_cards[card.get_type()].draw_at(win, (card.x, card.y))
             elif t_draw < 2 and card.get_type() == 'treasure' and card not in t_discard:
                 self.back_cards['treasure'].draw_at(win, (card.x, card.y))
@@ -121,7 +140,9 @@ class Cards:
                 if card in d_discard:
                     d_discard.remove(card)
                     d_discard_drag.append(card)
-                break
+                return card.get_info(self.screen_width, self.screen_height)
+                # break
+        return None
     
     def release(self, pos, rect_equipments, rect_table, rect_hand):
         global t_discard
@@ -129,20 +150,23 @@ class Cards:
         global t_discard_drag
         global d_discard_drag
         for card in self.cards:
-            if not card.release(pos, rect_equipments, rect_table, rect_hand):
+            if card.get_draging():
+                if not card.release(pos, rect_equipments, rect_table, rect_hand):
+                    if card in t_discard_drag:
+                        t_discard.append(card)
+                    if card in d_discard_drag:
+                        d_discard.append(card)
                 if card in t_discard_drag:
-                    t_discard.append(card)
+                    t_discard_drag.remove(card)
                 if card in d_discard_drag:
-                    d_discard.append(card)
-            if card in t_discard_drag:
-                t_discard_drag.remove(card)
-            if card in d_discard_drag:
-                d_discard_drag.remove(card)
+                    d_discard_drag.remove(card)
+                return card.get_info(self.screen_width, self.screen_height)
+        return None
     
     def move(self, pos, rect_screen):
         for card in self.cards:
             if card.move(pos, rect_screen):
-                return (card.id, card.x / self.screen_width, card.y / self.screen_height)
+                return card.get_info(self.screen_width, self.screen_height)
                 # break
         return None
 
@@ -153,7 +177,9 @@ class Cards:
                 if card.reveal(pos):
                     max_card_order = max_card_order + 1
                     card.set_order(max_card_order)
-                break
+                return card.get_info(self.screen_width, self.screen_height)
+                # break
+        return None
 
     def expand_card(self, pos, screen_width, screen_height):
         card_focused = False
@@ -204,6 +230,13 @@ class Cards:
         #transformar cards num dicionario
         for c in self.cards:
             # print(message)
-            if c.id == message[0]:
-                c.x = message[1]['x'] * self.screen_width
-                c.y = message[1]['y'] * self.screen_height
+            if c.id == message['id']:
+                c.x = c.rect.x = message['data']['x'] * self.screen_width
+                c.y = c.rect.y = message['data']['y'] * self.screen_height
+                c.last_x = message['data']['last_x'] * self.screen_height
+                c.last_y = message['data']['last_y'] * self.screen_height
+                c.draging = message['data']['draging']
+                c.type = message['data']['type']
+                c.order = message['data']['order']
+                c.last_order = message['data']['last_order']
+                c.face = message['data']['face']

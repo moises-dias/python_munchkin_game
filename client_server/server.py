@@ -7,7 +7,8 @@ from random import randrange
 import threading
 import sys
 
-server = "192.168.1.72"
+# server = "192.168.1.72"
+server = "192.168.1.23"
 port = 5555
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -38,7 +39,9 @@ for i in range(280):
     if i >= 140:
         cards[i]['x'] = 0.504
         cards[i]['type'] = 'door'
+
 print('size', sys.getsizeof(cards))
+
 clients = []
 def threaded_client(conn, player):
     global clients
@@ -51,25 +54,27 @@ def threaded_client(conn, player):
             data = pickle.loads(conn.recv(2048))
             # print('recebido ' + str(data))
             # print('recebido')
-            if data[0] == 'iniciar':
+            if data['message_type'] == 'init':
+                print('size', sys.getsizeof(cards))
                 conn.sendall(pickle.dumps(cards))
             else:
-                if data[0] == 'move':
-                    cards[data[1][0]]['x'] = data[1][1]
-                    cards[data[1][0]]['y'] = data[1][2]
+                if data['message_type'] == 'card_update':
+                    cards[data['message']['id']] = data['message']['data']
                 with lock:
                     for i, c in enumerate(clients):
+                        if c == conn:
+                            continue
                         # print('index ' + str(i))
                         # print(c)
-                        message = ('card', (data[1][0], cards[data[1][0]]))
-                        # print(f'sending message card moved to {i}')
-                        # print(message)
+                        message = {'message_type': 'card_update', 'message': data['message']}
+                        # message = ('card', (data[1][0], cards[data[1][0]]))
                         c.sendall(pickle.dumps(message))
         except Exception as e:
             print(e)
             break
 
     print("Lost connection")
+    clients.remove(conn)
     conn.close()
 
 currentPlayer = 0
