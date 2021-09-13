@@ -30,3 +30,6 @@ class Table:
         for field_name, field in self.fields.items():
             if not field_name == 'screen':
                 field.draw(win)
+    
+    def get_rects(self):
+        return self.fields

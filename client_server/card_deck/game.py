@@ -84,7 +84,7 @@ def play(network):
                         print('release')
 
             elif event.type == pygame.MOUSEMOTION:
-                result = cards_class.move(event.pos, table_class.get_rect('screen')) #ok
+                result = cards_class.move(event.pos, table_class.get_rect('screen'), table_class.get_rects()) #ok
                 if result:
                     print('move')
             
@@ -114,7 +114,7 @@ def play(network):
 
         table_class.draw(screen)
 
-        cards_class.draw(screen)
+        cards_class.draw(screen, player_id)
 
         pygame.display.flip()
 

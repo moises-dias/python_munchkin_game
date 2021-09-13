@@ -152,6 +152,7 @@ class Card:
                         # 'type': self.type, #n precisa disso nem aqui nem no servidor
                         'order': self.order,
                         # 'last_order': self.last_order,
-                        'face': self.face
+                        'face': self.face,
+                        'area': self.area
                     }
                 }

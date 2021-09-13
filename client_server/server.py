@@ -35,7 +35,8 @@ for i in range(280):
             # 'type': 'treasure',
             'order': 0,
             # 'last_order': 0,
-            'face': False
+            'face': False,
+            'area': 'deck'
     }
     if i >= 140:
         cards[i]['x'] = 0.504

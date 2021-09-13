@@ -73,6 +73,7 @@ class Cards:
                 # c.last_order = cards_info[im_idx]['last_order']
                 c.face = cards_info[im_idx]['face']
                 c.p_id = cards_info[im_idx]['p_id']
+                c.area = cards_info[im_idx]['area']
                 
                 self.cards.append(c)
 
@@ -87,7 +88,7 @@ class Cards:
         #comentado para testar o servidor, mas não vai mais ser necessário, shuffle deve ficar no server ao iniciar as cartas
         # random.shuffle(self.cards)
 
-    def draw(self, win):
+    def draw(self, win, player_id):
         self.cards.sort(key=lambda c: c.get_order())
         global t_discard
         global d_discard
@@ -110,6 +111,10 @@ class Cards:
                         card.draw(win)
 
         for card in self.cards:
+            #se id diferente e carta na area hand:
+            # continue
+            if card.area == 'hand' and not (card.p_id == player_id):
+                continue
             if card.get_order() > 0:
                 if card.get_face():
                     card.draw(win)
@@ -175,9 +180,16 @@ class Cards:
                 return card.get_info(self.screen_width, self.screen_height)
         return None
     
-    def move(self, pos, rect_screen):
+    def move(self, pos, rect_screen, rects):
         for card in self.cards:
             if card.move(pos, rect_screen):
+                for rect_name, rect in rects.items():
+                    if rect_name == 'screen':
+                        continue
+                    if rect.get_rect().collidepoint(pos):
+                        card.area = rect_name
+                        print(card.area)
+                        break
                 return card.get_info(self.screen_width, self.screen_height)
                 # break
         return None
@@ -254,6 +266,7 @@ class Cards:
                 # c.last_order = message['data']['last_order']
                 c.face = message['data']['face']
                 c.p_id = message['data']['p_id']
+                c.area = message['data']['area']
 
                 if message['data']['order'] > max_card_order:
                     max_card_order = message['data']['order']
