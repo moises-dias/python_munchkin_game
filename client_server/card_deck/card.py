@@ -23,6 +23,7 @@ class Card:
         self.im_x = im_x
         self.im_y = im_y
         self.im_name = im_name
+        self.p_id = -1
         
 
     def draw(self, win):
@@ -144,6 +145,7 @@ class Card:
                     'data': {
                         'x': self.x / screen_width,
                         'y': self.y / screen_height,
+                        'p_id': self.p_id,
                         # 'last_x': self.last_x / screen_width,
                         # 'last_y': self.last_y / screen_height,
                         'draging': self.draging,

@@ -12,6 +12,7 @@ images = {
     'back': {'image': pygame.image.load("card_deck/images/back.jpg"), 'w': 379, 'h': 584, 'type': 'back'}
 }
 
+# colocar essas variaveis dentro da classe?
 max_card_order = 0
 t_discard = []
 d_discard = []
@@ -71,6 +72,7 @@ class Cards:
                 c.order = cards_info[im_idx]['order']
                 # c.last_order = cards_info[im_idx]['last_order']
                 c.face = cards_info[im_idx]['face']
+                c.p_id = cards_info[im_idx]['p_id']
                 
                 self.cards.append(c)
 
@@ -116,6 +118,11 @@ class Cards:
                     # print(card.get_type())
                     # print('end')
                     self.back_cards[card.get_type()].draw_at(win, (card.x, card.y))
+                #printar id no x, y
+                if card.draging:
+                    font = pygame.font.SysFont("comicsans", 40)
+                    text = font.render(str(card.p_id), 1, (255,255,255))
+                    win.blit(text, (card.x, card.y))
             elif t_draw < 2 and card.get_type() == 'treasure' and card not in t_discard:
                 self.back_cards['treasure'].draw_at(win, (card.x, card.y))
                 t_draw = t_draw + 1
@@ -128,7 +135,7 @@ class Cards:
     def get_cards(self):
         return self.cards
     
-    def click(self, pos):
+    def click(self, pos, player_id):
         global t_discard
         global d_discard
         global t_discard_drag
@@ -136,6 +143,7 @@ class Cards:
         global max_card_order
         for card in reversed(self.cards):     
             if card.click(pos):
+                card.p_id = player_id
                 max_card_order = max_card_order + 1
                 card.set_order(max_card_order)
                 if card in t_discard:
@@ -245,6 +253,7 @@ class Cards:
                 c.order = message['data']['order']
                 # c.last_order = message['data']['last_order']
                 c.face = message['data']['face']
+                c.p_id = message['data']['p_id']
 
                 if message['data']['order'] > max_card_order:
                     max_card_order = message['data']['order']

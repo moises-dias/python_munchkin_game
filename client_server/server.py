@@ -28,6 +28,7 @@ for i in range(280):
     cards[i] = {
             'x': 0.404,
             'y': 0.7575,
+            'p_id': -1,
             # 'last_x': 0,
             # 'last_y': 0,
             'draging': False,
@@ -47,7 +48,7 @@ def threaded_client(conn, player):
     global clients
     global cards
     # mandar um id ou nome do cliente aqui?
-    # conn.send(pickle.dumps(player))
+    conn.send(pickle.dumps(player))
 
     while True:
         try:

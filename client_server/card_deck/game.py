@@ -9,7 +9,8 @@ cards_class = None
 def listen(network):
     global cards_class
     print('sleeping...')
-    time.sleep(5)
+    # resolver isso daqui
+    time.sleep(1)
     print('awake')
     while True:
         print('test')
@@ -33,6 +34,9 @@ def play(network):
     DEFAULT_SCALE_Y = 74
 
     FPS = 30
+
+    player_id = network.p
+    print('id do player é', player_id)
 
     pygame.init()
     screen = pygame.display.set_mode((DEFAULT_WIDTH, DEFAULT_HEIGHT), pygame.RESIZABLE)
@@ -65,7 +69,7 @@ def play(network):
             #mudado de elif para if
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:    
-                    result = cards_class.click(event.pos) #ok
+                    result = cards_class.click(event.pos, player_id) #ok
                     if result:
                         print('click')
                 if event.button == 3 and not pygame.mouse.get_pressed()[0]:    
