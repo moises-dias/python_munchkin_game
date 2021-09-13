@@ -15,9 +15,9 @@ class Table:
     def __init__(self, screen_width, screen_height):
         self.fields = {
             'screen':     Field(0,                          0,                           screen_width,                               screen_height,                               WHITE, 'screen'),
-            'players':    Field(0,                          0,                           x_limits[0] * screen_width,                 y_limits[0] * screen_height,                 RED, 'players'),
+            'players':    Field(0,                          0,                           x_limits[0] * screen_width,                 y_limits[0] * screen_height,                 BLACK, 'players'),
             'hand':       Field(0,                          y_limits[1] * screen_height, x_limits[0] * screen_width,                 (1 - y_limits[1]) * screen_height,           GREY, 'hand'),
-            'equipments': Field(0,                          y_limits[0] * screen_height, x_limits[0] * screen_width,                 (y_limits[1] - y_limits[0]) * screen_height, BLACK, 'equipments'),
+            'equipments': Field(0,                          y_limits[0] * screen_height, x_limits[0] * screen_width,                 (y_limits[1] - y_limits[0]) * screen_height, RED, 'equipments'),
             'table':      Field(x_limits[0] * screen_width, 0,                           (1 - x_limits[0]) * screen_width,           y_limits[1] * screen_height,                 GREEN, 'table'),
             'deck':       Field(x_limits[0] * screen_width, y_limits[1] * screen_height, (x_limits[1] - x_limits[0]) * screen_width, (1 - y_limits[1]) * screen_height,           BLUE, 'deck'),
             'logs':       Field(x_limits[1] * screen_width, y_limits[1] * screen_height, (1 - x_limits[1]) * screen_width,           (1 - y_limits[1]) * screen_height,           PURPLE, 'logs')

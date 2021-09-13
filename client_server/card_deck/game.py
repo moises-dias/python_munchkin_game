@@ -2,9 +2,11 @@ import pygame
 from ctypes import windll
 from card_deck.cards import Cards
 from card_deck.table import Table
+from card_deck.players import Players
 from threading import Thread
 import time
 cards_class = None
+players = None
 
 def listen(network):
     global cards_class
@@ -21,9 +23,14 @@ def listen(network):
             if message['message_type'] == 'card_update':
                 # print('card')
                 cards_class.update(message['message'])
+            elif message['message_type'] == 'players_update':
+                print('player update')
+                players.append(message['message']) #ou só mandar a lista de players novamente
+                print(players)
 
 def play(network):
     global cards_class
+    global players
     # DEFAULT_WIDTH = 1580
     # DEFAULT_HEIGHT = 950
     # DEFAULT_SCALE_X = 137
@@ -35,8 +42,10 @@ def play(network):
 
     FPS = 30
 
-    player_id = network.p
+    player_id = network.p['player']
+    players = network.p['players']
     print('id do player é', player_id)
+    print(players)
 
     pygame.init()
     screen = pygame.display.set_mode((DEFAULT_WIDTH, DEFAULT_HEIGHT), pygame.RESIZABLE)

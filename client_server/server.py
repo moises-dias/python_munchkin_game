@@ -45,11 +45,19 @@ for i in range(280):
 print('size', sys.getsizeof(cards))
 
 clients = []
+ids = []
 def threaded_client(conn, player):
     global clients
     global cards
+    global ids
     # mandar um id ou nome do cliente aqui?
-    conn.send(pickle.dumps(player))
+    ids.append(player)
+    conn.send(pickle.dumps({'player': player, 'players': ids}))
+    for i, c in enumerate(clients):
+        if c == conn:
+            continue
+        message = {'message_type': 'players_update', 'message': player}
+        c.sendall(pickle.dumps(message))
 
     while True:
         try:
