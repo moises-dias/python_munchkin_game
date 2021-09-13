@@ -7,8 +7,8 @@ from random import randrange
 import threading
 import sys
 
-# server = "192.168.1.72"
-server = "192.168.1.23"
+server = "192.168.1.72"
+# server = "192.168.1.23"
 port = 5555
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -28,17 +28,17 @@ for i in range(280):
     cards[i] = {
             'x': 0.404,
             'y': 0.7575,
-            'last_x': 0,
-            'last_y': 0,
+            # 'last_x': 0,
+            # 'last_y': 0,
             'draging': False,
-            'type': 'treasure',
+            # 'type': 'treasure',
             'order': 0,
-            'last_order': 0,
+            # 'last_order': 0,
             'face': False
     }
     if i >= 140:
         cards[i]['x'] = 0.504
-        cards[i]['type'] = 'door'
+        # cards[i]['type'] = 'door'
 
 print('size', sys.getsizeof(cards))
 

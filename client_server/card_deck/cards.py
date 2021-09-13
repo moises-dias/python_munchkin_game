@@ -19,6 +19,7 @@ t_discard_drag = []
 d_discard_drag = []
 class Cards:
     def __init__(self, screen_width, screen_height, cards_info, c_w, c_h, treasure_rect):
+        global max_card_order
         self.cards = []
         self.back_cards = {'treasure': DefaultCard(pygame.transform.smoothscale(images['back']['image'].subsurface((0, 0, images['back']['w'], images['back']['h'])), (c_w, c_h)),  0,  0), 
                            'door': DefaultCard(pygame.transform.smoothscale(images['back']['image'].subsurface((images['back']['w'], 0, images['back']['w'], images['back']['h'])), (c_w, c_h)),  0,  0)}
@@ -63,15 +64,18 @@ class Cards:
 
                 c = Card(pygame.transform.smoothscale(image.subsurface((im_x, im_y, im_w, im_h)), (c_w, c_h)),  init_x,  init_y,  im_idx,  im_type,  im_x,  im_y,  img_name)
                 
-                c.last_x = cards_info[im_idx]['last_x'] * self.screen_height
-                c.last_y = cards_info[im_idx]['last_y'] * self.screen_height
+                # c.last_x = cards_info[im_idx]['last_x'] * self.screen_height
+                # c.last_y = cards_info[im_idx]['last_y'] * self.screen_height
                 c.draging = cards_info[im_idx]['draging']
-                c.type = cards_info[im_idx]['type']
-                c.order = 1 #cards_info[im_idx]['order']
-                c.last_order = cards_info[im_idx]['last_order']
+                # c.type = cards_info[im_idx]['type']
+                c.order = cards_info[im_idx]['order']
+                # c.last_order = cards_info[im_idx]['last_order']
                 c.face = cards_info[im_idx]['face']
                 
                 self.cards.append(c)
+
+                if c.order > max_card_order:
+                    max_card_order = c.order
                 
 
 
@@ -227,16 +231,20 @@ class Cards:
                     break
     
     def update(self, message):
+        global max_card_order
         #transformar cards num dicionario
         for c in self.cards:
             # print(message)
             if c.id == message['id']:
                 c.x = c.rect.x = message['data']['x'] * self.screen_width
                 c.y = c.rect.y = message['data']['y'] * self.screen_height
-                c.last_x = message['data']['last_x'] * self.screen_height
-                c.last_y = message['data']['last_y'] * self.screen_height
+                # c.last_x = message['data']['last_x'] * self.screen_height
+                # c.last_y = message['data']['last_y'] * self.screen_height
                 c.draging = message['data']['draging']
-                c.type = message['data']['type']
+                # c.type = message['data']['type']
                 c.order = message['data']['order']
-                c.last_order = message['data']['last_order']
+                # c.last_order = message['data']['last_order']
                 c.face = message['data']['face']
+
+                if message['data']['order'] > max_card_order:
+                    max_card_order = message['data']['order']

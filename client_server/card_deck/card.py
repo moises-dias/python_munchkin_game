@@ -144,12 +144,12 @@ class Card:
                     'data': {
                         'x': self.x / screen_width,
                         'y': self.y / screen_height,
-                        'last_x': self.last_x / screen_width,
-                        'last_y': self.last_y / screen_height,
+                        # 'last_x': self.last_x / screen_width,
+                        # 'last_y': self.last_y / screen_height,
                         'draging': self.draging,
-                        'type': self.type, #n precisa disso nem aqui nem no servidor
+                        # 'type': self.type, #n precisa disso nem aqui nem no servidor
                         'order': self.order,
-                        'last_order': self.last_order,
+                        # 'last_order': self.last_order,
                         'face': self.face
                     }
                 }
