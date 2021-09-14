@@ -1,9 +1,11 @@
 from card_deck.field import Field
 
 WHITE = (255, 255, 255)
-GREY = (170, 170, 170)
-DARKGREY = (85, 85, 85)
+GREY = (191, 191, 191)
+MEDIUMGREY = (128, 128, 128)
+DARKGREY = (64, 64, 64)
 BLACK = (0, 0, 0)
+PURPLE = (255, 0, 255)
 
 # ISSO DEVE VIR NA INICIALIZAÇÃO DA CLASSE
 # players_w = 0.4 / 2
@@ -16,6 +18,8 @@ class Players:
         self.screen_height = screen_height
         self.players_w = (0.4 / 2) * screen_width
         self.players_h = (0.25 / 5) * screen_height 
+        self.hover = -1
+        self.selected = -1
         # CHAMAR UPDATE PLAYERS E DRAW/hover/click AO MESMO TEMPO DA ERRO!!! usar o msm lock usado no server
         self.update_players(player_ids)
 
@@ -41,16 +45,46 @@ class Players:
     # def click(self, pos):
     #     return self.fields[field_name].get_rect()
     
-    def focused(self, pos):
+    def focused(self, pos, type):
+        if type == 'select':
+            if self.selected != -1:
+                self.players[self.selected].color = DARKGREY
+                self.selected = -1
+        if type == 'hover':
+            if self.hover != -1 and self.hover != self.selected:
+                self.players[self.hover].color = DARKGREY
+            self.hover = -1
         for p_id, player in self.players.items():
             if player.rect.collidepoint(pos):
+                if type == 'select':
+                        self.selected = p_id
+                        self.hover = p_id
+                        self.players[self.selected].color = GREY 
+
+                elif type == 'hover':
+                    print(self.selected, self.hover)
+                    if self.selected == -1 or p_id != self.selected:
+                        self.hover = p_id
+                        self.players[self.hover].color = MEDIUMGREY
+                 
                 return p_id
+            
+        # self.players[self.hover].color = DARKGREY
+        # self.players[self.selected].color = DARKGREY
         return -1
 
     def draw(self, win):
         for p_id, player in self.players.items():
             # print(p_id, sep='')
             player.draw(win)
+
+    def clear(self):
+        if self.selected != -1:
+            self.players[self.selected].color = DARKGREY 
+            self.selected = -1
+        if self.hover != -1:
+            self.players[self.hover].color = DARKGREY 
+            self.hover = -1
     
     # def get_rects(self):
     #     return self.fields

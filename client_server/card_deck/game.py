@@ -93,7 +93,7 @@ def play(network):
                     #pegar o selected dos players aqui se mouse no campo players
                     if table_class.fields['players'].rect.collidepoint(event.pos): #que codigo mais feio mano
                         # print('player selected = ', players_class.focused(pygame.mouse.get_pos()))
-                        player_selected = players_class.focused(pygame.mouse.get_pos())
+                        player_selected = players_class.focused(pygame.mouse.get_pos(), 'select')
                     # IMPEDIR CLICK RELEASE E REVEAL NOS EQUIPAMENTOS DE OUTRAS PESSOAS
                     #se eu jogar a logica de segurar click reveal release pra dentro da classe cards, não vai precisar desse monte de if else aqui
                     result = cards_class.click(event.pos, player_id) #ok
@@ -116,10 +116,13 @@ def play(network):
                 #se mouse nao estiver no players hover = -1
                 if table_class.fields['players'].rect.collidepoint(event.pos):
                     # print('player hover = ', players_class.focused(pygame.mouse.get_pos()))
-                    player_hover = players_class.focused(pygame.mouse.get_pos())
+                    player_hover = players_class.focused(pygame.mouse.get_pos(), 'hover')
                 elif not table_class.fields['equipments'].rect.collidepoint(event.pos):
-                    player_hover = -1
-                    player_selected = -1
+                    #fazer um if player hover ou selected != -1 seta ambos como -1 e da um clear no players_class
+                    if player_hover != -1 or player_selected != -1:
+                        player_hover = -1
+                        player_selected = -1
+                        players_class.clear()
                 result = cards_class.move(event.pos, table_class.get_rect('screen'), table_class.get_rects()) #ok
                 # if result:
                 #     print('move')
