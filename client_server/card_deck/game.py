@@ -52,6 +52,9 @@ def play(network):
     print('id do player é', player_id)
     print(players)
 
+    player_selected = -1
+    player_hover = -1
+
     pygame.init()
     screen = pygame.display.set_mode((DEFAULT_WIDTH, DEFAULT_HEIGHT), pygame.RESIZABLE)
     pygame.display.set_caption("colocar uns meme aqui")
@@ -86,6 +89,10 @@ def play(network):
             #trocar nome de result para action
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:    
+                    #pegar o selected dos players aqui se mouse no campo players
+                    if table_class.fields['players'].rect.collidepoint(event.pos): #que codigo mais feio mano
+                        # print('player selected = ', players_class.focused(pygame.mouse.get_pos()))
+                        player_selected = players_class.focused(pygame.mouse.get_pos())
                     result = cards_class.click(event.pos, player_id) #ok
                     if result:
                         print('click')
@@ -101,11 +108,21 @@ def play(network):
                         print('release')
 
             elif event.type == pygame.MOUSEMOTION:
+                #pegar o hover dos players aqui se mouse no campo players
+                #se mouse nao estiver no players ou equips selected = -1
+                #se mouse nao estiver no players hover = -1
+                if table_class.fields['players'].rect.collidepoint(event.pos):
+                    # print('player hover = ', players_class.focused(pygame.mouse.get_pos()))
+                    player_hover = players_class.focused(pygame.mouse.get_pos())
+                elif not table_class.fields['equipments'].rect.collidepoint(event.pos):
+                    player_hover = -1
+                    player_selected = -1
                 result = cards_class.move(event.pos, table_class.get_rect('screen'), table_class.get_rects()) #ok
                 if result:
                     print('move')
             
             elif event.type == pygame.KEYDOWN:
+                # se tecla esc selected = -1
                 if event.key == pygame.K_d and not pygame.mouse.get_pressed()[0]:
                     result = cards_class.discard(pygame.mouse.get_pos())
                     if result:
@@ -135,7 +152,7 @@ def play(network):
 
         players_class.draw(screen)
 
-        # print(players_class.focused(pygame.mouse.get_pos()))
+        print('selected=', player_selected, ' hover=', player_hover)
 
         pygame.display.flip()
 
