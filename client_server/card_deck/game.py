@@ -88,16 +88,19 @@ def play(network):
             #mudado de elif para if
             #trocar nome de result para action
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:    
+                if event.button == 1:   
+                    
                     #pegar o selected dos players aqui se mouse no campo players
                     if table_class.fields['players'].rect.collidepoint(event.pos): #que codigo mais feio mano
                         # print('player selected = ', players_class.focused(pygame.mouse.get_pos()))
                         player_selected = players_class.focused(pygame.mouse.get_pos())
+                    # IMPEDIR CLICK RELEASE E REVEAL NOS EQUIPAMENTOS DE OUTRAS PESSOAS
+                    #se eu jogar a logica de segurar click reveal release pra dentro da classe cards, não vai precisar desse monte de if else aqui
                     result = cards_class.click(event.pos, player_id) #ok
                     if result:
                         print('click')
                 if event.button == 3 and not pygame.mouse.get_pressed()[0]:    
-                    result = cards_class.reveal(event.pos) #ok
+                    result = cards_class.reveal(event.pos, player_id) #ok
                     if result:
                         print('reveal')
 
@@ -118,11 +121,11 @@ def play(network):
                     player_hover = -1
                     player_selected = -1
                 result = cards_class.move(event.pos, table_class.get_rect('screen'), table_class.get_rects()) #ok
-                if result:
-                    print('move')
+                # if result:
+                #     print('move')
             
             elif event.type == pygame.KEYDOWN:
-                # se tecla esc selected = -1
+                # se tecla esc -> selected = -1
                 if event.key == pygame.K_d and not pygame.mouse.get_pressed()[0]:
                     result = cards_class.discard(pygame.mouse.get_pos())
                     if result:
@@ -148,11 +151,11 @@ def play(network):
 
         table_class.draw(screen)
 
-        cards_class.draw(screen, player_id)
+        cards_class.draw(screen, player_id, player_selected, player_hover)
 
         players_class.draw(screen)
 
-        print('selected=', player_selected, ' hover=', player_hover)
+        # print('selected=', player_selected, ' hover=', player_hover)
 
         pygame.display.flip()
 

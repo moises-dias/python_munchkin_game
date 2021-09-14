@@ -88,7 +88,7 @@ class Cards:
         #comentado para testar o servidor, mas não vai mais ser necessário, shuffle deve ficar no server ao iniciar as cartas
         # random.shuffle(self.cards)
 
-    def draw(self, win, player_id):
+    def draw(self, win, player_id, player_selected, player_hover):
         self.cards.sort(key=lambda c: c.get_order())
         global t_discard
         global d_discard
@@ -115,6 +115,16 @@ class Cards:
             # continue
             if card.area == 'hand' and not (card.p_id == player_id):
                 continue
+            if card.area == 'equipments':
+                if not player_selected == -1:
+                    id_to_draw = player_selected
+                elif not player_hover == -1:
+                    id_to_draw = player_hover
+                else:
+                    id_to_draw = player_id
+                if not card.p_id == id_to_draw:
+                    continue
+
             if card.get_order() > 0:
                 if card.get_face():
                     card.draw(win)
@@ -147,6 +157,8 @@ class Cards:
         global d_discard_drag
         global max_card_order
         for card in reversed(self.cards):     
+            if card.area == 'equipments' and not (card.p_id == player_id):
+                continue
             if card.click(pos):
                 card.p_id = player_id
                 max_card_order = max_card_order + 1
@@ -194,9 +206,11 @@ class Cards:
                 # break
         return None
 
-    def reveal(self, pos):
+    def reveal(self, pos, player_id):
         global max_card_order
         for card in reversed(self.cards):
+            if card.area == 'equipments' and not (card.p_id == player_id):
+                continue
             if card.focused(pos):
                 if card.reveal(pos):
                     max_card_order = max_card_order + 1
