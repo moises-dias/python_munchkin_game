@@ -7,11 +7,14 @@ from threading import Thread
 import time
 cards_class = None
 players = None
+players_class = None
 
 def listen(network):
     global cards_class
+    global players_class
     print('sleeping...')
     # resolver isso daqui
+    # depois que inicializar tudo na play setar um booleano pra liberar aqui?
     time.sleep(1)
     print('awake')
     while True:
@@ -27,10 +30,12 @@ def listen(network):
                 print('player update')
                 players.append(message['message']) #ou só mandar a lista de players novamente
                 print(players)
+                players_class.update_players(players)
 
 def play(network):
     global cards_class
     global players
+    global players_class
     # DEFAULT_WIDTH = 1580
     # DEFAULT_HEIGHT = 950
     # DEFAULT_SCALE_X = 137
@@ -68,6 +73,8 @@ def play(network):
 
     cards_class = Cards(SCREEN_WIDTH, SCREEN_HEIGHT, cards_info, scale_x, scale_y, table_class.get_rect('deck'))
 
+    players_class = Players(players, SCREEN_WIDTH, SCREEN_HEIGHT)
+
     running = True
 
     while running:
@@ -76,6 +83,7 @@ def play(network):
             if event.type == pygame.QUIT:
                 running = False
             #mudado de elif para if
+            #trocar nome de result para action
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:    
                     result = cards_class.click(event.pos, player_id) #ok
@@ -124,6 +132,10 @@ def play(network):
         table_class.draw(screen)
 
         cards_class.draw(screen, player_id)
+
+        players_class.draw(screen)
+
+        # print(players_class.focused(pygame.mouse.get_pos()))
 
         pygame.display.flip()
 

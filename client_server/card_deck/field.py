@@ -12,7 +12,7 @@ class Field:
 
     def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height))
-        font = pygame.font.SysFont("comicsans", 40) #font e text pode ser criado uma vez só, deixar na inicialização
+        font = pygame.font.SysFont("comicsans", 20) #font e text pode ser criado uma vez só, deixar na inicialização
         text = font.render(self.name, 1, (255,255,255))
         win.blit(text, (self.x, self.y))
     
