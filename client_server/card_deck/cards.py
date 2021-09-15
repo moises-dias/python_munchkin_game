@@ -86,7 +86,7 @@ class Cards:
                 #mas e qnd o jogo ja tiver começado? ordena como?
 
         #comentado para testar o servidor, mas não vai mais ser necessário, shuffle deve ficar no server ao iniciar as cartas
-        # random.shuffle(self.cards)
+        random.shuffle(self.cards)
 
     def draw(self, win, player_id, player_selected, player_hover):
         self.cards.sort(key=lambda c: c.get_order())
@@ -134,7 +134,7 @@ class Cards:
                     # print('end')
                     self.back_cards[card.get_type()].draw_at(win, (card.x, card.y))
                 #printar id no x, y
-                if card.draging:
+                if card.draging: # and card.area != 'equipments' and card.area != 'hand':
                     font = pygame.font.SysFont("comicsans", 40)
                     text = font.render(str(card.p_id), 1, (255,255,255))
                     win.blit(text, (card.x, card.y))

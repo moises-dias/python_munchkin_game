@@ -70,7 +70,7 @@ def play(network):
     scale_x = int(DEFAULT_SCALE_X * SCREEN_WIDTH / DEFAULT_WIDTH)
     scale_y = int(DEFAULT_SCALE_Y * SCREEN_HEIGHT / DEFAULT_HEIGHT)
 
-    table_class = Table(SCREEN_WIDTH, SCREEN_HEIGHT)
+    table_class = Table(SCREEN_WIDTH, SCREEN_HEIGHT, player_id)
 
     cards_info = network.get_all_cards()
 
@@ -151,6 +151,7 @@ def play(network):
         #     if message['message_type'] == 'card_update':
         #         # print('card')
         #         cards_class.update(message['message'])
+        table_class.update_equips_text(player_selected, player_hover)
 
         table_class.draw(screen)
 
