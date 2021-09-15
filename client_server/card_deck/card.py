@@ -24,6 +24,8 @@ class Card:
         self.im_y = im_y
         self.im_name = im_name
         self.p_id = -1
+        self.discarded = False
+        self.last_discarded = False
         
 
     def draw(self, win):
@@ -92,6 +94,7 @@ class Card:
                 self.x = self.rect.x = d_discard_pos[0]
                 self.y = self.rect.y = d_discard_pos[1]
             self.order = 0
+            self.discarded = True
             self.face = True
             return True
         return False
@@ -153,6 +156,7 @@ class Card:
                         'order': self.order,
                         # 'last_order': self.last_order,
                         'face': self.face,
-                        'area': self.area
+                        'area': self.area,
+                        'discarded': self.discarded
                     }
                 }

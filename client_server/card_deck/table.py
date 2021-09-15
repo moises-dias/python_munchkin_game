@@ -39,8 +39,9 @@ class Table:
 
     def update_equips_text(self, player_selected, player_hover):
         if player_selected != -1 and self.player_selected != player_selected:
-            self.fields['equipments'].name = f'{player_selected} equips'
+            self.fields['equipments'].name = f"{player_selected}'s equips"
         elif player_selected == -1 and player_hover != -1 and self.player_hover != player_hover:
-            self.fields['equipments'].name = f'{player_hover} equips'
+            self.fields['equipments'].name = f"{player_hover}'s equips"
+        #melhorar isso, chamar o else só uma vez e nas proximas conferir se já ta mostrando o player, n precisa redesenhar a msm coisa
         else:
-            self.fields['equipments'].name = f'{self.player_id} equips'
+            self.fields['equipments'].name = f"{self.player_id}'s equips"

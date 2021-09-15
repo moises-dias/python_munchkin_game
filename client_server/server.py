@@ -36,7 +36,8 @@ for i in range(280):
             'order': 0,
             # 'last_order': 0,
             'face': False,
-            'area': 'deck'
+            'area': 'deck',
+            'discarded': False
     }
     if i >= 140:
         cards[i]['x'] = 0.504

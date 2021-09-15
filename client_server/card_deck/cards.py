@@ -74,6 +74,12 @@ class Cards:
                 c.face = cards_info[im_idx]['face']
                 c.p_id = cards_info[im_idx]['p_id']
                 c.area = cards_info[im_idx]['area']
+                c.discarded = cards_info[im_idx]['discarded']
+                if c.discarded and not c.face:
+                    print('YO WTF')
+                    print('YO WTF')
+                    print('YO WTF')
+                    print('YO WTF')
                 
                 self.cards.append(c)
 
@@ -90,8 +96,8 @@ class Cards:
 
     def draw(self, win, player_id, player_selected, player_hover):
         self.cards.sort(key=lambda c: c.get_order())
-        global t_discard
-        global d_discard
+        # global t_discard
+        # global d_discard
         t_draw = 0
         d_draw = 0
 
@@ -100,15 +106,31 @@ class Cards:
         #     card.draw(win)
         # return
 
-        for discard_list in [t_discard, d_discard]:
-            if len(discard_list) > 2:
-                for card in discard_list[-2:]:
-                    if not card.get_draging(): # draging implica order > 0
-                        card.draw(win)
-            else:
-                for card in discard_list:
-                    if not card.get_draging():
-                        card.draw(win)
+        # for discard_list in [t_discard, d_discard]:
+        #     if len(discard_list) > 2:
+        #         for card in discard_list[-2:]:
+        #             if not card.get_draging(): # draging implica order > 0
+        #                 card.draw(win)
+        #     else:
+        #         for card in discard_list:
+        #             if not card.get_draging():
+        #                 card.draw(win)
+        door_discard_list = []
+        treasure_discard_list = []
+
+        for card in self.cards:
+            if card.discarded:
+                # print('card is discarded')
+                if card.type == 'treasure':
+                    treasure_discard_list.append(card)
+                else:
+                    door_discard_list.append(card)
+        for card in treasure_discard_list[-2:]:
+            # print('t')
+            card.draw(win)
+        for card in door_discard_list[-2:]:
+            # print('d')
+            card.draw(win)
 
         for card in self.cards:
             #se id diferente e carta na area hand:
@@ -124,8 +146,14 @@ class Cards:
                     id_to_draw = player_id
                 if not card.p_id == id_to_draw:
                     continue
-
-            if card.get_order() > 0:
+            
+            # if card.discarded:
+            #     print('card is discarded')
+            #     if card.type == 'treasure':
+            #         treasure_discard_list.append(card)
+            #     else:
+            #         door_discard_list.append(card)
+            elif card.get_order() > 0:
                 if card.get_face():
                     card.draw(win)
                 else:
@@ -135,17 +163,24 @@ class Cards:
                     self.back_cards[card.get_type()].draw_at(win, (card.x, card.y))
                 #printar id no x, y
                 if card.draging: # and card.area != 'equipments' and card.area != 'hand':
+                    # melhorar isso, nao precisa criar a font toda vez
                     font = pygame.font.SysFont("comicsans", 40)
                     text = font.render(str(card.p_id), 1, (255,255,255))
                     win.blit(text, (card.x, card.y))
-            elif t_draw < 2 and card.get_type() == 'treasure' and card not in t_discard:
+            elif t_draw < 2 and card.get_type() == 'treasure' and not card.discarded: # and card not in t_discard:
                 self.back_cards['treasure'].draw_at(win, (card.x, card.y))
                 t_draw = t_draw + 1
-            elif d_draw < 2 and card.get_type() == 'door' and card not in d_discard:
+            elif d_draw < 2 and card.get_type() == 'door' and not card.discarded: # and card not in d_discard:
                 self.back_cards['door'].draw_at(win, (card.x, card.y))
                 d_draw = d_draw + 1
         if self.expanded_card:
             self.expanded_card.draw(win)
+        # for card in treasure_discard_list[-2:]:
+        #     print('t')
+        #     card.draw(win)
+        # for card in door_discard_list[-2:]:
+        #     print('d')
+        #     card.draw(win)
 
     def get_cards(self):
         return self.cards
@@ -163,12 +198,15 @@ class Cards:
                 card.p_id = player_id
                 max_card_order = max_card_order + 1
                 card.set_order(max_card_order)
-                if card in t_discard:
-                    t_discard.remove(card)
-                    t_discard_drag.append(card)
-                if card in d_discard:
-                    d_discard.remove(card)
-                    d_discard_drag.append(card)
+                
+                card.last_discarded = card.discarded
+                card.discarded = False
+                # if card in t_discard:
+                #     t_discard.remove(card)
+                #     t_discard_drag.append(card)
+                # if card in d_discard:
+                #     d_discard.remove(card)
+                #     d_discard_drag.append(card)
                 return card.get_info(self.screen_width, self.screen_height)
                 # break
         return None
@@ -181,14 +219,18 @@ class Cards:
         for card in self.cards:
             if card.get_draging():
                 if not card.release(pos, rect_equipments, rect_table, rect_hand):
-                    if card in t_discard_drag:
-                        t_discard.append(card)
-                    if card in d_discard_drag:
-                        d_discard.append(card)
-                if card in t_discard_drag:
-                    t_discard_drag.remove(card)
-                if card in d_discard_drag:
-                    d_discard_drag.remove(card)
+                    if card.last_discarded:
+                        card.discarded = True
+                        card.face = True
+                        card.area = 'deck'
+                #     if card in t_discard_drag:
+                #         t_discard.append(card)
+                #     if card in d_discard_drag:
+                #         d_discard.append(card)
+                # if card in t_discard_drag:
+                #     t_discard_drag.remove(card)
+                # if card in d_discard_drag:
+                #     d_discard_drag.remove(card)
                 return card.get_info(self.screen_width, self.screen_height)
         return None
     
@@ -253,16 +295,22 @@ class Cards:
         self.expanded_card_id = -1
 
     def discard(self, pos):
-        global t_discard
-        global d_discard
+        # global t_discard
+        # global d_discard
         for card in reversed(self.cards):
             if card.get_order() > 0:
                 if card.discard(pos, self.t_discard_pos, self.d_discard_pos):
-                    if card.get_type() == 'treasure':
-                        t_discard.append(card)
-                    else:
-                        d_discard.append(card)
-                    break
+                    print('discard okay')
+                    card.discarded = True
+                    card.face = True
+                    card.area = 'deck'
+                    return card.get_info(self.screen_width, self.screen_height)
+                    # if card.get_type() == 'treasure':
+                    #     t_discard.append(card)
+                    # else:
+                    #     d_discard.append(card)
+                    # break
+        return None
     
     def update(self, message):
         global max_card_order
@@ -281,6 +329,7 @@ class Cards:
                 c.face = message['data']['face']
                 c.p_id = message['data']['p_id']
                 c.area = message['data']['area']
+                c.discarded = message['data']['discarded']
 
                 if message['data']['order'] > max_card_order:
                     max_card_order = message['data']['order']
