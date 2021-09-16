@@ -138,8 +138,10 @@ class Cards:
             if card.area == 'hand' and not (card.p_id == player_id):
                 continue
             if card.area == 'equipments':
+                # print(player_selected, player_hover, player_id, card.p_id)
                 if not player_selected == -1:
                     id_to_draw = player_selected
+                    # print('')
                 elif not player_hover == -1:
                     id_to_draw = player_hover
                 else:
@@ -153,7 +155,7 @@ class Cards:
             #         treasure_discard_list.append(card)
             #     else:
             #         door_discard_list.append(card)
-            elif card.get_order() > 0:
+            if card.get_order() > 0 and not card.discarded:
                 if card.get_face():
                     card.draw(win)
                 else:
@@ -192,7 +194,7 @@ class Cards:
         global d_discard_drag
         global max_card_order
         for card in reversed(self.cards):     
-            if card.area == 'equipments' and not (card.p_id == player_id):
+            if card.area in ['equipments', 'hand'] and not (card.p_id == player_id):
                 continue
             if card.click(pos):
                 card.p_id = player_id
@@ -251,7 +253,7 @@ class Cards:
     def reveal(self, pos, player_id):
         global max_card_order
         for card in reversed(self.cards):
-            if card.area == 'equipments' and not (card.p_id == player_id):
+            if card.discarded or (card.area in ['equipments', 'hand'] and not (card.p_id == player_id)):
                 continue
             if card.focused(pos):
                 if card.reveal(pos):
@@ -261,10 +263,10 @@ class Cards:
                 # break
         return None
 
-    def expand_card(self, pos, screen_width, screen_height):
+    def expand_card(self, pos, screen_width, screen_height, player_id):
         card_focused = False
         for card in reversed(self.cards):
-            if card.focused(pos):
+            if card.focused(pos) and not (card.area in ['equipments', 'hand'] and not (card.p_id == player_id)):
                 if not card.get_face():
                     break
                 
@@ -294,16 +296,19 @@ class Cards:
         self.expanded_card = None
         self.expanded_card_id = -1
 
-    def discard(self, pos):
+    def discard(self, pos, player_id):
+        global max_card_order
         # global t_discard
         # global d_discard
         for card in reversed(self.cards):
-            if card.get_order() > 0:
+            if card.get_order() > 0 and not card.discarded and not (card.area in ['equipments', 'hand'] and not (card.p_id == player_id)):
                 if card.discard(pos, self.t_discard_pos, self.d_discard_pos):
                     print('discard okay')
                     card.discarded = True
                     card.face = True
                     card.area = 'deck'
+                    max_card_order = max_card_order + 1
+                    card.set_order(max_card_order)
                     return card.get_info(self.screen_width, self.screen_height)
                     # if card.get_type() == 'treasure':
                     #     t_discard.append(card)
@@ -333,3 +338,18 @@ class Cards:
 
                 if message['data']['order'] > max_card_order:
                     max_card_order = message['data']['order']
+    
+    def discard_player(self, disconnected_player_id):
+        for card in self.cards:
+            if card.p_id == disconnected_player_id and not card.discarded: # e carta na mao ou equips, não descarta as da mesa
+                card.discarded = True
+                card.face = True
+                card.area = 'deck'
+                card.draging = False
+                # card.order = 0 # colocar last order + 1
+                if card.type == 'treasure':
+                    card.x = card.rect.x = self.t_discard_pos[0]
+                    card.y = card.rect.y = self.t_discard_pos[1]
+                else:
+                    card.x = card.rect.x = self.d_discard_pos[0]
+                    card.y = card.rect.y = self.d_discard_pos[1]

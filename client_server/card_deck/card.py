@@ -93,7 +93,7 @@ class Card:
             if self.type == 'door':
                 self.x = self.rect.x = d_discard_pos[0]
                 self.y = self.rect.y = d_discard_pos[1]
-            self.order = 0
+            # self.order = 0
             self.discarded = True
             self.face = True
             return True

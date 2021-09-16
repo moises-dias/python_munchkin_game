@@ -23,6 +23,8 @@ print("Waiting for a connection, Server Started")
 
 lock = threading.Lock()
 
+max_order = 0
+
 cards = {}
 for i in range(280):
     cards[i] = {
@@ -51,6 +53,23 @@ def threaded_client(conn, player):
     global clients
     global cards
     global ids
+    global max_order
+
+    #na hr de criar nome tirar esse codigo feio aqui
+    if player == 0:
+        player = 'moises'
+    elif player == 1:
+        player = 'carol'
+    elif player == 2:
+        player = 'zella'
+    elif player == 3:
+        player = 'thiago'
+    elif player == 4:
+        player = 'rafael'
+    elif player == 5:
+        player = 'paulo'
+
+
     # mandar um id ou nome do cliente aqui?
     ids.append(player)
     conn.send(pickle.dumps({'player': player, 'players': ids}))
@@ -68,6 +87,21 @@ def threaded_client(conn, player):
             if data['message_type'] == 'init':
                 print('size', sys.getsizeof(cards))
                 conn.sendall(pickle.dumps(cards))
+            elif data['message_type'] == 'quit':
+                #manda id pros players e break
+                for c_id, card in cards.items():
+                    if card['p_id'] == player and not card['discarded']: # e carta na hand ou equips
+                        card['x'] = 0.604
+                        if c_id >= 140:
+                            card['x'] = 0.704
+                        card['y'] = 0.7575
+                        card['draging'] = False
+                        # card['order'] = 0
+                        card['face'] = True
+                        card['area'] = 'deck'
+                        card['discarded'] = True
+                print('quitou')
+                break
             else:
                 if data['message_type'] == 'card_update':
                     cards[data['message']['id']] = data['message']['data']
@@ -81,10 +115,18 @@ def threaded_client(conn, player):
                         # message = ('card', (data[1][0], cards[data[1][0]]))
                         c.sendall(pickle.dumps(message))
         except Exception as e:
+            print('EXCEPTION 1 SERVER')
             print(e)
             break
 
     print("Lost connection")
+    ids.remove(player)
+    with lock: #precisa do global la em cima? testar isso num jupyter com dicionario e variaveis
+        for i, c in enumerate(clients):
+            if c == conn: #fazer depois de tirar o conn dai n precisa desse if
+                continue
+            message = {'message_type': 'player_disconnected', 'message': player}
+            c.sendall(pickle.dumps(message))
     clients.remove(conn)
     conn.close()
 

@@ -25,6 +25,7 @@ class Players:
 
     
     def update_players(self, player_ids):
+        self.players = {}
         for i, p_id in enumerate(player_ids):
             start_x = (i % 2) * self.players_w
             start_y = (i // 2) * self.players_h

@@ -8,24 +8,30 @@ import time
 cards_class = None
 players = None
 players_class = None
+running = True
 
 def listen(network):
     global cards_class
     global players_class
+    global running
+    global players
     print('sleeping...')
     # resolver isso daqui
     # depois que inicializar tudo na play setar um booleano pra liberar aqui?
     time.sleep(1)
     print('awake')
-    while True:
+    while running:
         print('test')
         message = network.receive()
         #usar o mesmo padrao aqui, msg type e msg
         if message and cards_class:
             # print('message')
             if message['message_type'] == 'card_update':
-                # print('card')
                 cards_class.update(message['message'])
+            if message['message_type'] == 'player_disconnected':
+                cards_class.discard_player(message['message'])
+                players.remove(message['message'])
+                players_class.update_players(players)
             elif message['message_type'] == 'players_update':
                 print('player update')
                 players.append(message['message']) #ou só mandar a lista de players novamente
@@ -36,6 +42,7 @@ def play(network):
     global cards_class
     global players
     global players_class
+    global running
     # DEFAULT_WIDTH = 1580
     # DEFAULT_HEIGHT = 950
     # DEFAULT_SCALE_X = 137
@@ -78,13 +85,15 @@ def play(network):
 
     players_class = Players(players, SCREEN_WIDTH, SCREEN_HEIGHT)
 
-    running = True
+    
 
     while running:
         result = None
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                print('quitou')
                 running = False
+                network.send({'message_type': 'quit'})
             #mudado de elif para if
             #trocar nome de result para action
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -130,7 +139,7 @@ def play(network):
             elif event.type == pygame.KEYDOWN:
                 # se tecla esc -> selected = -1
                 if event.key == pygame.K_d and not pygame.mouse.get_pressed()[0]:
-                    result = cards_class.discard(pygame.mouse.get_pos())
+                    result = cards_class.discard(pygame.mouse.get_pos(), player_id)
                     if result:
                         print('discard')
 
@@ -138,7 +147,7 @@ def play(network):
                 if event.key == pygame.K_v:
                     cards_class.cancel_expand()
             if pygame.key.get_pressed()[pygame.K_v]: #IMPEDIR CLICK, RELEASE,E DEMAIS FUNCOES ACIMA SE TIVER APERTANDO V
-                cards_class.expand_card(pygame.mouse.get_pos(), SCREEN_WIDTH, SCREEN_HEIGHT)
+                cards_class.expand_card(pygame.mouse.get_pos(), SCREEN_WIDTH, SCREEN_HEIGHT, player_id)
             if result:
                 network.send({'message_type': 'card_update', 'message': result}) #result no formato {'id': X, 'data': Y} sendo Y igual o dicionario no servidor
             # else:
