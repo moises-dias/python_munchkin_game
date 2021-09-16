@@ -188,29 +188,17 @@ class Cards:
         return self.cards
     
     def click(self, pos, player_id):
-        global t_discard
-        global d_discard
-        global t_discard_drag
-        global d_discard_drag
         global max_card_order
         for card in reversed(self.cards):     
-            if card.area in ['equipments', 'hand'] and not (card.p_id == player_id):
+            if not card.to_draw or not card.interact:
                 continue
             if card.click(pos):
                 card.p_id = player_id
-                max_card_order = max_card_order + 1
+                max_card_order = max_card_order + 1 # criar funcao set max order?
                 card.set_order(max_card_order)
-                
                 card.last_discarded = card.discarded
                 card.discarded = False
-                # if card in t_discard:
-                #     t_discard.remove(card)
-                #     t_discard_drag.append(card)
-                # if card in d_discard:
-                #     d_discard.remove(card)
-                #     d_discard_drag.append(card)
                 return card.get_info(self.screen_width, self.screen_height)
-                # break
         return None
     
     def release(self, pos, rect_equipments, rect_table, rect_hand):
@@ -346,6 +334,9 @@ class Cards:
                 card.face = True
                 card.area = 'deck'
                 card.draging = False
+                #setar to_draw e interact, ou chamar o update cards la da classe game
+                card.to_draw = True
+                card.interact = True
                 # card.order = 0 # colocar last order + 1
                 if card.type == 'treasure':
                     card.x = card.rect.x = self.t_discard_pos[0]
@@ -353,3 +344,31 @@ class Cards:
                 else:
                     card.x = card.rect.x = self.d_discard_pos[0]
                     card.y = card.rect.y = self.d_discard_pos[1]
+    
+    def set_draw_interact(self, player_selected, player_hover, player_id):
+        for card in self.cards:
+            if card.area in ['deck', 'table', 'players', 'logs']:
+                card.to_draw = True
+            elif card.area == 'hand' and card.p_id == player_id:
+                card.to_draw = True
+            elif card.area == 'equipments' and card.p_id == get_id_to_draw(player_selected, player_hover, player_id):
+                card.to_draw = True
+            else:
+                card.to_draw = False
+            
+            if card.to_draw and not (card.area == 'equipments' and card.p_id != player_id):
+                    card.interact = True
+            else:
+                card.interact = False
+            
+
+
+                
+
+def get_id_to_draw(player_selected, player_hover, player_id):
+    if not player_selected == -1:
+        return player_selected
+    elif not player_hover == -1:
+        return player_hover
+    else:
+        return player_id

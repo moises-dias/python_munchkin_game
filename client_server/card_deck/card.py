@@ -26,6 +26,8 @@ class Card:
         self.p_id = -1
         self.discarded = False
         self.last_discarded = False
+        self.to_draw = False
+        self.interact = False
         
 
     def draw(self, win):
