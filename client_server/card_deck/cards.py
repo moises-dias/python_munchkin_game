@@ -263,10 +263,10 @@ class Cards:
                 # break
         return None
 
-    def expand_card(self, pos, screen_width, screen_height, player_id):
+    def expand_card(self, pos, screen_width, screen_height, player_id, player_selected):
         card_focused = False
         for card in reversed(self.cards):
-            if card.focused(pos) and not (card.area in ['equipments', 'hand'] and not (card.p_id == player_id)):
+            if card.focused(pos) and not (card.area == 'hand' and not (card.p_id == player_id)) and (card.area == 'equipments' and (player_selected == card.p_id or player_selected == -1 and card.p_id == player_id)): #fazer o if card.desenhado T/F resolve isso...
                 if not card.get_face():
                     break
                 
