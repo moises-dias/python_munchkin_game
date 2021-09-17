@@ -89,7 +89,7 @@ class Card:
             return True
         return False
 
-    def discard(self, pos, t_discard_pos, d_discard_pos):
+    def try_discard(self, pos, t_discard_pos, d_discard_pos):
         if self.rect.collidepoint(pos):
             if self.type == 'treasure':
                 self.x = self.rect.x = t_discard_pos[0]
@@ -100,33 +100,52 @@ class Card:
             # self.order = 0
             self.discarded = True
             self.face = True
+            self.area = 'deck'
             return True
         return False
     
+    def discard(self, t_discard_pos, d_discard_pos):
+        self.discarded = True
+        self.face = True
+        self.area = 'deck'
+        self.draging = False
+        self.to_draw = True
+        self.interact = True
+        if self.type == 'treasure':
+            self.x = self.rect.x = t_discard_pos[0]
+            self.y = self.rect.y = t_discard_pos[1]
+        else:
+            self.x = self.rect.x = d_discard_pos[0]
+            self.y = self.rect.y = d_discard_pos[1]
+    
     def release(self, pos, rect_equipments, rect_table, rect_hand):
-        if self.draging: #redundante, ja ta sendo checado ao chamar o release
-            if not(self.rect.collidepoint(pos) and any([rect.collidepoint(pos) for rect in [rect_equipments, rect_table, rect_hand]])):
-                self.x = self.rect.x = self.last_x
-                self.y = self.rect.y = self.last_y
-                if self.last_order == 0:
-                    self.order = 0
-                self.area = self.last_area
-                self.draging = False
-                return False
-            else:
-                for rect in [rect_equipments, rect_table, rect_hand]:
-                    if (rect.collidepoint(pos) and self.rect.colliderect(rect) and not rect.contains(self.rect)):
-                        print(rect.top, rect.left, rect.bottom, rect.right)
-                        if self.x < rect.right < self.x + self.width: #right collision
-                            self.x = self.rect.x = self.x - (self.x + self.width - rect.right)
-                        if self.x < rect.left < self.x + self.width: #left collision
-                            self.x = self.rect.x = rect.left
-                        if self.y < rect.top < self.y + self.height: #top collision
-                            self.y = self.rect.y = rect.top
-                        if self.y < rect.bottom < self.y + self.height: #bottom collision
-                            self.y = self.rect.y = self.y - (self.y + self.height - rect.bottom)
+        # if self.draging: #redundante, ja ta sendo checado ao chamar o release
+        if not(self.rect.collidepoint(pos) and any([rect.collidepoint(pos) for rect in [rect_equipments, rect_table, rect_hand]])):
+            self.x = self.rect.x = self.last_x
+            self.y = self.rect.y = self.last_y
+            if self.last_order == 0:
+                self.order = 0
+            self.area = self.last_area
             self.draging = False
-            return True
+            if self.last_discarded:
+                self.discarded = True
+                self.face = True
+                self.area = 'deck' # setando last area acima n é suficiente?
+            return False
+        else:
+            for rect in [rect_equipments, rect_table, rect_hand]:
+                if (rect.collidepoint(pos) and self.rect.colliderect(rect) and not rect.contains(self.rect)):
+                    # print(rect.top, rect.left, rect.bottom, rect.right)
+                    if self.x < rect.right < self.x + self.width: #right collision
+                        self.x = self.rect.x = self.x - (self.x + self.width - rect.right)
+                    if self.x < rect.left < self.x + self.width: #left collision
+                        self.x = self.rect.x = rect.left
+                    if self.y < rect.top < self.y + self.height: #top collision
+                        self.y = self.rect.y = rect.top
+                    if self.y < rect.bottom < self.y + self.height: #bottom collision
+                        self.y = self.rect.y = self.y - (self.y + self.height - rect.bottom)
+        self.draging = False
+        return True
 
     def move(self, pos, rect_screen):
         if self.draging:
@@ -164,4 +183,9 @@ class Card:
     
     def set_info(self, card_info):
         for attr, value in card_info.items():
+            # recebe um dicionario onde as chaves necessáriamente devem ser atributos da classe card
             setattr(self, attr, value)
+            if attr == 'x':
+                self.rect.x = value
+            if attr == 'y':
+                self.rect.y = value

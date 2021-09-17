@@ -50,21 +50,26 @@ class Cards:
             for j in range(70):
                 im_idx = (i * 70) + j
                 
-                init_x = cards_info[im_idx]['x'] * screen_width
-                init_y = cards_info[im_idx]['y'] * screen_height
+                # init_x = cards_info[im_idx]['x'] * screen_width
+                # init_y = cards_info[im_idx]['y'] * screen_height
 
                 im_x = j%10 * im_w
                 im_y = j//10 * im_h
 
-                card = Card(pygame.transform.smoothscale(image.subsurface((im_x, im_y, im_w, im_h)), (c_w, c_h)),  init_x,  init_y,  im_idx,  im_type,  im_x,  im_y,  img_name)
+                card = Card(pygame.transform.smoothscale(image.subsurface((im_x, im_y, im_w, im_h)), (c_w, c_h)),  0,  0,  im_idx,  im_type,  im_x,  im_y,  img_name)
                 
                 # metodo no card q recebe um dict e atribui aos atributos
-                card.p_id = cards_info[im_idx]['p_id']
-                card.draging = cards_info[im_idx]['draging']
-                card.order = cards_info[im_idx]['order']
-                card.face = cards_info[im_idx]['face']
-                card.area = cards_info[im_idx]['area']
-                card.discarded = cards_info[im_idx]['discarded']
+                # card.p_id = cards_info[im_idx]['p_id']
+                # card.draging = cards_info[im_idx]['draging']
+                # card.order = cards_info[im_idx]['order']
+                # card.face = cards_info[im_idx]['face']
+                # card.area = cards_info[im_idx]['area']
+                # card.discarded = cards_info[im_idx]['discarded']
+                
+                cards_info[im_idx]['x'] = cards_info[im_idx]['x'] * screen_width
+                cards_info[im_idx]['y'] = cards_info[im_idx]['y'] * screen_height
+
+                card.set_info(cards_info[im_idx])
                 
                 self.cards.append(card)
 
@@ -131,11 +136,12 @@ class Cards:
     def release(self, pos, rect_equipments, rect_table, rect_hand):
         for card in self.cards:
             if card.get_draging():
-                if not card.release(pos, rect_equipments, rect_table, rect_hand):
-                    if card.last_discarded:
-                        card.discarded = True
-                        card.face = True
-                        card.area = 'deck'
+                # if not card.release(pos, rect_equipments, rect_table, rect_hand):
+                #     if card.last_discarded:
+                #         card.discarded = True
+                #         card.face = True
+                #         card.area = 'deck'
+                card.release(pos, rect_equipments, rect_table, rect_hand)
                 return card.get_info(self.screen_width, self.screen_height)
         return None
     
@@ -182,7 +188,8 @@ class Cards:
                     image = images[im_name]['image']
                     im_w = images[im_name]['w']
                     im_h = images[im_name]['h']
-                    self.expanded_card = DefaultCard(pygame.transform.smoothscale(image.subsurface((card.get_im_x(), card.get_im_y(), im_w, im_h)), (self.c_w * 2, self.c_h * 2)),  card_x,  card_y)
+                    expanded_image = pygame.transform.smoothscale(image.subsurface((card.get_im_x(), card.get_im_y(), im_w, im_h)), (self.c_w * 2, self.c_h * 2))
+                    self.expanded_card = DefaultCard(expanded_image,  card_x,  card_y)
                     self.expanded_card_id = card.get_id()
                 else:
                     self.expanded_card.set_x_y(card_x, card_y)
@@ -198,10 +205,10 @@ class Cards:
     def discard(self, pos):
         for card in reversed(self.cards):
             if card.get_order() > 0 and not card.discarded and card.to_draw and card.interact:
-                if card.discard(pos, self.t_discard_pos, self.d_discard_pos):
-                    card.discarded = True
-                    card.face = True
-                    card.area = 'deck'
+                if card.try_discard(pos, self.t_discard_pos, self.d_discard_pos):
+                    # card.discarded = True
+                    # card.face = True
+                    # card.area = 'deck'
                     self.max_card_order = self.max_card_order + 1
                     card.set_order(self.max_card_order)
                     return card.get_info(self.screen_width, self.screen_height)
@@ -211,14 +218,19 @@ class Cards:
         #transformar cards num dicionario, vai facilitar aqui
         for card in self.cards:
             if card.id == message['id']:
-                card.x = card.rect.x = message['data']['x'] * self.screen_width
-                card.y = card.rect.y = message['data']['y'] * self.screen_height
-                card.draging = message['data']['draging']
-                card.order = message['data']['order']
-                card.face = message['data']['face']
-                card.p_id = message['data']['p_id']
-                card.area = message['data']['area']
-                card.discarded = message['data']['discarded']
+                # card.x = card.rect.x = message['data']['x'] * self.screen_width
+                # card.y = card.rect.y = message['data']['y'] * self.screen_height
+                # card.p_id = message['data']['p_id']
+                # card.draging = message['data']['draging']
+                # card.order = message['data']['order']
+                # card.face = message['data']['face']
+                # card.area = message['data']['area']
+                # card.discarded = message['data']['discarded']
+
+                # ver algum jeito de nao ter que multiplicar o x e y por width e height, fazer isso aonde?
+                message['data']['x'] = message['data']['x'] * self.screen_width
+                message['data']['y'] = message['data']['y'] * self.screen_height
+                card.set_info(message['data'])
 
                 if message['data']['order'] > self.max_card_order:
                     self.max_card_order = message['data']['order']
@@ -226,18 +238,19 @@ class Cards:
     def discard_player(self, disconnected_player_id):
         for card in self.cards:
             if card.p_id == disconnected_player_id and not card.discarded:
-                card.discarded = True
-                card.face = True
-                card.area = 'deck'
-                card.draging = False
-                card.to_draw = True
-                card.interact = True
-                if card.type == 'treasure':
-                    card.x = card.rect.x = self.t_discard_pos[0]
-                    card.y = card.rect.y = self.t_discard_pos[1]
-                else:
-                    card.x = card.rect.x = self.d_discard_pos[0]
-                    card.y = card.rect.y = self.d_discard_pos[1]
+                card.discard(self.t_discard_pos, self.d_discard_pos)
+                # card.discarded = True
+                # card.face = True
+                # card.area = 'deck'
+                # card.draging = False
+                # card.to_draw = True
+                # card.interact = True
+                # if card.type == 'treasure':
+                #     card.x = card.rect.x = self.t_discard_pos[0]
+                #     card.y = card.rect.y = self.t_discard_pos[1]
+                # else:
+                #     card.x = card.rect.x = self.d_discard_pos[0]
+                #     card.y = card.rect.y = self.d_discard_pos[1]
     
     def set_draw_interact(self, player_selected, player_hover, player_id):
         for card in self.cards:
