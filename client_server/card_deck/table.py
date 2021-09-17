@@ -25,7 +25,7 @@ class Table:
         self.player_id = player_id
         self.last_id = player_id
 
-        self.fields['equipments'].name = f"{player_id}'s equips"
+        self.fields['equipments'].set_name(f"{player_id}'s equips")
     
     def get_rect(self, field_name):
         return self.fields[field_name].get_rect()
@@ -47,5 +47,5 @@ class Table:
             id_to_draw = self.player_id
 
         if id_to_draw != self.last_id:
-            self.fields['equipments'].name = f"{id_to_draw}'s equips"
+            self.fields['equipments'].set_name(f"{id_to_draw}'s equips")
             self.last_id = id_to_draw

@@ -9,12 +9,16 @@ class Field:
         self.height = h
         self.rect = pygame.rect.Rect((x, y, w, h))
         self.name = name
+        self.font = pygame.font.SysFont("comicsans", 20) #font e text pode ser criado uma vez só, deixar na inicialização
+        self.text = self.font.render(self.name, 1, (255,255,255))
 
     def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height))
-        font = pygame.font.SysFont("comicsans", 20) #font e text pode ser criado uma vez só, deixar na inicialização
-        text = font.render(self.name, 1, (255,255,255))
-        win.blit(text, (self.x, self.y))
+        win.blit(self.text, (self.x, self.y))
     
     def get_rect(self):
         return self.rect
+    
+    def set_name(self, name):
+        self.name = name
+        self.text = self.font.render(self.name, 1, (255,255,255))
