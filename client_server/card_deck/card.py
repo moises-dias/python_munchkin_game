@@ -154,14 +154,14 @@ class Card:
                         'x': self.x / screen_width,
                         'y': self.y / screen_height,
                         'p_id': self.p_id,
-                        # 'last_x': self.last_x / screen_width,
-                        # 'last_y': self.last_y / screen_height,
                         'draging': self.draging,
-                        # 'type': self.type, #n precisa disso nem aqui nem no servidor
                         'order': self.order,
-                        # 'last_order': self.last_order,
                         'face': self.face,
                         'area': self.area,
                         'discarded': self.discarded
                     }
                 }
+    
+    def set_info(self, card_info):
+        for attr, value in card_info.items():
+            setattr(self, attr, value)

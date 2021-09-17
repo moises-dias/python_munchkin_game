@@ -22,12 +22,11 @@ class Cards:
         self.expanded_card_id = -1
         self.c_w = c_w
         self.c_h = c_h
-        self.t_pos =         (treasure_rect.x + 0.01*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
-        self.d_pos =         (treasure_rect.x + 0.26*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
+        # self.t_pos =         (treasure_rect.x + 0.01*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
+        # self.d_pos =         (treasure_rect.x + 0.26*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
         self.t_discard_pos = (treasure_rect.x + 0.51*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
         self.d_discard_pos = (treasure_rect.x + 0.76*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
 
-        #tirar isso, n tem pq ter screen width e height no cards, mas colocar onde?
         self.screen_width = screen_width
         self.screen_height = screen_height
 
@@ -57,28 +56,20 @@ class Cards:
                 im_x = j%10 * im_w
                 im_y = j//10 * im_h
 
-                c = Card(pygame.transform.smoothscale(image.subsurface((im_x, im_y, im_w, im_h)), (c_w, c_h)),  init_x,  init_y,  im_idx,  im_type,  im_x,  im_y,  img_name)
+                card = Card(pygame.transform.smoothscale(image.subsurface((im_x, im_y, im_w, im_h)), (c_w, c_h)),  init_x,  init_y,  im_idx,  im_type,  im_x,  im_y,  img_name)
                 
-                # c.last_x = cards_info[im_idx]['last_x'] * self.screen_height
-                # c.last_y = cards_info[im_idx]['last_y'] * self.screen_height
-                c.draging = cards_info[im_idx]['draging']
-                # c.type = cards_info[im_idx]['type']
-                c.order = cards_info[im_idx]['order']
-                # c.last_order = cards_info[im_idx]['last_order']
-                c.face = cards_info[im_idx]['face']
-                c.p_id = cards_info[im_idx]['p_id']
-                c.area = cards_info[im_idx]['area']
-                c.discarded = cards_info[im_idx]['discarded']
-                if c.discarded and not c.face:
-                    print('YO WTF')
-                    print('YO WTF')
-                    print('YO WTF')
-                    print('YO WTF')
+                # metodo no card q recebe um dict e atribui aos atributos
+                card.p_id = cards_info[im_idx]['p_id']
+                card.draging = cards_info[im_idx]['draging']
+                card.order = cards_info[im_idx]['order']
+                card.face = cards_info[im_idx]['face']
+                card.area = cards_info[im_idx]['area']
+                card.discarded = cards_info[im_idx]['discarded']
                 
-                self.cards.append(c)
+                self.cards.append(card)
 
-                if c.order > self.max_card_order:
-                    self.max_card_order = c.order
+                if card.order > self.max_card_order:
+                    self.max_card_order = card.order
 
         random.shuffle(self.cards)
 
@@ -218,16 +209,16 @@ class Cards:
     
     def update(self, message):
         #transformar cards num dicionario, vai facilitar aqui
-        for c in self.cards:
-            if c.id == message['id']:
-                c.x = c.rect.x = message['data']['x'] * self.screen_width
-                c.y = c.rect.y = message['data']['y'] * self.screen_height
-                c.draging = message['data']['draging']
-                c.order = message['data']['order']
-                c.face = message['data']['face']
-                c.p_id = message['data']['p_id']
-                c.area = message['data']['area']
-                c.discarded = message['data']['discarded']
+        for card in self.cards:
+            if card.id == message['id']:
+                card.x = card.rect.x = message['data']['x'] * self.screen_width
+                card.y = card.rect.y = message['data']['y'] * self.screen_height
+                card.draging = message['data']['draging']
+                card.order = message['data']['order']
+                card.face = message['data']['face']
+                card.p_id = message['data']['p_id']
+                card.area = message['data']['area']
+                card.discarded = message['data']['discarded']
 
                 if message['data']['order'] > self.max_card_order:
                     self.max_card_order = message['data']['order']
