@@ -12,15 +12,9 @@ images = {
     'back': {'image': pygame.image.load("card_deck/images/back.jpg"), 'w': 379, 'h': 584, 'type': 'back'}
 }
 
-# colocar essas variaveis dentro da classe?
-max_card_order = 0
-t_discard = []
-d_discard = []
-t_discard_drag = []
-d_discard_drag = []
 class Cards:
     def __init__(self, screen_width, screen_height, cards_info, c_w, c_h, treasure_rect):
-        global max_card_order
+        self.max_card_order = 0
         self.cards = []
         self.back_cards = {'treasure': DefaultCard(pygame.transform.smoothscale(images['back']['image'].subsurface((0, 0, images['back']['w'], images['back']['h'])), (c_w, c_h)),  0,  0), 
                            'door': DefaultCard(pygame.transform.smoothscale(images['back']['image'].subsurface((images['back']['w'], 0, images['back']['w'], images['back']['h'])), (c_w, c_h)),  0,  0)}
@@ -83,8 +77,8 @@ class Cards:
                 
                 self.cards.append(c)
 
-                if c.order > max_card_order:
-                    max_card_order = c.order
+                if c.order > self.max_card_order:
+                    self.max_card_order = c.order
 
         random.shuffle(self.cards)
 
@@ -108,13 +102,11 @@ class Cards:
             card.draw(win)
 
         for card in self.cards:
-
             if card.get_order() > 0 and not card.discarded and card.to_draw:
                 if card.get_face():
                     card.draw(win)
                 else:
                     self.back_cards[card.get_type()].draw_at(win, (card.x, card.y))
-                #printar id no x, y
                 if card.draging:
                     # melhorar isso, nao precisa criar a font toda vez, jogar dentro da classe card e criar um método
                     font = pygame.font.SysFont("comicsans", 40)
@@ -133,14 +125,13 @@ class Cards:
         return self.cards
     
     def click(self, pos, player_id):
-        global max_card_order
         for card in reversed(self.cards):     
             if not card.to_draw or not card.interact:
                 continue
             if card.click(pos):
                 card.p_id = player_id
-                max_card_order = max_card_order + 1 # criar funcao set max order?
-                card.set_order(max_card_order)
+                self.max_card_order = self.max_card_order + 1
+                card.set_order(self.max_card_order)
                 card.last_discarded = card.discarded
                 card.discarded = False
                 return card.get_info(self.screen_width, self.screen_height)
@@ -170,30 +161,28 @@ class Cards:
         return None
 
     def reveal(self, pos):
-        global max_card_order
         for card in reversed(self.cards):
             if card.discarded or not card.to_draw or not card.interact:
                 continue
             if card.focused(pos):
                 if card.reveal(pos):
-                    max_card_order = max_card_order + 1
-                    card.set_order(max_card_order)
+                    self.max_card_order = self.max_card_order + 1
+                    card.set_order(self.max_card_order)
                 return card.get_info(self.screen_width, self.screen_height)
-                # break
         return None
 
-    def expand_card(self, pos, screen_width, screen_height):
+    def expand_card(self, pos):
         card_focused = False
         for card in reversed(self.cards):
             if card.focused(pos) and card.to_draw:
                 if not card.get_face():
                     break
                 
-                if pos[0] < screen_width/2:
+                if pos[0] < self.screen_width/2:
                     card_x = pos[0]
                 else:
                     card_x = pos[0] - self.c_w * 2
-                if pos[1] < screen_height/2:
+                if pos[1] < self.screen_height/2:
                     card_y = pos[1]
                 else:
                     card_y = pos[1] - self.c_h * 2
@@ -216,21 +205,18 @@ class Cards:
         self.expanded_card_id = -1
 
     def discard(self, pos):
-        global max_card_order
         for card in reversed(self.cards):
-            # criar uma funcao pra fazer essa checagem? pra todas as operações que precisam de um if
             if card.get_order() > 0 and not card.discarded and card.to_draw and card.interact:
                 if card.discard(pos, self.t_discard_pos, self.d_discard_pos):
                     card.discarded = True
                     card.face = True
                     card.area = 'deck'
-                    max_card_order = max_card_order + 1
-                    card.set_order(max_card_order)
+                    self.max_card_order = self.max_card_order + 1
+                    card.set_order(self.max_card_order)
                     return card.get_info(self.screen_width, self.screen_height)
         return None
     
     def update(self, message):
-        global max_card_order
         #transformar cards num dicionario, vai facilitar aqui
         for c in self.cards:
             if c.id == message['id']:
@@ -243,8 +229,8 @@ class Cards:
                 c.area = message['data']['area']
                 c.discarded = message['data']['discarded']
 
-                if message['data']['order'] > max_card_order:
-                    max_card_order = message['data']['order']
+                if message['data']['order'] > self.max_card_order:
+                    self.max_card_order = message['data']['order']
     
     def discard_player(self, disconnected_player_id):
         for card in self.cards:
@@ -263,7 +249,6 @@ class Cards:
                     card.y = card.rect.y = self.d_discard_pos[1]
     
     def set_draw_interact(self, player_selected, player_hover, player_id):
-        # pegar as duas ultimas do discard e do deck? ja deixar tudo pronto pro draw
         for card in self.cards:
             if card.area in ['deck', 'table', 'players', 'logs']:
                 card.to_draw = True

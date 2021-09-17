@@ -133,7 +133,7 @@ def play(network):
                 if event.key == pygame.K_v:
                     cards_class.cancel_expand()
             if pygame.key.get_pressed()[pygame.K_v]:
-                cards_class.expand_card(pygame.mouse.get_pos(), SCREEN_WIDTH, SCREEN_HEIGHT)
+                cards_class.expand_card(pygame.mouse.get_pos())
             if action:
                 network.send({'message_type': 'card_update', 'message': action}) #action no formato {'id': X, 'data': Y} sendo Y igual o dicionario no servidor
 
