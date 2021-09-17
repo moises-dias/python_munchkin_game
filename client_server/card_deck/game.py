@@ -56,15 +56,15 @@ def play(network):
 
     FPS = 30
 
-    player_id = network.p['player'] #melhorar esse nome e fazer um get
-    players = network.p['players']
+    player_id = network.get_player_id()
+    players = network.get_player_list()
 
     player_selected = -1
     player_hover = -1
 
     pygame.init()
     screen = pygame.display.set_mode((DEFAULT_WIDTH, DEFAULT_HEIGHT), pygame.RESIZABLE)
-    pygame.display.set_caption("colocar uns meme aqui")
+    pygame.display.set_caption("munchkin")
     clock = pygame.time.Clock()
 
     # user32 = windll.user32

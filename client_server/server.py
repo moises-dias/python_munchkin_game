@@ -31,19 +31,14 @@ for i in range(280):
             'x': 0.404,
             'y': 0.7575,
             'p_id': -1,
-            # 'last_x': 0,
-            # 'last_y': 0,
             'draging': False,
-            # 'type': 'treasure',
             'order': 0,
-            # 'last_order': 0,
             'face': False,
             'area': 'deck',
             'discarded': False
     }
     if i >= 140:
         cards[i]['x'] = 0.504
-        # cards[i]['type'] = 'door'
 
 print('size', sys.getsizeof(cards))
 
@@ -72,7 +67,7 @@ def threaded_client(conn, player):
 
     # mandar um id ou nome do cliente aqui?
     ids.append(player)
-    conn.send(pickle.dumps({'player': player, 'players': ids}))
+    conn.send(pickle.dumps({'player_id': player, 'players': ids}))
     for i, c in enumerate(clients):
         if c == conn:
             continue
@@ -82,26 +77,23 @@ def threaded_client(conn, player):
     while True:
         try:
             data = pickle.loads(conn.recv(2048))
-            # print('recebido ' + str(data))
-            # print('recebido')
             if data['message_type'] == 'init':
                 print('size', sys.getsizeof(cards))
                 conn.sendall(pickle.dumps(cards))
+
             elif data['message_type'] == 'quit':
-                #manda id pros players e break
                 for c_id, card in cards.items():
-                    if card['p_id'] == player and not card['discarded']: # e carta na hand ou equips
+                    if card['p_id'] == player and not card['discarded']:
                         card['x'] = 0.604
                         if c_id >= 140:
                             card['x'] = 0.704
                         card['y'] = 0.7575
                         card['draging'] = False
-                        # card['order'] = 0
                         card['face'] = True
                         card['area'] = 'deck'
                         card['discarded'] = True
-                print('quitou')
                 break
+
             else:
                 if data['message_type'] == 'card_update':
                     cards[data['message']['id']] = data['message']['data']
@@ -109,25 +101,22 @@ def threaded_client(conn, player):
                     for i, c in enumerate(clients):
                         if c == conn:
                             continue
-                        # print('index ' + str(i))
-                        # print(c)
                         message = {'message_type': 'card_update', 'message': data['message']}
-                        # message = ('card', (data[1][0], cards[data[1][0]]))
                         c.sendall(pickle.dumps(message))
         except Exception as e:
-            print('EXCEPTION 1 SERVER')
             print(e)
             break
 
     print("Lost connection")
     ids.remove(player)
     with lock: #precisa do global la em cima? testar isso num jupyter com dicionario e variaveis
+        clients.remove(conn)
         for i, c in enumerate(clients):
-            if c == conn: #fazer depois de tirar o conn dai n precisa desse if
-                continue
+            # if c == conn: #fazer depois de tirar o conn dai n precisa desse if
+            #     continue
             message = {'message_type': 'player_disconnected', 'message': player}
             c.sendall(pickle.dumps(message))
-    clients.remove(conn)
+        
     conn.close()
 
 currentPlayer = 0
