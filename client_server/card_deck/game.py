@@ -80,6 +80,7 @@ def play(network):
     while running:
         action = None
         for event in pygame.event.get():
+            cards_class.set_draw_interact(player_selected, player_hover, player_id)
             if event.type == pygame.QUIT:
                 running = False
                 network.send({'message_type': 'quit'})
@@ -87,72 +88,46 @@ def play(network):
                 if event.button == 1:   
                     if table_class.fields['players'].rect.collidepoint(event.pos):
                         player_selected = players_class.focused(pygame.mouse.get_pos(), 'select')
-                        cards_class.set_draw_interact(player_selected, player_hover, player_id)
-                    # IMPEDIR CLICK RELEASE E REVEAL NOS EQUIPAMENTOS DE OUTRAS PESSOAS
-                    #se eu jogar a logica de segurar click reveal release pra dentro da classe cards, não vai precisar desse monte de if else aqui
                     action = cards_class.click(event.pos, player_id)
 
                 if event.button == 3 and not pygame.mouse.get_pressed()[0]:    
-                    action = cards_class.reveal(event.pos, player_id)
+                    action = cards_class.reveal(event.pos)
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:  
-                    action = cards_class.release(event.pos, table_class.get_rect('equipments'), table_class.get_rect('table'), table_class.get_rect('hand')) #ok
-                    if action:
-                        print('release')
+                    action = cards_class.release(event.pos, table_class.get_rect('equipments'), table_class.get_rect('table'), table_class.get_rect('hand'))
 
             elif event.type == pygame.MOUSEMOTION:
-                #pegar o hover dos players aqui se mouse no campo players
-                #se mouse nao estiver no players ou equips selected = -1
-                #se mouse nao estiver no players hover = -1
                 if table_class.fields['players'].rect.collidepoint(event.pos):
-                    # print('player hover = ', players_class.focused(pygame.mouse.get_pos()))
                     player_hover = players_class.focused(pygame.mouse.get_pos(), 'hover')
                     cards_class.set_draw_interact(player_selected, player_hover, player_id)
                 elif not table_class.fields['equipments'].rect.collidepoint(event.pos):
-                    #fazer um if player hover ou selected != -1 seta ambos como -1 e da um clear no players_class
                     if player_hover != -1 or player_selected != -1:
                         player_hover = -1
                         player_selected = -1
                         players_class.clear()
                         cards_class.set_draw_interact(player_selected, player_hover, player_id)
-                action = cards_class.move(event.pos, table_class.get_rect('screen'), table_class.get_rects()) #ok
-                # if action:
-                #     print('move')
+                action = cards_class.move(event.pos, table_class.get_rect('screen'), table_class.get_rects())
             
             elif event.type == pygame.KEYDOWN:
-                # se tecla esc -> selected = -1
                 if event.key == pygame.K_d and not pygame.mouse.get_pressed()[0]:
-                    action = cards_class.discard(pygame.mouse.get_pos(), player_id)
-                    if action:
-                        print('discard')
+                    action = cards_class.discard(pygame.mouse.get_pos())
 
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_v:
                     cards_class.cancel_expand()
-            if pygame.key.get_pressed()[pygame.K_v]: #IMPEDIR CLICK, RELEASE,E DEMAIS FUNCOES ACIMA SE TIVER APERTANDO V
-                cards_class.expand_card(pygame.mouse.get_pos(), SCREEN_WIDTH, SCREEN_HEIGHT, player_id, player_selected)
+            if pygame.key.get_pressed()[pygame.K_v]:
+                cards_class.expand_card(pygame.mouse.get_pos(), SCREEN_WIDTH, SCREEN_HEIGHT)
             if action:
                 network.send({'message_type': 'card_update', 'message': action}) #action no formato {'id': X, 'data': Y} sendo Y igual o dicionario no servidor
-            # else:
-            #     print('none')
-        # fazer o if else e tratar o que for recebido
-        # message = network.receive()
-        # #usar o mesmo padrao aqui, msg type e msg
-        # if message:
-        #     # print('message')
-        #     if message['message_type'] == 'card_update':
-        #         # print('card')
-        #         cards_class.update(message['message'])
+
         table_class.update_equips_text(player_selected, player_hover)
 
         table_class.draw(screen)
 
-        cards_class.draw(screen, player_id, player_selected, player_hover)
+        cards_class.draw(screen)
 
         players_class.draw(screen)
-
-        # print('selected=', player_selected, ' hover=', player_hover)
 
         pygame.display.flip()
 

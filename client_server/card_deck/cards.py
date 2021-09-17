@@ -85,104 +85,49 @@ class Cards:
 
                 if c.order > max_card_order:
                     max_card_order = c.order
-                
 
-
-                #dar um random.shuffle na lista la no servidor, e aqui ordenar pela ordem no servidor
-                #mas e qnd o jogo ja tiver começado? ordena como?
-
-        #comentado para testar o servidor, mas não vai mais ser necessário, shuffle deve ficar no server ao iniciar as cartas
         random.shuffle(self.cards)
 
-    def draw(self, win, player_id, player_selected, player_hover):
+    def draw(self, win):
         self.cards.sort(key=lambda c: c.get_order())
-        # global t_discard
-        # global d_discard
         t_draw = 0
         d_draw = 0
 
-        # # remover esse for
-        # for card in self.cards:
-        #     card.draw(win)
-        # return
-
-        # for discard_list in [t_discard, d_discard]:
-        #     if len(discard_list) > 2:
-        #         for card in discard_list[-2:]:
-        #             if not card.get_draging(): # draging implica order > 0
-        #                 card.draw(win)
-        #     else:
-        #         for card in discard_list:
-        #             if not card.get_draging():
-        #                 card.draw(win)
         door_discard_list = []
         treasure_discard_list = []
 
         for card in self.cards:
             if card.discarded:
-                # print('card is discarded')
                 if card.type == 'treasure':
                     treasure_discard_list.append(card)
                 else:
                     door_discard_list.append(card)
         for card in treasure_discard_list[-2:]:
-            # print('t')
             card.draw(win)
         for card in door_discard_list[-2:]:
-            # print('d')
             card.draw(win)
 
         for card in self.cards:
-            #se id diferente e carta na area hand:
-            # continue
-            if card.area == 'hand' and not (card.p_id == player_id):
-                continue
-            if card.area == 'equipments':
-                # print(player_selected, player_hover, player_id, card.p_id)
-                if not player_selected == -1:
-                    id_to_draw = player_selected
-                    # print('')
-                elif not player_hover == -1:
-                    id_to_draw = player_hover
-                else:
-                    id_to_draw = player_id
-                if not card.p_id == id_to_draw:
-                    continue
-            
-            # if card.discarded:
-            #     print('card is discarded')
-            #     if card.type == 'treasure':
-            #         treasure_discard_list.append(card)
-            #     else:
-            #         door_discard_list.append(card)
-            if card.get_order() > 0 and not card.discarded:
+
+            if card.get_order() > 0 and not card.discarded and card.to_draw:
                 if card.get_face():
                     card.draw(win)
                 else:
-                    # print('begin')
-                    # print(card.get_type())
-                    # print('end')
                     self.back_cards[card.get_type()].draw_at(win, (card.x, card.y))
                 #printar id no x, y
-                if card.draging: # and card.area != 'equipments' and card.area != 'hand':
-                    # melhorar isso, nao precisa criar a font toda vez
+                if card.draging:
+                    # melhorar isso, nao precisa criar a font toda vez, jogar dentro da classe card e criar um método
                     font = pygame.font.SysFont("comicsans", 40)
                     text = font.render(str(card.p_id), 1, (255,255,255))
                     win.blit(text, (card.x, card.y))
-            elif t_draw < 2 and card.get_type() == 'treasure' and not card.discarded: # and card not in t_discard:
+            elif t_draw < 2 and card.get_type() == 'treasure' and not card.discarded:
                 self.back_cards['treasure'].draw_at(win, (card.x, card.y))
                 t_draw = t_draw + 1
-            elif d_draw < 2 and card.get_type() == 'door' and not card.discarded: # and card not in d_discard:
+            elif d_draw < 2 and card.get_type() == 'door' and not card.discarded:
                 self.back_cards['door'].draw_at(win, (card.x, card.y))
                 d_draw = d_draw + 1
         if self.expanded_card:
             self.expanded_card.draw(win)
-        # for card in treasure_discard_list[-2:]:
-        #     print('t')
-        #     card.draw(win)
-        # for card in door_discard_list[-2:]:
-        #     print('d')
-        #     card.draw(win)
 
     def get_cards(self):
         return self.cards
@@ -202,10 +147,6 @@ class Cards:
         return None
     
     def release(self, pos, rect_equipments, rect_table, rect_hand):
-        global t_discard
-        global d_discard
-        global t_discard_drag
-        global d_discard_drag
         for card in self.cards:
             if card.get_draging():
                 if not card.release(pos, rect_equipments, rect_table, rect_hand):
@@ -213,14 +154,6 @@ class Cards:
                         card.discarded = True
                         card.face = True
                         card.area = 'deck'
-                #     if card in t_discard_drag:
-                #         t_discard.append(card)
-                #     if card in d_discard_drag:
-                #         d_discard.append(card)
-                # if card in t_discard_drag:
-                #     t_discard_drag.remove(card)
-                # if card in d_discard_drag:
-                #     d_discard_drag.remove(card)
                 return card.get_info(self.screen_width, self.screen_height)
         return None
     
@@ -232,16 +165,14 @@ class Cards:
                         continue
                     if rect.get_rect().collidepoint(pos):
                         card.area = rect_name
-                        print(card.area)
                         break
                 return card.get_info(self.screen_width, self.screen_height)
-                # break
         return None
 
-    def reveal(self, pos, player_id):
+    def reveal(self, pos):
         global max_card_order
         for card in reversed(self.cards):
-            if card.discarded or (card.area in ['equipments', 'hand'] and not (card.p_id == player_id)):
+            if card.discarded or not card.to_draw or not card.interact:
                 continue
             if card.focused(pos):
                 if card.reveal(pos):
@@ -251,10 +182,10 @@ class Cards:
                 # break
         return None
 
-    def expand_card(self, pos, screen_width, screen_height, player_id, player_selected):
+    def expand_card(self, pos, screen_width, screen_height):
         card_focused = False
         for card in reversed(self.cards):
-            if card.focused(pos) and not (card.area == 'hand' and not (card.p_id == player_id)) and (card.area == 'equipments' and (player_selected == card.p_id or player_selected == -1 and card.p_id == player_id)): #fazer o if card.desenhado T/F resolve isso...
+            if card.focused(pos) and card.to_draw:
                 if not card.get_face():
                     break
                 
@@ -284,41 +215,29 @@ class Cards:
         self.expanded_card = None
         self.expanded_card_id = -1
 
-    def discard(self, pos, player_id):
+    def discard(self, pos):
         global max_card_order
-        # global t_discard
-        # global d_discard
         for card in reversed(self.cards):
-            if card.get_order() > 0 and not card.discarded and not (card.area in ['equipments', 'hand'] and not (card.p_id == player_id)):
+            # criar uma funcao pra fazer essa checagem? pra todas as operações que precisam de um if
+            if card.get_order() > 0 and not card.discarded and card.to_draw and card.interact:
                 if card.discard(pos, self.t_discard_pos, self.d_discard_pos):
-                    print('discard okay')
                     card.discarded = True
                     card.face = True
                     card.area = 'deck'
                     max_card_order = max_card_order + 1
                     card.set_order(max_card_order)
                     return card.get_info(self.screen_width, self.screen_height)
-                    # if card.get_type() == 'treasure':
-                    #     t_discard.append(card)
-                    # else:
-                    #     d_discard.append(card)
-                    # break
         return None
     
     def update(self, message):
         global max_card_order
-        #transformar cards num dicionario
+        #transformar cards num dicionario, vai facilitar aqui
         for c in self.cards:
-            # print(message)
             if c.id == message['id']:
                 c.x = c.rect.x = message['data']['x'] * self.screen_width
                 c.y = c.rect.y = message['data']['y'] * self.screen_height
-                # c.last_x = message['data']['last_x'] * self.screen_height
-                # c.last_y = message['data']['last_y'] * self.screen_height
                 c.draging = message['data']['draging']
-                # c.type = message['data']['type']
                 c.order = message['data']['order']
-                # c.last_order = message['data']['last_order']
                 c.face = message['data']['face']
                 c.p_id = message['data']['p_id']
                 c.area = message['data']['area']
@@ -329,15 +248,13 @@ class Cards:
     
     def discard_player(self, disconnected_player_id):
         for card in self.cards:
-            if card.p_id == disconnected_player_id and not card.discarded: # e carta na mao ou equips, não descarta as da mesa
+            if card.p_id == disconnected_player_id and not card.discarded:
                 card.discarded = True
                 card.face = True
                 card.area = 'deck'
                 card.draging = False
-                #setar to_draw e interact, ou chamar o update cards la da classe game
                 card.to_draw = True
                 card.interact = True
-                # card.order = 0 # colocar last order + 1
                 if card.type == 'treasure':
                     card.x = card.rect.x = self.t_discard_pos[0]
                     card.y = card.rect.y = self.t_discard_pos[1]
@@ -346,6 +263,7 @@ class Cards:
                     card.y = card.rect.y = self.d_discard_pos[1]
     
     def set_draw_interact(self, player_selected, player_hover, player_id):
+        # pegar as duas ultimas do discard e do deck? ja deixar tudo pronto pro draw
         for card in self.cards:
             if card.area in ['deck', 'table', 'players', 'logs']:
                 card.to_draw = True
@@ -361,9 +279,6 @@ class Cards:
             else:
                 card.interact = False
             
-
-
-                
 
 def get_id_to_draw(player_selected, player_hover, player_id):
     if not player_selected == -1:

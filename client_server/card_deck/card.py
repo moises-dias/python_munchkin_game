@@ -18,6 +18,7 @@ class Card:
         self.order = 0
         self.last_order = 0
         self.area = ''
+        self.last_area = ''
         self.face = False
         self.name = ''
         self.im_x = im_x
@@ -77,6 +78,7 @@ class Card:
             self.draging = True
             self.offset_x = self.x - mouse_x
             self.offset_y = self.y - mouse_y
+            self.last_area = self.area
             return True
         else:
             self.draging = False #ISSO VAI DAR PROBLEMA QND FOR PRA ONLINE
@@ -108,6 +110,7 @@ class Card:
                 self.y = self.rect.y = self.last_y
                 if self.last_order == 0:
                     self.order = 0
+                self.area = self.last_area
                 self.draging = False
                 return False
             else:
