@@ -22,9 +22,10 @@ class Table:
             'deck':       Field(x_limits[0] * screen_width, y_limits[1] * screen_height, (x_limits[1] - x_limits[0]) * screen_width, (1 - y_limits[1]) * screen_height,           BLUE, 'deck'),
             'logs':       Field(x_limits[1] * screen_width, y_limits[1] * screen_height, (1 - x_limits[1]) * screen_width,           (1 - y_limits[1]) * screen_height,           PURPLE, 'logs')
         }
-        self.player_selected = -1
-        self.player_hover = -1
         self.player_id = player_id
+        self.last_id = player_id
+
+        self.fields['equipments'].name = f"{player_id}'s equips"
     
     def get_rect(self, field_name):
         return self.fields[field_name].get_rect()
@@ -38,10 +39,13 @@ class Table:
         return self.fields
 
     def update_equips_text(self, player_selected, player_hover):
-        if player_selected != -1 and self.player_selected != player_selected:
-            self.fields['equipments'].name = f"{player_selected}'s equips"
-        elif player_selected == -1 and player_hover != -1 and self.player_hover != player_hover:
-            self.fields['equipments'].name = f"{player_hover}'s equips"
-        #melhorar isso, chamar o else só uma vez e nas proximas conferir se já ta mostrando o player, n precisa redesenhar a msm coisa
+        if player_selected != -1:
+            id_to_draw = player_selected
+        elif player_hover != -1:
+            id_to_draw = player_hover
         else:
-            self.fields['equipments'].name = f"{self.player_id}'s equips"
+            id_to_draw = self.player_id
+
+        if id_to_draw != self.last_id:
+            self.fields['equipments'].name = f"{id_to_draw}'s equips"
+            self.last_id = id_to_draw

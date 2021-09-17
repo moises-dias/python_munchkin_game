@@ -24,7 +24,7 @@ def listen(network):
             elif message['message_type'] == 'player_disconnected':
                 cards_class.discard_player(message['message'])
                 players.remove(message['message'])
-                players_class.update_players(players)
+                players_class.delete_player(players, message['message'])
             elif message['message_type'] == 'players_update':
                 players.append(message['message'])
                 players_class.update_players(players)
@@ -79,8 +79,8 @@ def play(network):
 
     while running:
         action = None
+        cards_class.set_draw_interact(player_selected, player_hover, player_id)
         for event in pygame.event.get():
-            cards_class.set_draw_interact(player_selected, player_hover, player_id)
             if event.type == pygame.QUIT:
                 running = False
                 network.send({'message_type': 'quit'})
@@ -125,9 +125,9 @@ def play(network):
 
         table_class.draw(screen)
 
-        cards_class.draw(screen)
-
         players_class.draw(screen)
+
+        cards_class.draw(screen)
 
         pygame.display.flip()
 
