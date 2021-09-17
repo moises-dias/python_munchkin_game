@@ -1,13 +1,20 @@
 import pygame
+import time
 from ctypes import windll
 from card_deck.cards import Cards
 from card_deck.table import Table
 from card_deck.players import Players
-import time
+
 cards_class = None
 players = None
 players_class = None
+
 running = False
+
+x_limits = [0.4, 0.8]
+y_limits = [0.25, 0.75]
+w_players = x_limits[0] / 2
+h_players = y_limits[0] / 5
 
 def listen(network):
     global cards_class
@@ -34,6 +41,10 @@ def play(network):
     global players
     global players_class
     global running
+    global x_limits
+    global y_limits
+    global w_players
+    global h_players
     # DEFAULT_WIDTH = 1580
     # DEFAULT_HEIGHT = 950
     # DEFAULT_SCALE_X = 137
@@ -45,7 +56,7 @@ def play(network):
 
     FPS = 30
 
-    player_id = network.p['player']
+    player_id = network.p['player'] #melhorar esse nome e fazer um get
     players = network.p['players']
 
     player_selected = -1
@@ -66,14 +77,19 @@ def play(network):
     scale_x = int(DEFAULT_SCALE_X * SCREEN_WIDTH / DEFAULT_WIDTH)
     scale_y = int(DEFAULT_SCALE_Y * SCREEN_HEIGHT / DEFAULT_HEIGHT)
 
-    table_class = Table(SCREEN_WIDTH, SCREEN_HEIGHT, player_id)
+    x_limits = [x * SCREEN_WIDTH for x in x_limits]
+    y_limits = [y * SCREEN_HEIGHT for y in y_limits]
+    w_players = w_players * SCREEN_WIDTH
+    h_players = h_players * SCREEN_HEIGHT
+
+    table_class = Table(SCREEN_WIDTH, SCREEN_HEIGHT, player_id, x_limits, y_limits)
 
     cards_info = network.get_all_cards()
 
     cards_class = Cards(SCREEN_WIDTH, SCREEN_HEIGHT, cards_info, scale_x, scale_y, table_class.get_rect('deck'))
     cards_class.set_draw_interact(player_selected, player_hover, player_id) # chamar la dentro do init
 
-    players_class = Players(players, SCREEN_WIDTH, SCREEN_HEIGHT)
+    players_class = Players(players, w_players, h_players)
     
     running = True
 

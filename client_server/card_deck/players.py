@@ -4,17 +4,11 @@ SELECTED_COLOR = (191, 191, 191)
 HOVERED_COLOR = (128, 128, 128)
 DEFAULT_COLOR = (64, 64, 64)
 
-# ISSO DEVE VIR NA INICIALIZAÇÃO DA CLASSE
-# players_w = 0.4 / 2
-# players_h = 0.25 / 5
-
 class Players:
-    def __init__(self, player_ids, screen_width, screen_height):
+    def __init__(self, player_ids, players_w, players_h):
         self.players = {}
-        self.screen_width = screen_width
-        self.screen_height = screen_height
-        self.players_w = (0.4 / 2) * screen_width
-        self.players_h = (0.25 / 5) * screen_height 
+        self.players_w = players_w
+        self.players_h = players_h
         self.hover = -1
         self.selected = -1
         # CHAMAR UPDATE PLAYERS E DRAW/hover/click AO MESMO TEMPO DA ERRO!!! usar o msm lock usado no server
