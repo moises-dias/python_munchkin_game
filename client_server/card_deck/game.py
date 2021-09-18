@@ -11,17 +11,17 @@ players_class = None
 
 running = False
 
-x_limits = [0.4, 0.8]
-y_limits = [0.25, 0.75]
-w_players = x_limits[0] / 2
-h_players = y_limits[0] / 5
+X_LIMITS_DEFAULT = [0.4, 0.8]
+Y_LIMITS_DEFAULT = [0.25, 0.75]
+W_PLAYERS_DEFAULT = X_LIMITS_DEFAULT[0] / 2
+H_PLAYERS_DEFAULT = Y_LIMITS_DEFAULT[0] / 5
 
 def listen(network):
     # ver se precisa desses globals aqui
     global cards_class
     global players_class
-    global running
     global players
+    global running
     while not running:
         time.sleep(0.01)
     while running:
@@ -43,10 +43,11 @@ def play(network):
     global players
     global players_class
     global running
-    global x_limits
-    global y_limits
-    global w_players
-    global h_players
+    # global x_limits
+    # global y_limits
+    # global w_players
+    # global h_players
+    
     # DEFAULT_WIDTH = 1580
     # DEFAULT_HEIGHT = 950
     # DEFAULT_SCALE_X = 137
@@ -79,10 +80,10 @@ def play(network):
     scale_x = int(DEFAULT_SCALE_X * SCREEN_WIDTH / DEFAULT_WIDTH)
     scale_y = int(DEFAULT_SCALE_Y * SCREEN_HEIGHT / DEFAULT_HEIGHT)
 
-    x_limits = [x * SCREEN_WIDTH for x in x_limits]
-    y_limits = [y * SCREEN_HEIGHT for y in y_limits]
-    w_players = w_players * SCREEN_WIDTH
-    h_players = h_players * SCREEN_HEIGHT
+    x_limits = [x * SCREEN_WIDTH for x in X_LIMITS_DEFAULT]
+    y_limits = [y * SCREEN_HEIGHT for y in Y_LIMITS_DEFAULT]
+    w_players = W_PLAYERS_DEFAULT * SCREEN_WIDTH
+    h_players = H_PLAYERS_DEFAULT * SCREEN_HEIGHT
 
     table_class = Table(SCREEN_WIDTH, SCREEN_HEIGHT, player_id, x_limits, y_limits)
 
