@@ -1,7 +1,7 @@
 import pygame
 
 class Field:
-    def __init__(self, x, y, w, h, color, name):
+    def __init__(self, x, y, w, h, color, name, font_size):
         self.x = x
         self.y = y
         self.color = color
@@ -9,7 +9,7 @@ class Field:
         self.height = h
         self.rect = pygame.rect.Rect((x, y, w, h))
         self.name = name
-        self.font = pygame.font.SysFont("comicsans", 20) #font e text pode ser criado uma vez só, deixar na inicialização
+        self.font = pygame.font.SysFont("comicsans", font_size) #font e text pode ser criado uma vez só, deixar na inicialização
         self.text = self.name
 
     def draw(self, win):

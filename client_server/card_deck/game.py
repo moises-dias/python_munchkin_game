@@ -50,6 +50,8 @@ def play(network):
     DEFAULT_HEIGHT = 317
     DEFAULT_SCALE_X = 46
     DEFAULT_SCALE_Y = 74
+    DEFAULT_FIELD_FONT_SIZE = 20
+    DEFAULT_CARD_FONT_SIZE = 20
 
     FPS = 30
 
@@ -73,20 +75,22 @@ def play(network):
 
     scale_x = int(DEFAULT_SCALE_X * SCREEN_WIDTH / DEFAULT_WIDTH)
     scale_y = int(DEFAULT_SCALE_Y * SCREEN_HEIGHT / DEFAULT_HEIGHT)
+    FIELD_FONT_SIZE = int(DEFAULT_FIELD_FONT_SIZE * SCREEN_WIDTH / DEFAULT_WIDTH)
+    CARD_FONT_SIZE = int(DEFAULT_CARD_FONT_SIZE * SCREEN_HEIGHT / DEFAULT_HEIGHT)
 
     x_limits = [x * SCREEN_WIDTH for x in X_LIMITS_DEFAULT]
     y_limits = [y * SCREEN_HEIGHT for y in Y_LIMITS_DEFAULT]
     w_players = W_PLAYERS_DEFAULT * SCREEN_WIDTH
     h_players = H_PLAYERS_DEFAULT * SCREEN_HEIGHT
 
-    table_class = Table(SCREEN_WIDTH, SCREEN_HEIGHT, player_id, x_limits, y_limits)
+    table_class = Table(SCREEN_WIDTH, SCREEN_HEIGHT, player_id, x_limits, y_limits, FIELD_FONT_SIZE)
 
     cards_info = network.get_all_cards()
 
-    cards_class = Cards(SCREEN_WIDTH, SCREEN_HEIGHT, cards_info, scale_x, scale_y, table_class.get_rect('deck'))
+    cards_class = Cards(SCREEN_WIDTH, SCREEN_HEIGHT, cards_info, scale_x, scale_y, table_class.get_rect('deck'), CARD_FONT_SIZE)
     cards_class.set_draw_interact(player_selected, player_hover, player_id) # chamar la dentro do init?
 
-    players_class = Players(players, w_players, h_players)
+    players_class = Players(players, w_players, h_players, FIELD_FONT_SIZE)
     
     running = True
 

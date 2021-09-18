@@ -9,15 +9,15 @@ BLUE = (0, 0, 255)
 PURPLE = (255, 0, 255)
 
 class Table:
-    def __init__(self, screen_width, screen_height, player_id, x_limits, y_limits):
+    def __init__(self, screen_width, screen_height, player_id, x_limits, y_limits, font_size):
         self.fields = {
-            'screen':     Field(0,           0,           screen_width,                 screen_height,                 WHITE, 'screen'),
-            'players':    Field(0,           0,           x_limits[0],                  y_limits[0],                   BLACK, 'players'),
-            'hand':       Field(0,           y_limits[1], x_limits[0],                  (screen_height - y_limits[1]), GREY, 'hand'),
-            'equipments': Field(0,           y_limits[0], x_limits[0],                  (y_limits[1] - y_limits[0]),   RED, 'equipments'),
-            'table':      Field(x_limits[0], 0,           (screen_width - x_limits[0]), y_limits[1],                   GREEN, 'table'),
-            'deck':       Field(x_limits[0], y_limits[1], (x_limits[1] - x_limits[0]),  (screen_height - y_limits[1]), BLUE, 'deck'),
-            'logs':       Field(x_limits[1], y_limits[1], (screen_width - x_limits[1]), (screen_height - y_limits[1]), PURPLE, 'logs')
+            'screen':     Field(0,           0,           screen_width,                 screen_height,                 WHITE, 'screen', font_size),
+            'players':    Field(0,           0,           x_limits[0],                  y_limits[0],                   BLACK, 'players', font_size),
+            'hand':       Field(0,           y_limits[1], x_limits[0],                  (screen_height - y_limits[1]), GREY, 'hand', font_size),
+            'equipments': Field(0,           y_limits[0], x_limits[0],                  (y_limits[1] - y_limits[0]),   RED, 'equipments', font_size),
+            'table':      Field(x_limits[0], 0,           (screen_width - x_limits[0]), y_limits[1],                   GREEN, 'table', font_size),
+            'deck':       Field(x_limits[0], y_limits[1], (x_limits[1] - x_limits[0]),  (screen_height - y_limits[1]), BLUE, 'deck', font_size),
+            'logs':       Field(x_limits[1], y_limits[1], (screen_width - x_limits[1]), (screen_height - y_limits[1]), PURPLE, 'logs', font_size)
         }
         self.player_id = player_id
         self.last_id = player_id

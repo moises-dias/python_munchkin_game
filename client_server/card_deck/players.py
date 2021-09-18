@@ -5,12 +5,13 @@ HOVERED_COLOR = (128, 128, 128)
 DEFAULT_COLOR = (64, 64, 64)
 
 class Players:
-    def __init__(self, player_ids, players_w, players_h):
+    def __init__(self, player_ids, players_w, players_h, font_size):
         self.players = {}
         self.players_w = players_w
         self.players_h = players_h
         self.hover = -1
         self.selected = -1
+        self.font_size = font_size
         # CHAMAR UPDATE PLAYERS E DRAW/hover/click AO MESMO TEMPO DA ERRO!!! usar o msm lock usado no server
         self.update_players(player_ids)
 
@@ -20,7 +21,7 @@ class Players:
         for i, p_id in enumerate(player_ids):
             start_x = (i % 2) * self.players_w
             start_y = (i // 2) * self.players_h
-            self.players[p_id] = Field(start_x, start_y, self.players_w, self.players_h, DEFAULT_COLOR, str(p_id))
+            self.players[p_id] = Field(start_x, start_y, self.players_w, self.players_h, DEFAULT_COLOR, str(p_id), self.font_size)
 
     def focused(self, pos, type):
         if type == 'select':

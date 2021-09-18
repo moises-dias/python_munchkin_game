@@ -13,7 +13,7 @@ images = {
 }
 
 class Cards:
-    def __init__(self, screen_width, screen_height, cards_info, c_w, c_h, treasure_rect):
+    def __init__(self, screen_width, screen_height, cards_info, c_w, c_h, treasure_rect, font_size):
         self.max_card_order = 0
         self.cards = []
         self.back_cards = {'treasure': DefaultCard(pygame.transform.smoothscale(images['back']['image'].subsurface((0, 0, images['back']['w'], images['back']['h'])), (c_w, c_h)),  0,  0), 
@@ -28,7 +28,7 @@ class Cards:
         self.screen_width = screen_width
         self.screen_height = screen_height
 
-        self.font = pygame.font.SysFont("comicsans", 40)
+        self.font = pygame.font.SysFont("comicsans", font_size)
 
         # preencher o json card_names
         # with open('card_deck/card_names.json') as test:
