@@ -17,7 +17,6 @@ W_PLAYERS_DEFAULT = X_LIMITS_DEFAULT[0] / 2
 H_PLAYERS_DEFAULT = Y_LIMITS_DEFAULT[0] / 5
 
 def listen(network):
-    # ver se precisa desses globals aqui
     global cards_class
     global players_class
     global players
@@ -38,16 +37,11 @@ def listen(network):
                 players_class.update_players(players)
 
 def play(network):
-    # ver se precisa desses globals aqui
     global cards_class
     global players
     global players_class
     global running
-    # global x_limits
-    # global y_limits
-    # global w_players
-    # global h_players
-    
+
     # DEFAULT_WIDTH = 1580
     # DEFAULT_HEIGHT = 950
     # DEFAULT_SCALE_X = 137
@@ -90,7 +84,7 @@ def play(network):
     cards_info = network.get_all_cards()
 
     cards_class = Cards(SCREEN_WIDTH, SCREEN_HEIGHT, cards_info, scale_x, scale_y, table_class.get_rect('deck'))
-    cards_class.set_draw_interact(player_selected, player_hover, player_id) # chamar la dentro do init
+    cards_class.set_draw_interact(player_selected, player_hover, player_id) # chamar la dentro do init?
 
     players_class = Players(players, w_players, h_players)
     

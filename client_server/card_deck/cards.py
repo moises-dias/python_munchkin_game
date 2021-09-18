@@ -22,8 +22,6 @@ class Cards:
         self.expanded_card_id = -1
         self.c_w = c_w
         self.c_h = c_h
-        # self.t_pos =         (treasure_rect.x + 0.01*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
-        # self.d_pos =         (treasure_rect.x + 0.26*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
         self.t_discard_pos = (treasure_rect.x + 0.51*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
         self.d_discard_pos = (treasure_rect.x + 0.76*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
 
@@ -45,34 +43,14 @@ class Cards:
             im_w = img_attrs['w']
             im_h = img_attrs['h']
             im_type = img_attrs['type']
-            # if im_type == 'treasure':
-            #     init_x, init_y = self.t_pos
-            # else:
-            #     init_x, init_y = self.d_pos
             for j in range(70):
                 im_idx = (i * 70) + j
-                
-                # init_x = cards_info[im_idx]['x'] * screen_width
-                # init_y = cards_info[im_idx]['y'] * screen_height
-
                 im_x = j%10 * im_w
                 im_y = j//10 * im_h
 
                 card = Card(pygame.transform.smoothscale(image.subsurface((im_x, im_y, im_w, im_h)), (c_w, c_h)),  0,  0,  im_idx,  im_type,  im_x,  im_y,  img_name)
-                
-                # metodo no card q recebe um dict e atribui aos atributos
-                # card.p_id = cards_info[im_idx]['p_id']
-                # card.draging = cards_info[im_idx]['draging']
-                # card.order = cards_info[im_idx]['order']
-                # card.face = cards_info[im_idx]['face']
-                # card.area = cards_info[im_idx]['area']
-                # card.discarded = cards_info[im_idx]['discarded']
-                
-                # cards_info[im_idx]['x'] = cards_info[im_idx]['x'] * screen_width
-                # cards_info[im_idx]['y'] = cards_info[im_idx]['y'] * screen_height
-
                 card.set_info(cards_info[im_idx], screen_width, screen_height)
-                
+
                 self.cards.append(card)
 
                 if card.order > self.max_card_order:
@@ -106,13 +84,13 @@ class Cards:
                 else:
                     self.back_cards[card.get_type()].draw_at(win, (card.x, card.y))
                 if card.draging:
-                    # melhorar isso, nao precisa criar a font toda vez, jogar dentro da classe card e criar um método
-                    # font = pygame.font.SysFont("comicsans", 40)
                     text = self.font.render(str(card.p_id), 1, (255,255,255))
                     win.blit(text, (card.x, card.y))
+
             elif t_draw < 2 and card.get_type() == 'treasure' and not card.discarded:
                 self.back_cards['treasure'].draw_at(win, (card.x, card.y))
                 t_draw = t_draw + 1
+
             elif d_draw < 2 and card.get_type() == 'door' and not card.discarded:
                 self.back_cards['door'].draw_at(win, (card.x, card.y))
                 d_draw = d_draw + 1
@@ -130,19 +108,12 @@ class Cards:
                 card.p_id = player_id
                 self.max_card_order = self.max_card_order + 1
                 card.set_order(self.max_card_order)
-                # card.last_discarded = card.discarded
-                # card.discarded = False
                 return card.get_info(self.screen_width, self.screen_height)
         return None
     
     def release(self, pos, rect_equipments, rect_table, rect_hand):
         for card in self.cards:
             if card.get_draging():
-                # if not card.release(pos, rect_equipments, rect_table, rect_hand):
-                #     if card.last_discarded:
-                #         card.discarded = True
-                #         card.face = True
-                #         card.area = 'deck'
                 card.release(pos, rect_equipments, rect_table, rect_hand)
                 return card.get_info(self.screen_width, self.screen_height)
         return None
@@ -209,9 +180,6 @@ class Cards:
             if card.get_order() > 0 and not card.discarded and card.to_draw and card.interact:
                 # retornar um false se tiver hoverando e não puder descartar, n tem pq checar mais 
                 if card.try_discard(pos, self.t_discard_pos, self.d_discard_pos):
-                    # card.discarded = True
-                    # card.face = True
-                    # card.area = 'deck'
                     self.max_card_order = self.max_card_order + 1
                     card.set_order(self.max_card_order)
                     return card.get_info(self.screen_width, self.screen_height)
@@ -221,18 +189,6 @@ class Cards:
         #transformar cards num dicionario, vai facilitar aqui
         for card in self.cards:
             if card.id == message['id']:
-                # card.x = card.rect.x = message['data']['x'] * self.screen_width
-                # card.y = card.rect.y = message['data']['y'] * self.screen_height
-                # card.p_id = message['data']['p_id']
-                # card.draging = message['data']['draging']
-                # card.order = message['data']['order']
-                # card.face = message['data']['face']
-                # card.area = message['data']['area']
-                # card.discarded = message['data']['discarded']
-
-                # ver algum jeito de nao ter que multiplicar o x e y por width e height, fazer isso aonde?
-                # message['data']['x'] = message['data']['x'] * self.screen_width
-                # message['data']['y'] = message['data']['y'] * self.screen_height
                 card.set_info(message['data'], self.screen_width, self.screen_height)
 
                 if message['data']['order'] > self.max_card_order:
@@ -242,19 +198,7 @@ class Cards:
         for card in self.cards:
             if card.p_id == disconnected_player_id and not card.discarded:
                 card.discard(self.t_discard_pos, self.d_discard_pos)
-                # card.discarded = True
-                # card.face = True
-                # card.area = 'deck'
-                # card.draging = False
-                # card.to_draw = True
-                # card.interact = True
-                # if card.type == 'treasure':
-                #     card.x = card.rect.x = self.t_discard_pos[0]
-                #     card.y = card.rect.y = self.t_discard_pos[1]
-                # else:
-                #     card.x = card.rect.x = self.d_discard_pos[0]
-                #     card.y = card.rect.y = self.d_discard_pos[1]
-    
+
     def set_draw_interact(self, player_selected, player_hover, player_id):
         for card in self.cards:
             if card.area in ['deck', 'table', 'players', 'logs']:

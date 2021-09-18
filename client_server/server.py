@@ -1,9 +1,6 @@
 import socket
 from _thread import *
 import pickle
-import time
-from datetime import datetime, timedelta
-from random import randrange
 import threading
 import sys
 
@@ -21,9 +18,8 @@ except socket.error as e:
 s.listen(6)
 print("Waiting for a connection, Server Started")
 
+# pesquisar threading lock
 lock = threading.Lock()
-
-max_order = 0
 
 cards = {}
 for i in range(280):
@@ -45,13 +41,7 @@ print('size', sys.getsizeof(cards))
 clients = []
 ids = []
 def threaded_client(conn, player):
-    # ver se precisa desses globals
-    global clients
-    global cards
-    global ids
-    global max_order
 
-    #na hr de criar nome tirar esse codigo feio aqui
     # pegar o nome na hr de iniciar o jogo, tratar aqui duplicados
     if player == 0:
         player = 'moises'
@@ -70,7 +60,7 @@ def threaded_client(conn, player):
     # mandar um id ou nome do cliente aqui?
     ids.append(player)
     conn.send(pickle.dumps({'player_id': player, 'players': ids}))
-    for i, c in enumerate(clients):
+    for c in clients:
         if c == conn:
             continue
         message = {'message_type': 'players_update', 'message': player}
@@ -80,7 +70,6 @@ def threaded_client(conn, player):
         try:
             data = pickle.loads(conn.recv(2048))
             if data['message_type'] == 'init':
-                print('size', sys.getsizeof(cards))
                 conn.sendall(pickle.dumps(cards))
 
             elif data['message_type'] == 'quit':
@@ -100,7 +89,7 @@ def threaded_client(conn, player):
                 if data['message_type'] == 'card_update':
                     cards[data['message']['id']] = data['message']['data']
                 with lock:
-                    for i, c in enumerate(clients):
+                    for c in clients:
                         if c == conn:
                             continue
                         message = {'message_type': 'card_update', 'message': data['message']}
@@ -111,17 +100,15 @@ def threaded_client(conn, player):
 
     print("Lost connection")
     ids.remove(player)
-    with lock: #precisa do global la em cima? testar isso num jupyter com dicionario e variaveis
+    with lock: #lock precisa do global?
         clients.remove(conn)
-        for i, c in enumerate(clients):
-            # if c == conn: #fazer depois de tirar o conn dai n precisa desse if
-            #     continue
+        for c in clients:
             message = {'message_type': 'player_disconnected', 'message': player}
             c.sendall(pickle.dumps(message))
         
     conn.close()
 
-currentPlayer = 0
+currentPlayer = 0 # aqui vai ser o nome do usuario iniciando o programa
 while True:
     conn, addr = s.accept()
     print("Connected to:", addr)
