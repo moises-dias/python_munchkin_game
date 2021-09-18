@@ -65,35 +65,58 @@ class Cards:
 
         door_discard_list = []
         treasure_discard_list = []
-
+        
+        counts = {'deck': {'treasure': 0, 'door': 0}, 'discard': {'treasure': 0, 'door': 0}}
         for card in self.cards:
+            # nesse for pegar os ultimos descartados e pegar a contagem dos decks e descarte
+            if card.order == 0:
+                counts['deck'][card.type] += 1
+            elif card.discarded:
+                counts['discard'][card.type] += 1
+
             if card.discarded:
                 if card.type == 'treasure':
                     treasure_discard_list.append(card)
                 else:
                     door_discard_list.append(card)
+
         for card in treasure_discard_list[-2:]:
             card.draw(win)
+        text = self.font.render(str(counts['discard']['treasure']), 1, (255,255,255))
+        win.blit(text, (self.t_discard_pos[0], self.t_discard_pos[1]))
+
         for card in door_discard_list[-2:]:
             card.draw(win)
+        text = self.font.render(str(counts['discard']['door']), 1, (255,255,255))
+        win.blit(text, (self.d_discard_pos[0], self.d_discard_pos[1]))
 
         for card in self.cards:
-            if card.get_order() > 0 and not card.discarded and card.to_draw:
-                if card.get_face():
-                    card.draw(win)
-                else:
-                    self.back_cards[card.get_type()].draw_at(win, (card.x, card.y))
-                if card.draging:
-                    text = self.font.render(str(card.p_id), 1, (255,255,255))
-                    win.blit(text, (card.x, card.y))
+            #inverter a ordem para desenhar os tesouros primeiro e colocar a contagem nos mesmos
+            if not card.discarded:
+                if card.order == 0:
+                    if t_draw < 2 and card.get_type() == 'treasure':
+                        self.back_cards['treasure'].draw_at(win, (card.x, card.y))
+                        t_draw = t_draw + 1
+                        if t_draw == 2:
+                            text = self.font.render(str(counts['deck']['treasure']), 1, (255,255,255))
+                            win.blit(text, (card.x, card.y))
 
-            elif t_draw < 2 and card.get_type() == 'treasure' and not card.discarded:
-                self.back_cards['treasure'].draw_at(win, (card.x, card.y))
-                t_draw = t_draw + 1
+                    elif d_draw < 2 and card.get_type() == 'door':
+                        self.back_cards['door'].draw_at(win, (card.x, card.y))
+                        d_draw = d_draw + 1
+                        if d_draw == 2:
+                            text = self.font.render(str(counts['deck']['door']), 1, (255,255,255))
+                            win.blit(text, (card.x, card.y))
 
-            elif d_draw < 2 and card.get_type() == 'door' and not card.discarded:
-                self.back_cards['door'].draw_at(win, (card.x, card.y))
-                d_draw = d_draw + 1
+                elif card.to_draw:
+                    if card.get_face():
+                        card.draw(win)
+                    else:
+                        self.back_cards[card.get_type()].draw_at(win, (card.x, card.y))
+                    if card.draging:
+                        text = self.font.render(str(card.p_id), 1, (255,255,255))
+                        win.blit(text, (card.x, card.y))
+
         if self.expanded_card:
             self.expanded_card.draw(win)
 
