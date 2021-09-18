@@ -45,12 +45,14 @@ print('size', sys.getsizeof(cards))
 clients = []
 ids = []
 def threaded_client(conn, player):
+    # ver se precisa desses globals
     global clients
     global cards
     global ids
     global max_order
 
     #na hr de criar nome tirar esse codigo feio aqui
+    # pegar o nome na hr de iniciar o jogo, tratar aqui duplicados
     if player == 0:
         player = 'moises'
     elif player == 1:

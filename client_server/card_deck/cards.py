@@ -30,6 +30,8 @@ class Cards:
         self.screen_width = screen_width
         self.screen_height = screen_height
 
+        self.font = pygame.font.SysFont("comicsans", 40)
+
         # preencher o json card_names
         # with open('card_deck/card_names.json') as test:
         #     data = json.load(test)
@@ -66,10 +68,10 @@ class Cards:
                 # card.area = cards_info[im_idx]['area']
                 # card.discarded = cards_info[im_idx]['discarded']
                 
-                cards_info[im_idx]['x'] = cards_info[im_idx]['x'] * screen_width
-                cards_info[im_idx]['y'] = cards_info[im_idx]['y'] * screen_height
+                # cards_info[im_idx]['x'] = cards_info[im_idx]['x'] * screen_width
+                # cards_info[im_idx]['y'] = cards_info[im_idx]['y'] * screen_height
 
-                card.set_info(cards_info[im_idx])
+                card.set_info(cards_info[im_idx], screen_width, screen_height)
                 
                 self.cards.append(card)
 
@@ -105,8 +107,8 @@ class Cards:
                     self.back_cards[card.get_type()].draw_at(win, (card.x, card.y))
                 if card.draging:
                     # melhorar isso, nao precisa criar a font toda vez, jogar dentro da classe card e criar um método
-                    font = pygame.font.SysFont("comicsans", 40)
-                    text = font.render(str(card.p_id), 1, (255,255,255))
+                    # font = pygame.font.SysFont("comicsans", 40)
+                    text = self.font.render(str(card.p_id), 1, (255,255,255))
                     win.blit(text, (card.x, card.y))
             elif t_draw < 2 and card.get_type() == 'treasure' and not card.discarded:
                 self.back_cards['treasure'].draw_at(win, (card.x, card.y))
@@ -128,8 +130,8 @@ class Cards:
                 card.p_id = player_id
                 self.max_card_order = self.max_card_order + 1
                 card.set_order(self.max_card_order)
-                card.last_discarded = card.discarded
-                card.discarded = False
+                # card.last_discarded = card.discarded
+                # card.discarded = False
                 return card.get_info(self.screen_width, self.screen_height)
         return None
     
@@ -205,6 +207,7 @@ class Cards:
     def discard(self, pos):
         for card in reversed(self.cards):
             if card.get_order() > 0 and not card.discarded and card.to_draw and card.interact:
+                # retornar um false se tiver hoverando e não puder descartar, n tem pq checar mais 
                 if card.try_discard(pos, self.t_discard_pos, self.d_discard_pos):
                     # card.discarded = True
                     # card.face = True
@@ -228,9 +231,9 @@ class Cards:
                 # card.discarded = message['data']['discarded']
 
                 # ver algum jeito de nao ter que multiplicar o x e y por width e height, fazer isso aonde?
-                message['data']['x'] = message['data']['x'] * self.screen_width
-                message['data']['y'] = message['data']['y'] * self.screen_height
-                card.set_info(message['data'])
+                # message['data']['x'] = message['data']['x'] * self.screen_width
+                # message['data']['y'] = message['data']['y'] * self.screen_height
+                card.set_info(message['data'], self.screen_width, self.screen_height)
 
                 if message['data']['order'] > self.max_card_order:
                     self.max_card_order = message['data']['order']

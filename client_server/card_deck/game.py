@@ -17,6 +17,7 @@ w_players = x_limits[0] / 2
 h_players = y_limits[0] / 5
 
 def listen(network):
+    # ver se precisa desses globals aqui
     global cards_class
     global players_class
     global running
@@ -37,6 +38,7 @@ def listen(network):
                 players_class.update_players(players)
 
 def play(network):
+    # ver se precisa desses globals aqui
     global cards_class
     global players
     global players_class

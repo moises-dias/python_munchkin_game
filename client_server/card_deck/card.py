@@ -79,6 +79,8 @@ class Card:
             self.offset_x = self.x - mouse_x
             self.offset_y = self.y - mouse_y
             self.last_area = self.area
+            self.last_discarded = self.discarded
+            self.discarded = False
             return True
         else:
             self.draging = False #ISSO VAI DAR PROBLEMA QND FOR PRA ONLINE
@@ -168,20 +170,22 @@ class Card:
     
     def get_info(self, screen_width, screen_height):
         return {
-                    'id': self.id, 
-                    'data': {
-                        'x': self.x / screen_width,
-                        'y': self.y / screen_height,
-                        'p_id': self.p_id,
-                        'draging': self.draging,
-                        'order': self.order,
-                        'face': self.face,
-                        'area': self.area,
-                        'discarded': self.discarded
-                    }
-                }
+            'id': self.id, 
+            'data': {
+                'x': self.x / screen_width,
+                'y': self.y / screen_height,
+                'p_id': self.p_id,
+                'draging': self.draging,
+                'order': self.order,
+                'face': self.face,
+                'area': self.area,
+                'discarded': self.discarded
+            }
+        }
     
-    def set_info(self, card_info):
+    def set_info(self, card_info, screen_width, screen_height):
+        card_info['x'] = card_info['x'] * screen_width
+        card_info['y'] = card_info['y'] * screen_height
         for attr, value in card_info.items():
             # recebe um dicionario onde as chaves necessáriamente devem ser atributos da classe card
             setattr(self, attr, value)
