@@ -214,7 +214,15 @@ class Cards:
                     card.interact = True
             else:
                 card.interact = False
-            
+    
+    def get_quantities(self):
+        quantities = {}
+        for card in self.cards:
+            if card.area in ['hand', 'equipments']:
+                if not card.p_id in quantities:
+                    quantities[card.p_id] = {'hand': 0, 'equipments': 0}
+                quantities[card.p_id][card.area] += 1
+        return quantities
 
 def get_id_to_draw(player_selected, player_hover, player_id):
     if not player_selected == -1:

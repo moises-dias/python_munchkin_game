@@ -47,8 +47,18 @@ class Players:
                 return p_id
         return -1
 
-    def draw(self, win):
+    def draw(self, win, quantities):
         for p_id, player in self.players.items():
+            text = player.name
+            if p_id in quantities and 'hand' in quantities[p_id]:
+                text = f"{text} - {quantities[p_id]['hand']}"
+            else:
+                text = f"{text} - 0"
+            if p_id in quantities and 'equipments' in quantities[p_id]:
+                text = f"{text} - {quantities[p_id]['equipments']}"
+            else:
+                text = f"{text} - 0"
+            player.text = text # pode usar o metodo set name
             player.draw(win)
 
     def clear(self):

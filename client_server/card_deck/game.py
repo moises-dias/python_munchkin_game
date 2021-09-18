@@ -138,7 +138,7 @@ def play(network):
 
         table_class.draw(screen)
 
-        players_class.draw(screen)
+        players_class.draw(screen, cards_class.get_quantities())
 
         cards_class.draw(screen)
 
