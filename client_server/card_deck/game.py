@@ -149,7 +149,7 @@ def play(network):
                         # cards_class.set_draw_interact(player_selected, player_hover, player_id)
                         caller(cards_class, 'set_draw_interact', [player_selected, player_hover, player_id], cards_class_lock)
                 # action = cards_class.move(event.pos, table_class.get_rect('screen'), table_class.get_rects())
-                action = caller(cards_class, 'move', [event.pos, table_class.get_rect('screen'), table_class.get_rects()], cards_class_lock)
+                action = caller(cards_class, 'move', [event.pos, table_class.get_rect('screen'), table_class.get_rects(), player_id], cards_class_lock)
             
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_d and not pygame.mouse.get_pressed()[0]:

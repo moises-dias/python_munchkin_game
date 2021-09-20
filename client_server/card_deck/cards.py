@@ -141,16 +141,17 @@ class Cards:
                 return card.get_info(self.screen_width, self.screen_height)
         return None
     
-    def move(self, pos, rect_screen, rects):
+    def move(self, pos, rect_screen, rects, player_id):
         for card in self.cards:
-            if card.move(pos, rect_screen):
-                for rect_name, rect in rects.items():
-                    if rect_name == 'screen':
-                        continue
-                    if rect.get_rect().collidepoint(pos):
-                        card.area = rect_name
-                        break
-                return card.get_info(self.screen_width, self.screen_height)
+            if card.p_id == player_id:
+                if card.move(pos, rect_screen):
+                    for rect_name, rect in rects.items():
+                        if rect_name == 'screen':
+                            continue
+                        if rect.get_rect().collidepoint(pos):
+                            card.area = rect_name
+                            break
+                    return card.get_info(self.screen_width, self.screen_height)
         return None
 
     def reveal(self, pos):
@@ -212,6 +213,10 @@ class Cards:
         #transformar cards num dicionario, vai facilitar aqui
         for card in self.cards:
             if card.id == message['id']:
+                print(message['data']['draging'], card.draging)
+                if not message['data']['draging'] and card.draging:
+                    print("someone else released a card")
+
                 card.set_info(message['data'], self.screen_width, self.screen_height)
 
                 if message['data']['order'] > self.max_card_order:
