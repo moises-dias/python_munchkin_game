@@ -14,7 +14,7 @@ class Field:
 
     def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height))
-        text_to_draw = self.font.render(self.text, 1, (255,255,255))
+        text_to_draw = self.font.render(self.text, 1, (0, 0, 0))
         win.blit(text_to_draw, (self.x, self.y))
     
     def get_rect(self):

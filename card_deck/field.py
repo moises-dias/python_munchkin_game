@@ -13,7 +13,7 @@ class Field:
     def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height))
         font = pygame.font.SysFont("comicsans", 40)
-        text = font.render(self.name, 1, (255,255,255))
+        text = font.render(self.name, 1, (0, 0, 0))
         win.blit(text, (self.x, self.y))
     
     def get_rect(self):

@@ -82,12 +82,12 @@ class Cards:
 
         for card in treasure_discard_list[-2:]:
             card.draw(win)
-        text = self.font.render(str(counts['discard']['treasure']), 1, (255,255,255))
+        text = self.font.render(str(counts['discard']['treasure']), 1, ((0, 0, 0)))
         win.blit(text, (self.t_discard_pos[0], self.t_discard_pos[1]))
 
         for card in door_discard_list[-2:]:
             card.draw(win)
-        text = self.font.render(str(counts['discard']['door']), 1, (255,255,255))
+        text = self.font.render(str(counts['discard']['door']), 1, ((0, 0, 0)))
         win.blit(text, (self.d_discard_pos[0], self.d_discard_pos[1]))
 
         for card in self.cards:
@@ -98,14 +98,14 @@ class Cards:
                         self.back_cards['treasure'].draw_at(win, (card.x, card.y))
                         t_draw = t_draw + 1
                         if t_draw == 2:
-                            text = self.font.render(str(counts['deck']['treasure']), 1, (255,255,255))
+                            text = self.font.render(str(counts['deck']['treasure']), 1, ((0, 0, 0)))
                             win.blit(text, (card.x, card.y))
 
                     elif d_draw < 2 and card.get_type() == 'door':
                         self.back_cards['door'].draw_at(win, (card.x, card.y))
                         d_draw = d_draw + 1
                         if d_draw == 2:
-                            text = self.font.render(str(counts['deck']['door']), 1, (255,255,255))
+                            text = self.font.render(str(counts['deck']['door']), 1, ((0, 0, 0)))
                             win.blit(text, (card.x, card.y))
 
                 elif card.to_draw:
@@ -114,7 +114,7 @@ class Cards:
                     else:
                         self.back_cards[card.get_type()].draw_at(win, (card.x, card.y))
                     if card.draging:
-                        text = self.font.render(str(card.p_id), 1, (255,255,255))
+                        text = self.font.render(str(card.p_id), 1, ((0, 0, 0)))
                         win.blit(text, (card.x, card.y))
 
         if self.expanded_card:
