@@ -34,6 +34,9 @@ class Table:
     
     def get_rects(self):
         return self.fields
+    
+    def get_collidepoint(self, field, pos):
+        return self.fields[field].rect.collidepoint(pos)
 
     def update_equips_text(self, player_selected, player_hover):
         if player_selected != -1:

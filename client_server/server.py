@@ -19,7 +19,9 @@ s.listen(6)
 print("Waiting for a connection, Server Started")
 
 # pesquisar threading lock
-lock = threading.Lock()
+conn_lock = threading.Lock()
+ids_lock = threading.Lock()
+cards_lock = threading.Lock()
 
 cards = {}
 for i in range(280):
@@ -58,37 +60,47 @@ def threaded_client(conn, player):
 
 
     # mandar um id ou nome do cliente aqui?
-    ids.append(player)
-    conn.send(pickle.dumps({'player_id': player, 'players': ids}))
-    for c in clients:
-        if c == conn:
-            continue
-        message = {'message_type': 'players_update', 'message': player}
-        c.sendall(pickle.dumps(message))
+    with ids_lock:
+        with conn_lock:
+            ids.append(player)
+            conn.send(pickle.dumps({'player_id': player, 'players': ids}))
+    # with lock aqui
+    with conn_lock:
+        for c in clients:
+            if c == conn:
+                continue
+            message = {'message_type': 'players_update', 'message': player}
+            c.sendall(pickle.dumps(message))
 
     while True:
         try:
             data = pickle.loads(conn.recv(2048))
             if data['message_type'] == 'init':
-                conn.sendall(pickle.dumps(cards))
+                # with lock
+                with conn_lock:
+                    with cards_lock:
+                        conn.sendall(pickle.dumps(cards))
 
             elif data['message_type'] == 'quit':
-                for c_id, card in cards.items():
-                    if card['p_id'] == player and not card['discarded']:
-                        card['x'] = 0.604
-                        if c_id >= 140:
-                            card['x'] = 0.704
-                        card['y'] = 0.7575
-                        card['draging'] = False
-                        card['face'] = True
-                        card['area'] = 'deck'
-                        card['discarded'] = True
+                with cards_lock:
+                    for c_id, card in cards.items():
+                        if card['p_id'] == player and not card['discarded']:
+                            card['x'] = 0.604
+                            if c_id >= 140:
+                                card['x'] = 0.704
+                            card['y'] = 0.7575
+                            card['draging'] = False
+                            card['face'] = True
+                            card['area'] = 'deck'
+                            card['discarded'] = True
                 break
 
             else:
                 if data['message_type'] == 'card_update':
-                    cards[data['message']['id']] = data['message']['data']
-                with lock:
+                    with cards_lock:
+                        cards[data['message']['id']] = data['message']['data']
+                # o trecho abaixo não tem que estar dentro do if acima? dar um tab nele
+                with conn_lock:
                     for c in clients:
                         if c == conn:
                             continue
@@ -99,8 +111,10 @@ def threaded_client(conn, player):
             break
 
     print("Lost connection")
-    ids.remove(player)
-    with lock: #lock precisa do global?
+    # passar pra dentro do with lock abaixo
+    with ids_lock:
+        ids.remove(player)
+    with conn_lock: #lock precisa do global?
         clients.remove(conn)
         for c in clients:
             message = {'message_type': 'player_disconnected', 'message': player}
@@ -112,7 +126,7 @@ currentPlayer = 0 # aqui vai ser o nome do usuario iniciando o programa
 while True:
     conn, addr = s.accept()
     print("Connected to:", addr)
-    with lock:
+    with conn_lock:
         clients.append(conn)
     start_new_thread(threaded_client, (conn, currentPlayer))
     currentPlayer += 1
