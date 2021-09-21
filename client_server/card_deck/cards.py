@@ -124,18 +124,20 @@ class Cards:
         return self.cards
     
     def click(self, pos, player_id):
-        for card in reversed(self.cards):     
-            if not card.to_draw or not card.interact:
-                continue
-            if card.click(pos):
-                card.p_id = player_id
-                self.max_card_order = self.max_card_order + 1
-                card.set_order(self.max_card_order)
-                return card.get_info(self.screen_width, self.screen_height)
+        for card in reversed(self.cards):  
+            if card.focused(pos) and card.to_draw:   
+                if not card.interact:
+                    return None
+                if card.click(pos):
+                    card.p_id = player_id
+                    self.max_card_order = self.max_card_order + 1
+                    card.set_order(self.max_card_order)
+                    return card.get_info(self.screen_width, self.screen_height)
+                return None
         return None
     
     def release(self, pos, rect_equipments, rect_table, rect_hand):
-        for card in self.cards:
+        for card in reversed(self.cards):
             if card.interact and card.get_draging():
                 card.release(pos, rect_equipments, rect_table, rect_hand)
                 return card.get_info(self.screen_width, self.screen_height)
@@ -156,13 +158,14 @@ class Cards:
 
     def reveal(self, pos):
         for card in reversed(self.cards):
-            if card.discarded or not card.to_draw or not card.interact:
-                continue
-            if card.focused(pos):
+            if card.to_draw and card.focused(pos):
+                if card.discarded or not card.interact:
+                    return None
                 if card.reveal(pos):
                     self.max_card_order = self.max_card_order + 1
                     card.set_order(self.max_card_order)
-                return card.get_info(self.screen_width, self.screen_height)
+                    return card.get_info(self.screen_width, self.screen_height)
+                return None
         return None
 
     def expand_card(self, pos):
@@ -201,12 +204,14 @@ class Cards:
 
     def discard(self, pos):
         for card in reversed(self.cards):
-            if card.get_order() > 0 and not card.discarded and card.to_draw and card.interact:
-                # retornar um false se tiver hoverando e não puder descartar, n tem pq checar mais 
-                if card.try_discard(pos, self.t_discard_pos, self.d_discard_pos):
-                    self.max_card_order = self.max_card_order + 1
-                    card.set_order(self.max_card_order)
-                    return card.get_info(self.screen_width, self.screen_height)
+            if card.focused(pos) and card.to_draw:
+                if card.get_order() > 0 and not card.discarded and card.interact:
+                    # retornar um false se tiver hoverando e não puder descartar, n tem pq checar mais 
+                    if card.try_discard(pos, self.t_discard_pos, self.d_discard_pos):
+                        self.max_card_order = self.max_card_order + 1
+                        card.set_order(self.max_card_order)
+                        return card.get_info(self.screen_width, self.screen_height)
+                return None
         return None
     
     def update(self, message):
