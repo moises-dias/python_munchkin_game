@@ -43,6 +43,10 @@ print('size', sys.getsizeof(cards))
 clients = []
 ids = []
 def threaded_client(conn, player):
+    bytes_message = b''
+    buffersize = 1024
+    footersize = 10 #endmessage
+    # criar variavel footer com endmessage
 
     # pegar o nome na hr de iniciar o jogo, tratar aqui duplicados
     if player == 0:
@@ -63,23 +67,30 @@ def threaded_client(conn, player):
     with ids_lock:
         with conn_lock:
             ids.append(player)
-            conn.send(pickle.dumps({'player_id': player, 'players': ids}))
+            conn.send(pickle.dumps({'player_id': player, 'players': ids}) + bytes(f'endmessage', "utf-8"))
     # with lock aqui
     with conn_lock:
         for c in clients:
             if c == conn:
                 continue
             message = {'message_type': 'players_update', 'message': player}
-            c.sendall(pickle.dumps(message))
+            c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
 
     while True:
         try:
-            data = pickle.loads(conn.recv(2048))
+            # data = pickle.loads(conn.recv(2048))
+            while bytes_message.find(b'endmessage') == -1:
+                data = conn.recv(buffersize)
+                bytes_message += data
+            data = bytes_message[:bytes_message.find(b'endmessage')]
+            data = pickle.loads(data)
+            bytes_message = bytes_message[bytes_message.find(b'endmessage') + footersize:]
+            # return pickle.loads(to_return)
             if data['message_type'] == 'init':
                 # with lock
                 with conn_lock:
                     with cards_lock:
-                        conn.sendall(pickle.dumps(cards))
+                        conn.sendall(pickle.dumps(cards) + bytes(f'endmessage', "utf-8"))
 
             elif data['message_type'] == 'quit':
                 with cards_lock:
@@ -105,7 +116,7 @@ def threaded_client(conn, player):
                         if c == conn:
                             continue
                         message = {'message_type': 'card_update', 'message': data['message']}
-                        c.sendall(pickle.dumps(message))
+                        c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
         except Exception as e:
             print(e)
             break
@@ -118,7 +129,7 @@ def threaded_client(conn, player):
         clients.remove(conn)
         for c in clients:
             message = {'message_type': 'player_disconnected', 'message': player}
-            c.sendall(pickle.dumps(message))
+            c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
         
     conn.close()
 
