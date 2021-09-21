@@ -136,7 +136,7 @@ class Cards:
     
     def release(self, pos, rect_equipments, rect_table, rect_hand):
         for card in self.cards:
-            if card.get_draging():
+            if card.interact and card.get_draging():
                 card.release(pos, rect_equipments, rect_table, rect_hand)
                 return card.get_info(self.screen_width, self.screen_height)
         return None
@@ -238,7 +238,7 @@ class Cards:
             else:
                 card.to_draw = False
             
-            if card.to_draw and not (card.area == 'equipments' and card.p_id != player_id):
+            if card.to_draw and not (card.area == 'equipments' and card.p_id != player_id) and not(card.draging and card.p_id != player_id):
                     card.interact = True
             else:
                 card.interact = False
