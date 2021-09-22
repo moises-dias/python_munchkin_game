@@ -49,6 +49,9 @@ def listen(network):
                 players.append(message['message'])
                 # players_class.update_players(players)
                 caller(players_class, 'update_players', [players], players_class_lock)
+            elif message['message_type'] == 'self_disconnected':
+                break
+    print('listen ended')
 
 def play(network):
     global cards_class
@@ -64,8 +67,8 @@ def play(network):
     DEFAULT_HEIGHT = 317
     DEFAULT_SCALE_X = 46
     DEFAULT_SCALE_Y = 74
-    DEFAULT_FIELD_FONT_SIZE = 20
-    DEFAULT_CARD_FONT_SIZE = 20
+    DEFAULT_FIELD_FONT_SIZE = 11
+    DEFAULT_CARD_FONT_SIZE = 11
 
     FPS = 30
 
@@ -181,3 +184,5 @@ def play(network):
         clock.tick(FPS)
 
     pygame.quit()
+
+    print('play ended')

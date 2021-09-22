@@ -127,6 +127,8 @@ def threaded_client(conn, player):
         ids.remove(player)
     with conn_lock: #lock precisa do global?
         clients.remove(conn)
+        message = {'message_type': 'self_disconnected'}
+        conn.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
         for c in clients:
             message = {'message_type': 'player_disconnected', 'message': player}
             c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
