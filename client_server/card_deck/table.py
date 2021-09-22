@@ -1,4 +1,6 @@
 from card_deck.field import Field
+import random
+import pygame
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -21,8 +23,11 @@ class Table:
         }
         self.player_id = player_id
         self.last_id = player_id
-
         self.fields['equipments'].set_name(f"{player_id}'s equips")
+
+        self.font = pygame.font.Font("client_server/card_deck/fonts/comicsans.ttf", font_size*6)
+        self.dice_count = 0
+        self.dice_result = '1'
     
     def get_rect(self, field_name):
         return self.fields[field_name].get_rect()
@@ -37,6 +42,23 @@ class Table:
     
     def get_collidepoint(self, field, pos):
         return self.fields[field].rect.collidepoint(pos)
+    
+    def dice_roll(self, dice_result):
+        self.dice_count = 60
+        if dice_result:
+            self.dice_result = dice_result
+        else:
+            self.dice_result = str(random.randint(1, 6))
+        return self.dice_result
+
+
+    def draw_dice_number(self, win):
+        if self.dice_count > 0:
+            self.dice_count -= 1
+            text_to_draw = self.font.render(str(random.randint(1, 6)), 1, (0, 0, 0))
+        else:
+            text_to_draw = self.font.render(self.dice_result, 1, (0, 0, 0))
+        win.blit(text_to_draw, (1.075 * self.fields['logs'].x, 0.97 * self.fields['logs'].y))
 
     def update_equips_text(self, player_selected, player_hover):
         if player_selected != -1:
