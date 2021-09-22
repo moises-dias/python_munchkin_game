@@ -30,6 +30,9 @@ class Card:
         self.to_draw = False
         self.interact = False
         
+    def reset(self, t_pos, d_pos):
+        # colocar aqui tudo o que precisa setar pra resetar a carta
+        pass
 
     def draw(self, win):
         win.blit(self.image, (self.x, self.y))
