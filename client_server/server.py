@@ -141,6 +141,14 @@ def threaded_client(conn):
                             continue
                         message = {'message_type': 'reset_game', 'message': data['message']}
                         c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
+            
+            elif data['message_type'] == 'dice_roll':
+                with conn_lock:
+                    for c in clients:
+                        if c == conn:
+                            continue
+                        message = {'message_type': 'dice_roll', 'message': data['message']}
+                        c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
 
             else:
                 if data['message_type'] == 'card_update':
