@@ -49,6 +49,9 @@ def listen(network):
                 players.append(message['message'])
                 # players_class.update_players(players)
                 caller(players_class, 'update_players', [players], players_class_lock)
+            elif message['message_type'] == 'reset_game':
+                print('calling reset on listen function')
+                caller(cards_class, 'reset', [], cards_class_lock)
             elif message['message_type'] == 'self_disconnected':
                 break
     print('listen ended')
@@ -71,6 +74,9 @@ def play(network):
     DEFAULT_CARD_FONT_SIZE = 11
 
     FPS = 30
+
+    typed_word = ''
+    reset_word = 'reset12345'
 
     player_id = network.get_player_id()
     players = network.get_player_list()
@@ -158,6 +164,14 @@ def play(network):
                 if event.key == pygame.K_d and not pygame.mouse.get_pressed()[0]:
                     # action = cards_class.discard(pygame.mouse.get_pos())
                     action = caller(cards_class, 'discard', [pygame.mouse.get_pos()], cards_class_lock)
+                # print(event.unicode, event.unicode.isalnum())
+                if event.unicode.isalnum():
+                    typed_word = (typed_word + event.unicode)[-10:]
+                    if typed_word == reset_word:
+                        print("RESETAR")
+                        network.send({'message_type': 'reset_game', 'message': player_id})
+                        caller(cards_class, 'reset', [], cards_class_lock)
+                # print(typed_word)
 
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_v:

@@ -31,8 +31,20 @@ class Card:
         self.interact = False
         
     def reset(self, t_pos, d_pos):
-        # colocar aqui tudo o que precisa setar pra resetar a carta
-        pass
+        if self.type == 'treasure':
+            self.x = self.rect.x = t_pos[0]
+            self.y = self.rect.y = t_pos[1]
+        if self.type == 'door':
+            self.x = self.rect.x = d_pos[0]
+            self.y = self.rect.y = d_pos[1]
+        self.draging = False
+        self.order = 0
+        self.area = 'deck'
+        self.face = False
+        self.p_id = -1
+        self.discarded = False
+        self.to_draw = True
+        self.interact = True
 
     def draw(self, win):
         win.blit(self.image, (self.x, self.y))

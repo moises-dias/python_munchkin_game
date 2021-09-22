@@ -22,6 +22,8 @@ class Cards:
         self.expanded_card_id = -1
         self.c_w = c_w
         self.c_h = c_h
+        self.t_pos = (treasure_rect.x + 0.01*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
+        self.d_pos = (treasure_rect.x + 0.26*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
         self.t_discard_pos = (treasure_rect.x + 0.51*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
         self.d_discard_pos = (treasure_rect.x + 0.76*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
 
@@ -123,6 +125,10 @@ class Cards:
 
     def get_cards(self):
         return self.cards
+
+    def reset(self):
+        for card in self.cards:
+            card.reset(self.t_pos, self.d_pos)
     
     def click(self, pos, player_id):
         for card in reversed(self.cards):  

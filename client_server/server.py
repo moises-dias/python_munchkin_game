@@ -15,7 +15,7 @@ try:
 except socket.error as e:
     str(e)
 
-s.listen(6)
+s.listen(3)
 print("Waiting for a connection, Server Started")
 
 # pesquisar threading lock
@@ -43,6 +43,7 @@ print('size', sys.getsizeof(cards))
 clients = []
 ids = []
 def threaded_client(conn):
+    global cards
     bytes_message = b''
     buffersize = 1024
     footersize = 10 #endmessage
@@ -117,6 +118,29 @@ def threaded_client(conn):
                             card['area'] = 'deck'
                             card['discarded'] = True
                 break
+            
+            elif data['message_type'] == 'reset_game':
+                with cards_lock:
+                    # criar um metodo pra fazer isso tanto no init quanto aqui no reset
+                    for i in range(280):
+                        cards[i] = {
+                                'x': 0.404,
+                                'y': 0.7575,
+                                'p_id': -1,
+                                'draging': False,
+                                'order': 0,
+                                'face': False,
+                                'area': 'deck',
+                                'discarded': False
+                        }
+                        if i >= 140:
+                            cards[i]['x'] = 0.504
+                with conn_lock:
+                    for c in clients:
+                        if c == conn:
+                            continue
+                        message = {'message_type': 'reset_game', 'message': data['message']}
+                        c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
 
             else:
                 if data['message_type'] == 'card_update':
