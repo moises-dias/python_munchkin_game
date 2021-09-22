@@ -2,20 +2,21 @@ import socket
 import pickle
 
 class Network:
-    def __init__(self):
+    def __init__(self, player_name, ip):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = "192.168.1.72"
+        self.server = ip
         # self.server = "192.168.1.23"
         self.port = 5555
         self.addr = (self.server, self.port)
         self.bytes_message = b''
         self.buffersize = 1024
         self.footersize = 10 #endmessage
-        self.p = self.connect()
+        self.p = self.connect(player_name)
 
-    def connect(self):
+    def connect(self, player_name):
         try:
             self.client.connect(self.addr)
+            self.send(player_name)
             # return pickle.loads(self.client.recv(2048))
             return self.process()
         except Exception as e:

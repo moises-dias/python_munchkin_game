@@ -42,26 +42,38 @@ print('size', sys.getsizeof(cards))
 
 clients = []
 ids = []
-def threaded_client(conn, player):
+def threaded_client(conn):
     bytes_message = b''
     buffersize = 1024
     footersize = 10 #endmessage
     # criar variavel footer com endmessage
 
     # pegar o nome na hr de iniciar o jogo, tratar aqui duplicados
-    if player == 0:
-        player = 'moises'
-    elif player == 1:
-        player = 'carol'
-    elif player == 2:
-        player = 'zella'
-    elif player == 3:
-        player = 'thiago'
-    elif player == 4:
-        player = 'rafael'
-    elif player == 5:
-        player = 'paulo'
+    # if player == 0:
+    #     player = 'moises'
+    # elif player == 1:
+    #     player = 'carol'
+    # elif player == 2:
+    #     player = 'zella'
+    # elif player == 3:
+    #     player = 'thiago'
+    # elif player == 4:
+    #     player = 'rafael'
+    # elif player == 5:
+    #     player = 'paulo'
 
+    while bytes_message.find(b'endmessage') == -1:
+        data = conn.recv(buffersize)
+        bytes_message += data
+    data = bytes_message[:bytes_message.find(b'endmessage')]
+    player = pickle.loads(data)
+    bytes_message = bytes_message[bytes_message.find(b'endmessage') + footersize:]
+    
+    if player in ids:
+        count = 1
+        while(player + str(count)) in ids:
+            count += 1
+        player = player + str(count)
 
     # mandar um id ou nome do cliente aqui?
     with ids_lock:
@@ -135,11 +147,9 @@ def threaded_client(conn, player):
         
     conn.close()
 
-currentPlayer = 0 # aqui vai ser o nome do usuario iniciando o programa
 while True:
     conn, addr = s.accept()
     print("Connected to:", addr)
     with conn_lock:
         clients.append(conn)
-    start_new_thread(threaded_client, (conn, currentPlayer))
-    currentPlayer += 1
+    start_new_thread(threaded_client, (conn,))
