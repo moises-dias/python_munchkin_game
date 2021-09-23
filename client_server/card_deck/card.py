@@ -79,7 +79,7 @@ class Card:
     def reveal(self, pos):
         if self.rect.collidepoint(pos) and self.order > 0:
             self.face = not self.face
-            print(self.face)
+            # print(self.face)
             return True
         return False
 

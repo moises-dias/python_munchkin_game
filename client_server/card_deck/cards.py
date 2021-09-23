@@ -225,9 +225,9 @@ class Cards:
         #transformar cards num dicionario, vai facilitar aqui
         for card in self.cards:
             if card.id == message['id']:
-                print(message['data']['draging'], card.draging)
-                if not message['data']['draging'] and card.draging:
-                    print("someone else released a card")
+                # print(message['data']['draging'], card.draging)
+                # if not message['data']['draging'] and card.draging:
+                #     print("someone else released a card")
 
                 card.set_info(message['data'], self.screen_width, self.screen_height)
 

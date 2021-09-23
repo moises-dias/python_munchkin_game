@@ -1,8 +1,8 @@
 from card_deck.field import Field
 
-SELECTED_COLOR = (255, 255, 255)
-HOVERED_COLOR = (192, 192, 192)
-DEFAULT_COLOR = (128, 128, 128)
+SELECTED_COLOR = (151, 173, 151)
+HOVERED_COLOR = (120, 139, 120)
+DEFAULT_COLOR = (100, 112, 100)
 
 class Players:
     def __init__(self, player_ids, players_w, players_h, font_size):

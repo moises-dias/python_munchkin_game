@@ -53,10 +53,10 @@ def listen(network):
                 # players_class.update_players(players)
                 caller(players_class, 'update_players', [players], players_class_lock)
             elif message['message_type'] == 'reset_game':
-                print('calling reset on listen function')
+                # print('calling reset on listen function')
                 caller(cards_class, 'reset', [], cards_class_lock)
             elif message['message_type'] == 'dice_roll':
-                print('other player rolled dice')
+                # print('other player rolled dice')
                 caller(table_class, 'dice_roll', [message['message']], table_class_lock)
             elif message['message_type'] == 'self_disconnected':
                 break
@@ -96,10 +96,10 @@ def play(network):
     pygame.display.set_caption("munchkin")
     clock = pygame.time.Clock()
 
-    # user32 = windll.user32
-    # ShowWindow = user32.ShowWindow
-    # wm_info = pygame.display.get_wm_info()['window']
-    # ShowWindow(wm_info, 3)
+    user32 = windll.user32
+    ShowWindow = user32.ShowWindow
+    wm_info = pygame.display.get_wm_info()['window']
+    ShowWindow(wm_info, 3)
 
     SCREEN_WIDTH, SCREEN_HEIGHT = pygame.display.get_surface().get_size()
 
@@ -140,7 +140,7 @@ def play(network):
                         player_selected = caller(players_class, 'focused', [pygame.mouse.get_pos(), 'select'], players_class_lock)
                     # action = cards_class.click(event.pos, player_id)
                     if caller(table_class, 'get_collidepoint', ['logs', event.pos], table_class_lock):
-                        print('dice clicked')
+                        # print('dice clicked')
                         dice_result = caller(table_class, 'dice_roll', [None], table_class_lock)
                         network.send({'message_type': 'dice_roll', 'message': dice_result})
                     action = caller(cards_class, 'click', [event.pos, player_id], cards_class_lock)
@@ -179,7 +179,7 @@ def play(network):
                 if event.unicode.isalnum():
                     typed_word = (typed_word + event.unicode)[-10:]
                     if typed_word == reset_word:
-                        print("RESETAR")
+                        # print("RESETAR")
                         network.send({'message_type': 'reset_game', 'message': player_id})
                         caller(cards_class, 'reset', [], cards_class_lock)
                 # print(typed_word)

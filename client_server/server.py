@@ -39,7 +39,7 @@ for i in range(280):
     if i >= 140:
         cards[i]['x'] = 0.504
 
-print('size', sys.getsizeof(cards))
+# print('size', sys.getsizeof(cards))
 
 clients = []
 ids = []
