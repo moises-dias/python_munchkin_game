@@ -5,15 +5,15 @@ import random
 import json
 
 images = {
-    'treasure1': {'image': pygame.image.load("card_deck/images/treasure1.jpeg"), 'w': 245, 'h': 351, 'type': 'treasure'},
-    'treasure2': {'image': pygame.image.load("card_deck/images/treasure2.jpeg"), 'w': 500, 'h': 809, 'type': 'treasure'},
-    'door1': {'image': pygame.image.load("card_deck/images/door1.jpg"), 'w': 378, 'h': 585, 'type': 'door'},
-    'door2': {'image': pygame.image.load("card_deck/images/door2.jpeg"), 'w': 245, 'h': 351, 'type': 'door'},
-    'back': {'image': pygame.image.load("card_deck/images/back.jpg"), 'w': 379, 'h': 584, 'type': 'back'}
+    'treasure1': {'image': pygame.image.load("client_server/card_deck/images/treasure1.jpeg"), 'w': 245, 'h': 351, 'type': 'treasure'},
+    'treasure2': {'image': pygame.image.load("client_server/card_deck/images/treasure2.jpeg"), 'w': 500, 'h': 809, 'type': 'treasure'},
+    'door1': {'image': pygame.image.load("client_server/card_deck/images/door1.jpg"), 'w': 378, 'h': 585, 'type': 'door'},
+    'door2': {'image': pygame.image.load("client_server/card_deck/images/door2.jpeg"), 'w': 245, 'h': 351, 'type': 'door'},
+    'back': {'image': pygame.image.load("client_server/card_deck/images/back.jpg"), 'w': 379, 'h': 584, 'type': 'back'}
 }
 
 class Cards:
-    def __init__(self, screen_width, screen_height, cards_info, c_w, c_h, treasure_rect):
+    def __init__(self, screen_width, screen_height, cards_info, c_w, c_h, treasure_rect, font_size):
         self.max_card_order = 0
         self.cards = []
         self.back_cards = {'treasure': DefaultCard(pygame.transform.smoothscale(images['back']['image'].subsurface((0, 0, images['back']['w'], images['back']['h'])), (c_w, c_h)),  0,  0), 
@@ -22,13 +22,16 @@ class Cards:
         self.expanded_card_id = -1
         self.c_w = c_w
         self.c_h = c_h
+        self.t_pos = (treasure_rect.x + 0.01*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
+        self.d_pos = (treasure_rect.x + 0.26*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
         self.t_discard_pos = (treasure_rect.x + 0.51*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
         self.d_discard_pos = (treasure_rect.x + 0.76*treasure_rect.w, treasure_rect.y + 0.03*treasure_rect.h)
 
         self.screen_width = screen_width
         self.screen_height = screen_height
 
-        self.font = pygame.font.SysFont("comicsans", 40)
+        # self.font = pygame.font.SysFont("comicsans", font_size)
+        self.font = pygame.font.Font("client_server/card_deck/fonts/comicsans.ttf", font_size)
 
         # preencher o json card_names
         # with open('card_deck/card_names.json') as test:
@@ -65,80 +68,111 @@ class Cards:
 
         door_discard_list = []
         treasure_discard_list = []
-
+        
+        counts = {'deck': {'treasure': 0, 'door': 0}, 'discard': {'treasure': 0, 'door': 0}}
         for card in self.cards:
+            # nesse for pegar os ultimos descartados e pegar a contagem dos decks e descarte
+            if card.order == 0:
+                counts['deck'][card.type] += 1
+            elif card.discarded:
+                counts['discard'][card.type] += 1
+
             if card.discarded:
                 if card.type == 'treasure':
                     treasure_discard_list.append(card)
                 else:
                     door_discard_list.append(card)
+
         for card in treasure_discard_list[-2:]:
             card.draw(win)
+        text = self.font.render(str(counts['discard']['treasure']), 1, ((0, 0, 0)))
+        win.blit(text, (self.t_discard_pos[0], self.t_discard_pos[1]))
+
         for card in door_discard_list[-2:]:
             card.draw(win)
+        text = self.font.render(str(counts['discard']['door']), 1, ((0, 0, 0)))
+        win.blit(text, (self.d_discard_pos[0], self.d_discard_pos[1]))
 
         for card in self.cards:
-            if card.get_order() > 0 and not card.discarded and card.to_draw:
-                if card.get_face():
-                    card.draw(win)
-                else:
-                    self.back_cards[card.get_type()].draw_at(win, (card.x, card.y))
-                if card.draging:
-                    text = self.font.render(str(card.p_id), 1, (255,255,255))
-                    win.blit(text, (card.x, card.y))
+            #inverter a ordem para desenhar os tesouros primeiro e colocar a contagem nos mesmos
+            if not card.discarded:
+                if card.order == 0:
+                    if t_draw < 2 and card.get_type() == 'treasure':
+                        self.back_cards['treasure'].draw_at(win, (card.x, card.y))
+                        t_draw = t_draw + 1
+                        if t_draw == 2:
+                            text = self.font.render(str(counts['deck']['treasure']), 1, ((0, 0, 0)))
+                            win.blit(text, (card.x, card.y))
 
-            elif t_draw < 2 and card.get_type() == 'treasure' and not card.discarded:
-                self.back_cards['treasure'].draw_at(win, (card.x, card.y))
-                t_draw = t_draw + 1
+                    elif d_draw < 2 and card.get_type() == 'door':
+                        self.back_cards['door'].draw_at(win, (card.x, card.y))
+                        d_draw = d_draw + 1
+                        if d_draw == 2:
+                            text = self.font.render(str(counts['deck']['door']), 1, ((0, 0, 0)))
+                            win.blit(text, (card.x, card.y))
 
-            elif d_draw < 2 and card.get_type() == 'door' and not card.discarded:
-                self.back_cards['door'].draw_at(win, (card.x, card.y))
-                d_draw = d_draw + 1
+                elif card.to_draw:
+                    if card.get_face():
+                        card.draw(win)
+                    else:
+                        self.back_cards[card.get_type()].draw_at(win, (card.x, card.y))
+                    if card.draging:
+                        text = self.font.render(str(card.p_id), 1, ((0, 0, 0)))
+                        win.blit(text, (card.x, card.y))
+
         if self.expanded_card:
             self.expanded_card.draw(win)
 
     def get_cards(self):
         return self.cards
+
+    def reset(self):
+        for card in self.cards:
+            card.reset(self.t_pos, self.d_pos)
     
     def click(self, pos, player_id):
-        for card in reversed(self.cards):     
-            if not card.to_draw or not card.interact:
-                continue
-            if card.click(pos):
-                card.p_id = player_id
-                self.max_card_order = self.max_card_order + 1
-                card.set_order(self.max_card_order)
-                return card.get_info(self.screen_width, self.screen_height)
+        for card in reversed(self.cards):  
+            if card.focused(pos) and card.to_draw:   
+                if not card.interact:
+                    return None
+                if card.click(pos):
+                    card.p_id = player_id
+                    self.max_card_order = self.max_card_order + 1
+                    card.set_order(self.max_card_order)
+                    return card.get_info(self.screen_width, self.screen_height)
+                return None
         return None
     
     def release(self, pos, rect_equipments, rect_table, rect_hand):
-        for card in self.cards:
-            if card.get_draging():
+        for card in reversed(self.cards):
+            if card.interact and card.get_draging():
                 card.release(pos, rect_equipments, rect_table, rect_hand)
                 return card.get_info(self.screen_width, self.screen_height)
         return None
     
-    def move(self, pos, rect_screen, rects):
+    def move(self, pos, rect_screen, rects, player_id):
         for card in self.cards:
-            if card.move(pos, rect_screen):
-                for rect_name, rect in rects.items():
-                    if rect_name == 'screen':
-                        continue
-                    if rect.get_rect().collidepoint(pos):
-                        card.area = rect_name
-                        break
-                return card.get_info(self.screen_width, self.screen_height)
+            if card.p_id == player_id:
+                if card.move(pos, rect_screen):
+                    for rect_name, rect in rects.items():
+                        if rect_name == 'screen':
+                            continue
+                        if rect.get_rect().collidepoint(pos):
+                            card.area = rect_name
+                            break
+                    return card.get_info(self.screen_width, self.screen_height)
         return None
 
     def reveal(self, pos):
         for card in reversed(self.cards):
-            if card.discarded or not card.to_draw or not card.interact:
-                continue
-            if card.focused(pos):
+            if card.to_draw and card.focused(pos):
+                if card.discarded or not card.interact:
+                    return None
                 if card.reveal(pos):
                     self.max_card_order = self.max_card_order + 1
                     card.set_order(self.max_card_order)
-                return card.get_info(self.screen_width, self.screen_height)
+                    return card.get_info(self.screen_width, self.screen_height)
+                return None
         return None
 
     def expand_card(self, pos):
@@ -177,18 +211,24 @@ class Cards:
 
     def discard(self, pos):
         for card in reversed(self.cards):
-            if card.get_order() > 0 and not card.discarded and card.to_draw and card.interact:
-                # retornar um false se tiver hoverando e não puder descartar, n tem pq checar mais 
-                if card.try_discard(pos, self.t_discard_pos, self.d_discard_pos):
-                    self.max_card_order = self.max_card_order + 1
-                    card.set_order(self.max_card_order)
-                    return card.get_info(self.screen_width, self.screen_height)
+            if card.focused(pos) and card.to_draw:
+                if card.get_order() > 0 and not card.discarded and card.interact:
+                    # retornar um false se tiver hoverando e não puder descartar, n tem pq checar mais 
+                    if card.try_discard(pos, self.t_discard_pos, self.d_discard_pos):
+                        self.max_card_order = self.max_card_order + 1
+                        card.set_order(self.max_card_order)
+                        return card.get_info(self.screen_width, self.screen_height)
+                return None
         return None
     
     def update(self, message):
         #transformar cards num dicionario, vai facilitar aqui
         for card in self.cards:
             if card.id == message['id']:
+                # print(message['data']['draging'], card.draging)
+                # if not message['data']['draging'] and card.draging:
+                #     print("someone else released a card")
+
                 card.set_info(message['data'], self.screen_width, self.screen_height)
 
                 if message['data']['order'] > self.max_card_order:
@@ -210,11 +250,19 @@ class Cards:
             else:
                 card.to_draw = False
             
-            if card.to_draw and not (card.area == 'equipments' and card.p_id != player_id):
+            if card.to_draw and not (card.area == 'equipments' and card.p_id != player_id) and not(card.draging and card.p_id != player_id):
                     card.interact = True
             else:
                 card.interact = False
-            
+    
+    def get_quantities(self):
+        quantities = {}
+        for card in self.cards:
+            if card.area in ['hand', 'equipments']:
+                if not card.p_id in quantities:
+                    quantities[card.p_id] = {'hand': 0, 'equipments': 0}
+                quantities[card.p_id][card.area] += 1
+        return quantities
 
 def get_id_to_draw(player_selected, player_hover, player_id):
     if not player_selected == -1:
