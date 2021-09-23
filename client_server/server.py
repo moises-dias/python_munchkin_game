@@ -3,6 +3,7 @@ from _thread import *
 import pickle
 import threading
 import sys
+import time
 
 server = "192.168.1.72"
 # server = "192.168.1.23"
@@ -15,7 +16,7 @@ try:
 except socket.error as e:
     str(e)
 
-s.listen(3)
+s.listen(5)
 print("Waiting for a connection, Server Started")
 
 # pesquisar threading lock
@@ -180,6 +181,10 @@ def threaded_client(conn):
     conn.close()
 
 while True:
+    while len(clients) > 9:
+        # print(len(clients))
+        time.sleep(3)
+    print('client size: ', len(clients))
     conn, addr = s.accept()
     print("Connected to:", addr)
     with conn_lock:
