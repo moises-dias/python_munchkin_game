@@ -23,6 +23,7 @@ print("Waiting for a connection, Server Started")
 conn_lock = threading.Lock()
 ids_lock = threading.Lock()
 cards_lock = threading.Lock()
+level_lock = threading.Lock()
 
 cards = {}
 
@@ -83,6 +84,7 @@ init_cards(cards)
 
 clients = []
 ids = []
+player_levels = {}
 def threaded_client(conn):
     global cards
     bytes_message = b''
@@ -117,16 +119,20 @@ def threaded_client(conn):
     with ids_lock:
         with conn_lock:
             ids.append(player)
-            try:
-                conn.send(pickle.dumps({'player_id': player, 'players': ids}) + bytes(f'endmessage', "utf-8"))
-            except Exception as e:
-                print('SERVER 3', e)
+            with level_lock:
+                if not player in player_levels:
+                    player_levels[player] = '1'
+                try:
+                    conn.send(pickle.dumps({'player_id': player, 'players': ids, 'levels': player_levels}) + bytes(f'endmessage', "utf-8"))
+                except Exception as e:
+                    print('SERVER 3', e)
 
     with conn_lock:
         for c in clients:
             if c == conn:
                 continue
-            message = {'message_type': 'players_update', 'message': player} # aqui devolver a carta pro player nos clientes
+            with level_lock:
+                message = {'message_type': 'players_update', 'message': {'player': player, 'levels': player_levels}} # aqui devolver a carta pro player nos clientes
             try:
                 c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
             except Exception as e:
@@ -175,6 +181,19 @@ def threaded_client(conn):
                 with cards_lock:
                     discard_player_cards(player, cards)
                 break
+            
+            elif data['message_type'] == 'level_update':
+                with conn_lock:
+                    with level_lock:
+                        player_levels[data['message']['player']] = data['message']['level']
+                        for c in clients:
+                            if c == conn:
+                                continue
+                            message = {'message_type': 'level_update', 'message': {'player': data['message']['player'], 'level': data['message']['level']}}
+                            try:
+                                c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
+                            except Exception as e:
+                                print('SERVER 6.1', e)
             
             elif data['message_type'] == 'reset_game':
                 with cards_lock:

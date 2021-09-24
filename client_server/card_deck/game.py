@@ -49,10 +49,10 @@ def listen(network):
                 # players_class.delete_player(players, message['message'])
                 caller(players_class, 'delete_player', [players, message['message']], players_class_lock)
             elif message['message_type'] == 'players_update':
-                players.append(message['message'])
+                players.append(message['message']['player'])
                 # players_class.update_players(players)
-                caller(players_class, 'update_players', [players], players_class_lock)
-                caller(cards_class, 'set_player_cards', [message['message']], cards_class_lock)
+                caller(players_class, 'update_players', [players, message['message']['levels']], players_class_lock)
+                caller(cards_class, 'set_player_cards', [message['message']['player']], cards_class_lock)
             elif message['message_type'] == 'reset_game':
                 # print('calling reset on listen function')
                 caller(cards_class, 'reset', [], cards_class_lock)
@@ -61,6 +61,8 @@ def listen(network):
             elif message['message_type'] == 'dice_roll':
                 # print('other player rolled dice')
                 caller(table_class, 'dice_roll', [message['message']], table_class_lock)
+            elif message['message_type'] == 'level_update':
+                caller(players_class, 'set_level', [message['message']['player'], message['message']['level']], players_class_lock)
             elif message['message_type'] == 'self_disconnected':
                 break
     print('listen ended')
@@ -91,6 +93,7 @@ def play(network):
 
     player_id = network.get_player_id()
     players = network.get_player_list()
+    player_levels = network.get_player_levels()
 
     player_selected = -1
     player_hover = -1
@@ -124,7 +127,7 @@ def play(network):
     cards_class = Cards(SCREEN_WIDTH, SCREEN_HEIGHT, cards_info, scale_x, scale_y, table_class.get_rect('deck'), CARD_FONT_SIZE)
     cards_class.set_draw_interact(player_selected, player_hover, player_id) # chamar la dentro do init?
 
-    players_class = Players(players, w_players, h_players, FIELD_FONT_SIZE)
+    players_class = Players(players, player_levels, w_players, h_players, FIELD_FONT_SIZE)
     
     running = True
 
@@ -189,6 +192,9 @@ def play(network):
                     elif typed_word == reset_discarded_word:
                         network.send({'message_type': 'reset_discarded', 'message': player_id})
                         caller(cards_class, 'reset_discarded', [], cards_class_lock)
+                if event.unicode.isnumeric() and caller(table_class, 'get_collidepoint', ['players', pygame.mouse.get_pos()], table_class_lock):
+                    network.send({'message_type': 'level_update', 'message': {'player': player_id, 'level': event.unicode}})
+                    caller(players_class, 'set_level', [player_id, event.unicode], players_class_lock)
                 # print(typed_word)
 
             elif event.type == pygame.KEYUP:

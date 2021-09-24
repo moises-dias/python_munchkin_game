@@ -59,6 +59,9 @@ class Network:
     def get_player_list(self):
         return self.p['players']
     
+    def get_player_levels(self):
+        return self.p['levels']
+    
     def process(self):    
         while self.bytes_message.find(b'endmessage') == -1:
             try:
