@@ -40,31 +40,33 @@ def listen(network):
         message = network.receive()
         if message:
             if message['message_type'] == 'card_update':
-                # cards_class.update(message['message'])
                 caller(cards_class, 'update', [message['message']], cards_class_lock)
+
             elif message['message_type'] == 'player_disconnected':
-                # cards_class.discard_player(message['message'])
                 caller(cards_class, 'discard_player', [message['message']], cards_class_lock)
                 players.remove(message['message'])
-                # players_class.delete_player(players, message['message'])
                 caller(players_class, 'delete_player', [players, message['message']], players_class_lock)
+
             elif message['message_type'] == 'players_update':
                 players.append(message['message']['player'])
-                # players_class.update_players(players)
                 caller(players_class, 'update_players', [players, message['message']['levels']], players_class_lock)
                 caller(cards_class, 'set_player_cards', [message['message']['player']], cards_class_lock)
+
             elif message['message_type'] == 'reset_game':
-                # print('calling reset on listen function')
                 caller(cards_class, 'reset', [], cards_class_lock)
+
             elif message['message_type'] == 'reset_discarded':
                 caller(cards_class, 'reset_discarded', [], cards_class_lock)
+
             elif message['message_type'] == 'dice_roll':
-                # print('other player rolled dice')
                 caller(table_class, 'dice_roll', [message['message']], table_class_lock)
+
             elif message['message_type'] == 'level_update':
                 caller(players_class, 'set_level', [message['message']['player'], message['message']['level']], players_class_lock)
+
             elif message['message_type'] == 'self_disconnected':
                 break
+
     print('listen ended')
 
 def play(network):
@@ -133,7 +135,6 @@ def play(network):
 
     while running:
         action = None
-        # cards_class.set_draw_interact(player_selected, player_hover, player_id)
         caller(cards_class, 'set_draw_interact', [player_selected, player_hover, player_id], cards_class_lock)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -141,52 +142,38 @@ def play(network):
                 network.send({'message_type': 'quit'})
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:   
-                    # if table_class.fields['players'].rect.collidepoint(event.pos):
                     if caller(table_class, 'get_collidepoint', ['players', event.pos], table_class_lock):
-                        # player_selected = players_class.focused(pygame.mouse.get_pos(), 'select')
                         player_selected = caller(players_class, 'focused', [pygame.mouse.get_pos(), 'select'], players_class_lock)
-                    # action = cards_class.click(event.pos, player_id)
                     if caller(table_class, 'get_collidepoint', ['logs', event.pos], table_class_lock):
-                        # print('dice clicked')
                         dice_result = caller(table_class, 'dice_roll', [None], table_class_lock)
                         network.send({'message_type': 'dice_roll', 'message': dice_result})
                     action = caller(cards_class, 'click', [event.pos, player_id], cards_class_lock)
 
                 if event.button == 3 and not pygame.mouse.get_pressed()[0]:    
-                    # action = cards_class.reveal(event.pos)
                     action = caller(cards_class, 'reveal', [event.pos], cards_class_lock)
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:  
-                    # action = cards_class.release(event.pos, table_class.get_rect('equipments'), table_class.get_rect('table'), table_class.get_rect('hand'))
                     action = caller(cards_class, 'release', [event.pos, caller(table_class, 'get_rect', ['equipments'], table_class_lock), caller(table_class, 'get_rect', ['table'], table_class_lock), caller(table_class, 'get_rect', ['hand'], table_class_lock)], cards_class_lock)
 
             elif event.type == pygame.MOUSEMOTION:
                 if caller(table_class, 'get_collidepoint', ['players', event.pos], table_class_lock):
-                    # player_hover = players_class.focused(pygame.mouse.get_pos(), 'hover')
                     player_hover = caller(players_class, 'focused', [pygame.mouse.get_pos(), 'hover'], players_class_lock)
-                    # cards_class.set_draw_interact(player_selected, player_hover, player_id)
                     caller(cards_class, 'set_draw_interact', [player_selected, player_hover, player_id], cards_class_lock)
                 elif not caller(table_class, 'get_collidepoint', ['equipments', event.pos], table_class_lock):
                     if player_hover != -1 or player_selected != -1:
                         player_hover = -1
                         player_selected = -1
-                        # players_class.clear()
                         caller(players_class, 'clear', [], players_class_lock)
-                        # cards_class.set_draw_interact(player_selected, player_hover, player_id)
                         caller(cards_class, 'set_draw_interact', [player_selected, player_hover, player_id], cards_class_lock)
-                # action = cards_class.move(event.pos, table_class.get_rect('screen'), table_class.get_rects())
                 action = caller(cards_class, 'move', [event.pos, caller(table_class, 'get_rect', ['screen'], table_class_lock), caller(table_class, 'get_rects', [], table_class_lock), player_id], cards_class_lock)
             
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_d and not pygame.mouse.get_pressed()[0]:
-                    # action = cards_class.discard(pygame.mouse.get_pos())
                     action = caller(cards_class, 'discard', [pygame.mouse.get_pos()], cards_class_lock)
-                # print(event.unicode, event.unicode.isalnum())
                 if event.unicode.isalnum():
                     typed_word = (typed_word + event.unicode)[-10:]
                     if typed_word == reset_word:
-                        # print("RESETAR")
                         network.send({'message_type': 'reset_game', 'message': player_id})
                         caller(cards_class, 'reset', [], cards_class_lock)
                     elif typed_word == reset_discarded_word:
@@ -195,27 +182,21 @@ def play(network):
                 if event.unicode.isnumeric() and caller(table_class, 'get_collidepoint', ['players', pygame.mouse.get_pos()], table_class_lock):
                     network.send({'message_type': 'level_update', 'message': {'player': player_id, 'level': event.unicode}})
                     caller(players_class, 'set_level', [player_id, event.unicode], players_class_lock)
-                # print(typed_word)
 
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_v:
-                    # cards_class.cancel_expand()
                     caller(cards_class, 'cancel_expand', [], cards_class_lock)
             if pygame.key.get_pressed()[pygame.K_v]:
-                # cards_class.expand_card(pygame.mouse.get_pos())
                 caller(cards_class, 'expand_card', [pygame.mouse.get_pos()], cards_class_lock)
             if action:
                 network.send({'message_type': 'card_update', 'message': action}) #action no formato {'id': X, 'data': Y} sendo Y igual o dicionario no servidor
 
-        caller(table_class, 'update_equips_text', [player_selected, player_hover], table_class_lock)
+        caller(table_class, 'update_equips_text', [player_selected, player_hover], table_class_lock) # colocar dentro da table, criar um metodo draw com table player e cards?
 
         caller(table_class, 'draw', [screen], table_class_lock)
-        #table_class.draw_dice_number(screen) # chamar de dentro do metodo draw da table class
 
-        # players_class.draw(screen, cards_class.get_quantities())
         caller(players_class, 'draw', [screen, caller(cards_class, 'get_quantities', [], cards_class_lock)], players_class_lock)
 
-        # cards_class.draw(screen)
         caller(cards_class, 'draw', [screen], cards_class_lock)
 
         pygame.display.flip()
