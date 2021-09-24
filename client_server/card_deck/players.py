@@ -19,7 +19,7 @@ class Players:
     
     def update_players(self, player_ids, levels):
         self.levels = levels
-        print(levels)
+        # print(levels)
         self.players = {}
         for i, p_id in enumerate(player_ids):
             start_x = (i % 2) * self.players_w

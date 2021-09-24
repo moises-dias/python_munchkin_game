@@ -182,6 +182,17 @@ def threaded_client(conn):
                     discard_player_cards(player, cards)
                 break
             
+            elif data['message_type'] == 'score_update':
+                with conn_lock:
+                    for c in clients:
+                        if c == conn:
+                            continue
+                        message = {'message_type': 'score_update', 'message': data['message']}
+                        try:
+                            c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
+                        except Exception as e:
+                            print('SERVER 6.1', e)
+            
             elif data['message_type'] == 'level_update':
                 with conn_lock:
                     with level_lock:
@@ -193,7 +204,7 @@ def threaded_client(conn):
                             try:
                                 c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
                             except Exception as e:
-                                print('SERVER 6.1', e)
+                                print('SERVER 6.2', e)
             
             elif data['message_type'] == 'reset_game':
                 with cards_lock:

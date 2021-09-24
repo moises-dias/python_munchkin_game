@@ -4,17 +4,20 @@ from ctypes import windll
 from card_deck.cards import Cards
 from card_deck.table import Table
 from card_deck.players import Players
+from card_deck.scores import Scores
 import threading
 
 cards_class = None
 players = None
 players_class = None
 table_class = None
+scores_class = None
 
 cards_class_lock = threading.Lock()
 # players_lock = threading.Lock()
 players_class_lock = threading.Lock()
 table_class_lock = threading.Lock()
+scores_class_lock = threading.Lock()
 
 running = False
 
@@ -32,6 +35,7 @@ def listen(network):
     global cards_class
     global players_class
     global table_class
+    global scores_class
     global players
     global running
     while not running:
@@ -64,6 +68,9 @@ def listen(network):
             elif message['message_type'] == 'level_update':
                 caller(players_class, 'set_level', [message['message']['player'], message['message']['level']], players_class_lock)
 
+            elif message['message_type'] == 'score_update':
+                caller(scores_class, 'set_number', [message['message']['type'], message['message']['value']], scores_class_lock)
+
             elif message['message_type'] == 'self_disconnected':
                 break
 
@@ -74,6 +81,7 @@ def play(network):
     global players
     global players_class
     global table_class
+    global scores_class
     global running
 
     # DEFAULT_WIDTH = 1580
@@ -87,7 +95,7 @@ def play(network):
     DEFAULT_FIELD_FONT_SIZE = 11
     DEFAULT_CARD_FONT_SIZE = 11
 
-    FPS = 30
+    FPS = 20
 
     typed_word = ''
     reset_word = 'reset12345'
@@ -105,10 +113,10 @@ def play(network):
     pygame.display.set_caption("munchkin")
     clock = pygame.time.Clock()
 
-    # user32 = windll.user32
-    # ShowWindow = user32.ShowWindow
-    # wm_info = pygame.display.get_wm_info()['window']
-    # ShowWindow(wm_info, 3)
+    user32 = windll.user32
+    ShowWindow = user32.ShowWindow
+    wm_info = pygame.display.get_wm_info()['window']
+    ShowWindow(wm_info, 3)
 
     SCREEN_WIDTH, SCREEN_HEIGHT = pygame.display.get_surface().get_size()
 
@@ -130,6 +138,8 @@ def play(network):
     cards_class.set_draw_interact(player_selected, player_hover, player_id) # chamar la dentro do init?
 
     players_class = Players(players, player_levels, w_players, h_players, FIELD_FONT_SIZE)
+
+    scores_class = Scores(x_limits[0], SCREEN_WIDTH, SCREEN_HEIGHT, FIELD_FONT_SIZE)
     
     running = True
 
@@ -182,6 +192,15 @@ def play(network):
                 if event.unicode.isnumeric() and caller(table_class, 'get_collidepoint', ['players', pygame.mouse.get_pos()], table_class_lock):
                     network.send({'message_type': 'level_update', 'message': {'player': player_id, 'level': event.unicode}})
                     caller(players_class, 'set_level', [player_id, event.unicode], players_class_lock)
+                if caller(scores_class, 'collidepoint', [pygame.mouse.get_pos()], scores_class_lock):
+                    score = None
+                    if event.key == pygame.K_BACKSPACE:
+                        score = caller(scores_class, 'backspace', [pygame.mouse.get_pos()], scores_class_lock)
+                    elif event.unicode.isnumeric():
+                        score = caller(scores_class, 'add_number', [pygame.mouse.get_pos(), event.unicode], scores_class_lock)
+                    if score:
+                        network.send({'message_type': 'score_update', 'message': score})
+                        # print('score sent to server')
 
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_v:
@@ -196,6 +215,8 @@ def play(network):
         caller(table_class, 'draw', [screen], table_class_lock)
 
         caller(players_class, 'draw', [screen, caller(cards_class, 'get_quantities', [], cards_class_lock)], players_class_lock)
+
+        caller(scores_class, 'draw', [screen], scores_class_lock)
 
         caller(cards_class, 'draw', [screen], cards_class_lock)
 
