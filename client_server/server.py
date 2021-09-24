@@ -109,7 +109,7 @@ def threaded_client(conn):
     data = bytes_message[:bytes_message.find(b'endmessage')]
     player = pickle.loads(data)
     bytes_message = bytes_message[bytes_message.find(b'endmessage') + footersize:]
-    
+
     if player in ids:
         count = 1
         while(player + str(count)) in ids:
@@ -137,7 +137,7 @@ def threaded_client(conn):
                 c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
             except Exception as e:
                 print('SERVER 4', e)
-    
+
     set_player_cards(player, cards)
 
     while True:
@@ -181,7 +181,7 @@ def threaded_client(conn):
                 with cards_lock:
                     discard_player_cards(player, cards)
                 break
-            
+
             elif data['message_type'] == 'score_update':
                 with conn_lock:
                     for c in clients:
@@ -192,7 +192,7 @@ def threaded_client(conn):
                             c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
                         except Exception as e:
                             print('SERVER 6.1', e)
-            
+
             elif data['message_type'] == 'level_update':
                 with conn_lock:
                     with level_lock:
@@ -205,7 +205,7 @@ def threaded_client(conn):
                                 c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
                             except Exception as e:
                                 print('SERVER 6.2', e)
-            
+
             elif data['message_type'] == 'reset_game':
                 with cards_lock:
                     init_cards(cards)
@@ -218,7 +218,7 @@ def threaded_client(conn):
                             c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
                         except Exception as e:
                             print('SERVER 7', e)
-            
+
             elif data['message_type'] == 'reset_discarded':
                 with cards_lock:
                     reset_discarded_cards(cards)
@@ -231,7 +231,7 @@ def threaded_client(conn):
                             c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
                         except Exception as e:
                             print('SERVER 7.1', e)
-            
+
             elif data['message_type'] == 'dice_roll':
                 with conn_lock:
                     for c in clients:
