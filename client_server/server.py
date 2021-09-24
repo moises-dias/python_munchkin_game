@@ -41,9 +41,25 @@ def init_cards(cards):
         if i >= 140:
             cards[i]['x'] = 0.504
 
+def reset_discarded_cards(cards):
+    for i in range(280):
+        if cards[i]['discarded']:
+            cards[i] = {
+                    'x': 0.404,
+                    'y': 0.7575,
+                    'p_id': -1,
+                    'draging': False,
+                    'order': 0,
+                    'face': False,
+                    'area': 'deck',
+                    'discarded': False
+            }
+            if i >= 140:
+                cards[i]['x'] = 0.504
+
 def discard_player_cards(player, cards):
     for c_id, card in cards.items():
-        if card['p_id'] == player and not card['discarded']:
+        if card['p_id'] == player and not card['discarded'] and card['area'] in ['hand', 'equipments']:
             card['x'] = 0.604
             if c_id >= 140:
                 card['x'] = 0.704
@@ -172,6 +188,19 @@ def threaded_client(conn):
                             c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
                         except Exception as e:
                             print('SERVER 7', e)
+            
+            elif data['message_type'] == 'reset_discarded':
+                with cards_lock:
+                    reset_discarded_cards(cards)
+                with conn_lock:
+                    for c in clients:
+                        if c == conn:
+                            continue
+                        message = {'message_type': 'reset_discarded', 'message': data['message']}
+                        try:
+                            c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
+                        except Exception as e:
+                            print('SERVER 7.1', e)
             
             elif data['message_type'] == 'dice_roll':
                 with conn_lock:

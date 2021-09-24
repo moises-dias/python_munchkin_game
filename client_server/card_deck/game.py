@@ -56,6 +56,8 @@ def listen(network):
             elif message['message_type'] == 'reset_game':
                 # print('calling reset on listen function')
                 caller(cards_class, 'reset', [], cards_class_lock)
+            elif message['message_type'] == 'reset_discarded':
+                caller(cards_class, 'reset_discarded', [], cards_class_lock)
             elif message['message_type'] == 'dice_roll':
                 # print('other player rolled dice')
                 caller(table_class, 'dice_roll', [message['message']], table_class_lock)
@@ -85,6 +87,7 @@ def play(network):
 
     typed_word = ''
     reset_word = 'reset12345'
+    reset_discarded_word = 'reset54321'
 
     player_id = network.get_player_id()
     players = network.get_player_list()
@@ -183,6 +186,9 @@ def play(network):
                         # print("RESETAR")
                         network.send({'message_type': 'reset_game', 'message': player_id})
                         caller(cards_class, 'reset', [], cards_class_lock)
+                    elif typed_word == reset_discarded_word:
+                        network.send({'message_type': 'reset_discarded', 'message': player_id})
+                        caller(cards_class, 'reset_discarded', [], cards_class_lock)
                 # print(typed_word)
 
             elif event.type == pygame.KEYUP:

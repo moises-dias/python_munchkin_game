@@ -115,6 +115,7 @@ class Card:
                 self.x = self.rect.x = d_discard_pos[0]
                 self.y = self.rect.y = d_discard_pos[1]
             # self.order = 0
+            self.p_id = -1
             self.discarded = True
             self.face = True
             self.area = 'deck'

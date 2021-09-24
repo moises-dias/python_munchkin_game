@@ -129,6 +129,11 @@ class Cards:
     def reset(self):
         for card in self.cards:
             card.reset(self.t_pos, self.d_pos)
+
+    def reset_discarded(self):
+        for card in self.cards:
+            if card.discarded:
+                card.reset(self.t_pos, self.d_pos)
     
     def click(self, pos, player_id):
         for card in reversed(self.cards):  
@@ -236,7 +241,7 @@ class Cards:
     
     def discard_player(self, disconnected_player_id):
         for card in self.cards:
-            if card.p_id == disconnected_player_id and not card.discarded:
+            if card.p_id == disconnected_player_id and not card.discarded and card.area in ['hand', 'equipments']:
                 card.discard(self.t_discard_pos, self.d_discard_pos)
 
     def set_player_cards(self, player):
