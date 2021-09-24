@@ -52,6 +52,7 @@ def listen(network):
                 players.append(message['message'])
                 # players_class.update_players(players)
                 caller(players_class, 'update_players', [players], players_class_lock)
+                caller(cards_class, 'set_player_cards', [message['message']], cards_class_lock)
             elif message['message_type'] == 'reset_game':
                 # print('calling reset on listen function')
                 caller(cards_class, 'reset', [], cards_class_lock)
@@ -96,10 +97,10 @@ def play(network):
     pygame.display.set_caption("munchkin")
     clock = pygame.time.Clock()
 
-    user32 = windll.user32
-    ShowWindow = user32.ShowWindow
-    wm_info = pygame.display.get_wm_info()['window']
-    ShowWindow(wm_info, 3)
+    # user32 = windll.user32
+    # ShowWindow = user32.ShowWindow
+    # wm_info = pygame.display.get_wm_info()['window']
+    # ShowWindow(wm_info, 3)
 
     SCREEN_WIDTH, SCREEN_HEIGHT = pygame.display.get_surface().get_size()
 

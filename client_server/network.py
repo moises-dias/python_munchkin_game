@@ -5,7 +5,8 @@ class Network:
     def __init__(self, player_name, ip):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server = ip
-        # self.server = "192.168.1.23"
+        self.server = "192.168.1.72"
+        self.port = 3389
         self.port = 5555
         self.addr = (self.server, self.port)
         self.bytes_message = b''
@@ -20,14 +21,14 @@ class Network:
             # return pickle.loads(self.client.recv(2048))
             return self.process()
         except Exception as e:
-            print(e)
+            print('NETWORK 1', e)
 
     def send(self, message):
         try:
             to_send = pickle.dumps(message) + bytes(f'endmessage', "utf-8")
             self.client.send(to_send)
         except Exception as e:
-            print(e)
+            print('NETWORK 2', e)
 
     def receive(self):
         # data = pickle.loads(self.client.recv(2048))
@@ -36,12 +37,17 @@ class Network:
         if len(self.bytes_message) > 0:
             return self.process()
         else:
-            self.bytes_message = self.client.recv(self.buffersize)
+            try:
+                self.bytes_message = self.client.recv(self.buffersize)
+            except Exception as e:
+                print('NETWORK 3', e)
             return self.process()
 
     def get_all_cards(self):
-        self.client.send(pickle.dumps({'message_type': 'init'}) + bytes(f'endmessage', "utf-8"))
-        # cards_info = pickle.loads(self.client.recv(16384))
+        try:
+            self.client.send(pickle.dumps({'message_type': 'init'}) + bytes(f'endmessage', "utf-8"))
+        except Exception as e:
+            print('NETWORK 4', e)
 
         # antes desses process perdidos limpar a bytes_message ?
         cards_info = self.process()
@@ -55,7 +61,10 @@ class Network:
     
     def process(self):    
         while self.bytes_message.find(b'endmessage') == -1:
-            new_msg = self.client.recv(self.buffersize)
+            try:
+                new_msg = self.client.recv(self.buffersize)
+            except Exception as e:
+                print('NETWORK 5', e)
             self.bytes_message += new_msg
         to_return = self.bytes_message[:self.bytes_message.find(b'endmessage')]
         self.bytes_message = self.bytes_message[self.bytes_message.find(b'endmessage') + self.footersize:]

@@ -239,6 +239,18 @@ class Cards:
             if card.p_id == disconnected_player_id and not card.discarded:
                 card.discard(self.t_discard_pos, self.d_discard_pos)
 
+    def set_player_cards(self, player):
+        for card in self.cards:
+            if card.p_id == player and card.discarded:
+                card.x = card.rect.x = 0.004
+                card.y = card.rect.y = 0.7575
+                card.draging = False
+                card.face = True
+                card.area = 'hand'
+                card.discarded = False
+
+# CRIAR UM METODO Q SE TIVER CARTA SENDO ARRASTADA E PLAYER NAO TIVER CONECTADO SETA DRAGING COMO FALSE
+    
     def set_draw_interact(self, player_selected, player_hover, player_id):
         for card in self.cards:
             if card.area in ['deck', 'table', 'players', 'logs']:
