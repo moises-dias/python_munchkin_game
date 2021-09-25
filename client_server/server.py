@@ -7,8 +7,8 @@ import time
 server = ""
 port = 3389
 
-server = "192.168.1.72"
-port = 5555
+# server = "192.168.1.72"
+# port = 5555
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -60,7 +60,7 @@ def reset_discarded_cards(cards):
 
 def discard_player_cards(player, cards):
     for c_id, card in cards.items():
-        if card['p_id'] == player and not card['discarded'] and card['area'] in ['hand', 'equipments']:
+        if card['p_id'] == player and ((not card['discarded'] and card['area'] in ['hand', 'equipments']) or card['draging']):
             card['x'] = 0.604
             if c_id >= 140:
                 card['x'] = 0.704

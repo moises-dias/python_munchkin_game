@@ -124,10 +124,10 @@ def play(network):
         pygame.display.set_caption("munchkin")
         clock = pygame.time.Clock()
 
-        # user32 = windll.user32
-        # ShowWindow = user32.ShowWindow
-        # wm_info = pygame.display.get_wm_info()['window']
-        # ShowWindow(wm_info, 3)
+        user32 = windll.user32
+        ShowWindow = user32.ShowWindow
+        wm_info = pygame.display.get_wm_info()['window']
+        ShowWindow(wm_info, 3)
 
         SCREEN_WIDTH, SCREEN_HEIGHT = pygame.display.get_surface().get_size()
 

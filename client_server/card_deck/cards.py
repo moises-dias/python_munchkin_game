@@ -241,7 +241,7 @@ class Cards:
     
     def discard_player(self, disconnected_player_id):
         for card in self.cards:
-            if card.p_id == disconnected_player_id and not card.discarded and card.area in ['hand', 'equipments']:
+            if card.p_id == disconnected_player_id and ((not card.discarded and card.area in ['hand', 'equipments']) or card.draging):
                 card.discard(self.t_discard_pos, self.d_discard_pos)
 
     def set_player_cards(self, player):
