@@ -1,17 +1,19 @@
 import socket
 import pickle
+import threading
 
 class Network:
     def __init__(self, player_name, ip):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server = ip
         self.port = 3389
-        # self.server = "192.168.1.72"
-        # self.port = 5555
+        self.server = "192.168.1.72"
+        self.port = 5555
         self.addr = (self.server, self.port)
         self.bytes_message = b''
         self.buffersize = 1024
         self.footersize = 10 #endmessage
+        self.lock = threading.Lock()
         self.p = self.connect(player_name)
 
     def connect(self, player_name):
@@ -26,12 +28,14 @@ class Network:
             raise e
 
     def send(self, message):
-        try:
-            to_send = pickle.dumps(message) + bytes(f'endmessage', "utf-8")
-            self.client.send(to_send)
-        except Exception as e:
-            print('NETWORK 2', e)
-            self.send({'message_type': 'quit'})
+        with self.lock:
+            try:
+                to_send = pickle.dumps(message) + bytes(f'endmessage', "utf-8")
+                self.client.send(to_send)
+            except Exception as e:
+                print('NETWORK 2', e)
+                # self.send({'message_type': 'quit'})
+                raise e
 
     def receive(self):
         # data = pickle.loads(self.client.recv(2048))
@@ -45,6 +49,7 @@ class Network:
             except Exception as e:
                 print('NETWORK 3', e)
                 self.send({'message_type': 'quit'})
+                raise e
             return self.process()
 
     def get_all_cards(self):
@@ -53,6 +58,7 @@ class Network:
         except Exception as e:
             print('NETWORK 4', e)
             self.send({'message_type': 'quit'})
+            raise e
 
         # antes desses process perdidos limpar a bytes_message ?
         cards_info = self.process()
@@ -73,6 +79,8 @@ class Network:
                 new_msg = self.client.recv(self.buffersize)
             except Exception as e:
                 print('NETWORK 5', e)
+                self.send({'message_type': 'quit'})
+                raise e
             self.bytes_message += new_msg
         to_return = self.bytes_message[:self.bytes_message.find(b'endmessage')]
         self.bytes_message = self.bytes_message[self.bytes_message.find(b'endmessage') + self.footersize:]

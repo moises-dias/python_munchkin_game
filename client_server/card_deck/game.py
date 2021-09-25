@@ -72,6 +72,11 @@ def listen(network):
                 elif message['message_type'] == 'score_update':
                     caller(scores_class, 'set_number', [message['message']['type'], message['message']['value']], scores_class_lock)
 
+                elif message['message_type'] == 'heartbeat':
+                    # print('client received heartbeat')
+                    network.send({'message_type': 'heartbeat'})
+                    # print('client sent heartbeat')
+
                 elif message['message_type'] == 'self_disconnected':
                     break
 
@@ -79,6 +84,7 @@ def listen(network):
     except Exception as e:
         print('listen error ', e)
         network.send({'message_type': 'quit'})
+        raise e
 
 def play(network):
     try:
@@ -118,10 +124,10 @@ def play(network):
         pygame.display.set_caption("munchkin")
         clock = pygame.time.Clock()
 
-        user32 = windll.user32
-        ShowWindow = user32.ShowWindow
-        wm_info = pygame.display.get_wm_info()['window']
-        ShowWindow(wm_info, 3)
+        # user32 = windll.user32
+        # ShowWindow = user32.ShowWindow
+        # wm_info = pygame.display.get_wm_info()['window']
+        # ShowWindow(wm_info, 3)
 
         SCREEN_WIDTH, SCREEN_HEIGHT = pygame.display.get_surface().get_size()
 
@@ -235,3 +241,4 @@ def play(network):
     except Exception as e:
         print('play error ', e)
         network.send({'message_type': 'quit'})
+        raise e

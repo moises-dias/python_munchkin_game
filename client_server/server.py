@@ -144,9 +144,16 @@ def threaded_client(conn):
         try:
             while bytes_message.find(b'endmessage') == -1:
                 try:
-                    data = conn.recv(buffersize)
+                    try:
+                        data = conn.recv(buffersize)
+                    except:
+                        # print('server sending heartbeat')
+                        message = {'message_type': 'heartbeat'}
+                        conn.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
+                        data = conn.recv(buffersize)
+                        # print('server receiving heartbeat')
                 except Exception as e:
-                    print('SERVER 5', e)
+                    print('SERVER 5', player, e)
                     with conn_lock:
                         clients.remove(conn)
                         for c in clients:
@@ -243,22 +250,21 @@ def threaded_client(conn):
                         except Exception as e:
                             print('SERVER 8', e)
 
-            else:
-                if data['message_type'] == 'card_update':
+            elif data['message_type'] == 'card_update':
                     with cards_lock:
                         cards[data['message']['id']] = data['message']['data']
-                # o trecho abaixo não tem que estar dentro do if acima? dar um tab nele
-                with conn_lock:
-                    for c in clients:
-                        if c == conn:
-                            continue
-                        message = {'message_type': 'card_update', 'message': data['message']}
-                        try:
-                            c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
-                        except Exception as e:
-                            print('SERVER 9', e)
+                    with conn_lock:
+                        for c in clients:
+                            if c == conn:
+                                continue
+                            message = {'message_type': 'card_update', 'message': data['message']}
+                            try:
+                                c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
+                            except Exception as e:
+                                print('SERVER 9', e)
         except Exception as e:
             print('SERVER 9.1', e)
+            print(data)
             break
 
     print("Lost connection")
@@ -289,6 +295,7 @@ while True:
         time.sleep(3)
     print('client size: ', len(clients))
     conn, addr = s.accept()
+    conn.settimeout(3)
     print("Connected to:", addr)
     with conn_lock:
         clients.append(conn)
