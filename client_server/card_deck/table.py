@@ -51,7 +51,7 @@ class Table:
         return self.fields[field].rect.collidepoint(pos)
     
     def dice_roll(self, dice_result):
-        self.dice_count = 60
+        self.dice_count = 30
         if dice_result:
             self.dice_result = dice_result
         else:
