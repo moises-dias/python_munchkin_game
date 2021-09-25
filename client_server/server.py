@@ -284,7 +284,7 @@ def threaded_client(conn):
                 c.sendall(pickle.dumps(message) + bytes(f'endmessage', "utf-8"))
             except Exception as e:
                 print('SERVER 11', e)
-    try:    
+    try:
         conn.close()
     except Exception as e:
         print('SERVER 12', e)
