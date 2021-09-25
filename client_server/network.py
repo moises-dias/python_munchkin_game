@@ -61,7 +61,10 @@ class Network:
             raise e
 
         # antes desses process perdidos limpar a bytes_message ?
-        cards_info = self.process()
+        cards_info = {'message_type': ''}
+        while 'message_type' in cards_info:
+            print('trying to init cards')
+            cards_info = self.process()
         return cards_info
 
     def get_player_id(self):
