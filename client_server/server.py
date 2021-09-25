@@ -264,7 +264,7 @@ def threaded_client(conn):
     print("Lost connection")
     # passar pra dentro do with lock abaixo
     with ids_lock:
-        ids.remove(player)
+        if player in ids: ids.remove(player)
     with conn_lock: #lock precisa do global?
         clients.remove(conn)
         message = {'message_type': 'self_disconnected'}

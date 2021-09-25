@@ -5,9 +5,9 @@ class Network:
     def __init__(self, player_name, ip):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server = ip
-        self.server = "192.168.1.72"
         self.port = 3389
-        self.port = 5555
+        # self.server = "192.168.1.72"
+        # self.port = 5555
         self.addr = (self.server, self.port)
         self.bytes_message = b''
         self.buffersize = 1024
@@ -22,6 +22,8 @@ class Network:
             return self.process()
         except Exception as e:
             print('NETWORK 1', e)
+            self.send({'message_type': 'quit'})
+            raise e
 
     def send(self, message):
         try:
@@ -29,6 +31,7 @@ class Network:
             self.client.send(to_send)
         except Exception as e:
             print('NETWORK 2', e)
+            self.send({'message_type': 'quit'})
 
     def receive(self):
         # data = pickle.loads(self.client.recv(2048))
@@ -41,6 +44,7 @@ class Network:
                 self.bytes_message = self.client.recv(self.buffersize)
             except Exception as e:
                 print('NETWORK 3', e)
+                self.send({'message_type': 'quit'})
             return self.process()
 
     def get_all_cards(self):
@@ -48,6 +52,7 @@ class Network:
             self.client.send(pickle.dumps({'message_type': 'init'}) + bytes(f'endmessage', "utf-8"))
         except Exception as e:
             print('NETWORK 4', e)
+            self.send({'message_type': 'quit'})
 
         # antes desses process perdidos limpar a bytes_message ?
         cards_info = self.process()
