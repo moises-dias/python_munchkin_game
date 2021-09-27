@@ -2,7 +2,7 @@
 ## Boardgame online programado em Python.
 
 ### Descrição:
-Munchkin Online é um tabuleiro contendo as cartas do jogo munchkin que permite a até 10 jogadores jogarem o cardgame de forma online ou local. O projeto foi feito com a intenção de simular da melhor forma a experiência do jogo físico. No estado atual, o projeto já permite que partidas sejam realizadas normalmente, como pode ser visto no vídeo abaixo, mas possui muitas melhorias que serão desenvolvidas futuramente, como inclusão de registros (logs) de ações de cada jogador, redimensionamento das áreas e alerta de jogadores com mais de cinco cartas na mão. 
+Munchkin Online é um tabuleiro programado em python utilizando a biblioteca pygame, contendo as cartas do jogo munchkin e que permite a até 10 jogadores jogarem o cardgame de forma online ou local. O projeto foi feito com a intenção de simular da melhor forma a experiência do jogo físico. No estado atual, o projeto já permite que partidas sejam realizadas normalmente, como pode ser visto no vídeo abaixo, mas possui muitas melhorias que serão desenvolvidas futuramente, tanto no código, refatorando o mesmo, como inclusão de novas funcionalidades, tais como registros (logs) de ações de cada jogador, redimensionamento das áreas e alerta de jogadores com mais de cinco cartas na mão.
 
 ### Clique na imagem para visualizar um vídeo de alguns minutos de jogo:
 [![Munchkin Online](https://img.youtube.com/vi/AXy6kqnnp74/0.jpg)](https://www.youtube.com/watch?v=AXy6kqnnp74 "Munchkin Online Gameplay")
@@ -39,7 +39,7 @@ Descomentar as linhas 12 e 13 no arquivo server.py, colocando o ip da sua rede n
 
 **Iniciando o cliente**:  
 No arquivo conf.txt, colocar o seu nome na primeira linha, o ip da sua rede na segunda linha e a porta na terceira linha (ip e porta devem ser os mesmos do arquivo server.py)
-o cliente pode então ser iniciado tanto pelo código (client.py) quanto pelo executável (client.exe) gerado pelo pyinstaller.
+o cliente pode então ser iniciado tanto pelo executável (client.exe gerado pelo pyinstaller) quanto pelo código (client.py) sendo necessária a instalação da biblioteca pygame para a execução do código client.py.
 
 #### ONLINE
 **Iniciando o servidor**:  
@@ -54,7 +54,7 @@ Caso preferir, nesse [link](https://www.youtube.com/watch?v=RFPlXmgKCtk) tem um 
 
 **Iniciando o cliente**:  
 No arquivo conf.txt, colocar o seu nome na primeira linha, o External IP da VM segunda linha e a porta 3389 na terceira linha.
-o cliente pode então ser iniciado tanto pelo código (client.py) quanto pelo executável (client.exe) gerado pelo pyinstaller.
+o cliente pode então ser iniciado tanto pelo executável (client.exe gerado pelo pyinstaller) quanto pelo código (client.py) sendo necessária a instalação da biblioteca pygame para a execução do código client.py.
 
 ### Agradecimentos
 Os agradecimentos vão principalmente para o Steve Jackson, criador do jogo munchkin.  
