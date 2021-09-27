@@ -34,26 +34,28 @@ Munchkin Online é um tabuleiro contendo as cartas do jogo munchkin que permite 
 
 ### Instruções para execução do jogo:
 #### LOCALMENTE
-Iniciando servidor:  
+**Iniciando servidor**:  
 Descomentar as linhas 12 e 13 no arquivo server.py, colocando o ip da sua rede na variavel server (linha 12) e o numero da porta na variavel port (linha 13, por padrão eu utilizei 5555) e então executar o arquivo server.py utilizando python 3.
 
-iniciando o cliente:  
+**Iniciando o cliente**:  
 No arquivo conf.txt, colocar o seu nome na primeira linha, o ip da sua rede na segunda linha e a porta na terceira linha (ip e porta devem ser os mesmos do arquivo server.py)
 o cliente pode então ser iniciado tanto pelo código (client.py) quanto pelo executável (client.exe) gerado pelo pyinstaller.
 
 #### ONLINE
-Iniciando o servidor:  
+**Iniciando o servidor**:  
 Para jogar online, o servidor deve ser hospedado em alguma nuvem, eu vou aqui explicar como realizar essa hospedagem no Google Cloud Platform.
 * No painel do GCP, acesse a ferramenta Compute Engine e dentro dela clique em create instance.
 * Na pagina que abrir, selecione um nome para a VM, no campo região selecione o mais próximo da sua localidade, e em machine type, a opção mais básica já é suficiente para essa aplicação, após a confirmação desses itens clique em create.
 * Anote o número do External IP que aparece na máquina que foi criada.
 * Clique em SSH na máquina criada, no terminal que se abrir, execute o comando ```nano server.py``` e insira o código do arquivo server.py disponível nesse repositório.
-* Salve o arquivo server.py criado na VM, e execute o mesmo com o comando ```python3 server.py```
+* Salve o arquivo server.py criado na VM, e execute o mesmo com o comando ```python3 server.py```  
 
-Iniciando o cliente:  
+Caso preferir, nesse [link](https://www.youtube.com/watch?v=RFPlXmgKCtk) tem um vídeo mostrando o processo descrito acima. 
+
+**Iniciando o cliente**:  
 No arquivo conf.txt, colocar o seu nome na primeira linha, o External IP da VM segunda linha e a porta 3389 na terceira linha.
-o cliente pode então ser iniciado tanto pelo código (client.py) quanto pelo executável (client.exe) gerado pelo pyinstaller
+o cliente pode então ser iniciado tanto pelo código (client.py) quanto pelo executável (client.exe) gerado pelo pyinstaller.
 
-#### agradecimentos
+### Agradecimentos
 Os agradecimentos vão principalmente para o Steve Jackson, criador do jogo munchkin.  
 E para o Tim Ruscica, do site TechWithTim, pelo [tutorial de jogo online usando python](https://www.techwithtim.net/tutorials/python-online-game-tutorial/) que foi o ponto de partida para esse projeto.
