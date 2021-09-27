@@ -31,7 +31,7 @@ class Table:
         self.last_id = player_id
         self.fields['equipments'].set_name(f"{player_id}'s equips")
 
-        self.font = pygame.font.Font("client_server/card_deck/fonts/comicsans.ttf", font_size*6)
+        self.font = pygame.font.Font("client/card_deck/fonts/comicsans.ttf", font_size*6)
         self.dice_count = 0
         self.dice_result = '1'
     

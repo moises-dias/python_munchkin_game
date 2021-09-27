@@ -5,11 +5,11 @@ import random
 import json
 
 images = {
-    'treasure1': {'image': pygame.image.load("client_server/card_deck/images/treasure1.jpeg"), 'w': 245, 'h': 351, 'type': 'treasure'},
-    'treasure2': {'image': pygame.image.load("client_server/card_deck/images/treasure2.jpeg"), 'w': 500, 'h': 809, 'type': 'treasure'},
-    'door1': {'image': pygame.image.load("client_server/card_deck/images/door1.jpg"), 'w': 378, 'h': 585, 'type': 'door'},
-    'door2': {'image': pygame.image.load("client_server/card_deck/images/door2.jpeg"), 'w': 245, 'h': 351, 'type': 'door'},
-    'back': {'image': pygame.image.load("client_server/card_deck/images/back.jpg"), 'w': 379, 'h': 584, 'type': 'back'}
+    'treasure1': {'image': pygame.image.load("client/card_deck/images/treasure1.jpeg"), 'w': 245, 'h': 351, 'type': 'treasure'},
+    'treasure2': {'image': pygame.image.load("client/card_deck/images/treasure2.jpeg"), 'w': 500, 'h': 809, 'type': 'treasure'},
+    'door1': {'image': pygame.image.load("client/card_deck/images/door1.jpg"), 'w': 378, 'h': 585, 'type': 'door'},
+    'door2': {'image': pygame.image.load("client/card_deck/images/door2.jpeg"), 'w': 245, 'h': 351, 'type': 'door'},
+    'back': {'image': pygame.image.load("client/card_deck/images/back.jpg"), 'w': 379, 'h': 584, 'type': 'back'}
 }
 
 class Cards:
@@ -31,7 +31,7 @@ class Cards:
         self.screen_height = screen_height
 
         # self.font = pygame.font.SysFont("comicsans", font_size)
-        self.font = pygame.font.Font("client_server/card_deck/fonts/comicsans.ttf", font_size)
+        self.font = pygame.font.Font("client/card_deck/fonts/comicsans.ttf", font_size)
 
         # preencher o json card_names
         # with open('card_deck/card_names.json') as test:

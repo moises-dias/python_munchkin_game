@@ -5,7 +5,7 @@ from threading import Thread
 import re
 
 def main():
-    with open('client_server/conf.txt', encoding="utf8") as f:
+    with open('client/conf.txt', encoding="utf8") as f:
         lines = [line.strip() for line in f.readlines()]
         name = lines[0]
         name = re.sub('[^A-Za-z]+', '', name)

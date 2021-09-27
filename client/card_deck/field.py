@@ -10,7 +10,7 @@ class Field:
         self.rect = pygame.rect.Rect((x, y, w, h))
         self.name = name
         # self.font = pygame.font.SysFont("comicsans", font_size) #font e text pode ser criado uma vez só, deixar na inicialização
-        self.font = pygame.font.Font("client_server/card_deck/fonts/comicsans.ttf", font_size) #font e text pode ser criado uma vez só, deixar na inicialização
+        self.font = pygame.font.Font("client/card_deck/fonts/comicsans.ttf", font_size) #font e text pode ser criado uma vez só, deixar na inicialização
         self.text = self.name
 
     def draw(self, win):
