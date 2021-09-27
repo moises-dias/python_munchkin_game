@@ -8,7 +8,7 @@ Munchkin Online é um tabuleiro contendo as cartas do jogo munchkin que permite 
 [![Munchkin Online](https://img.youtube.com/vi/AXy6kqnnp74/0.jpg)](https://www.youtube.com/watch?v=AXy6kqnnp74 "Munchkin Online Gameplay")
 
 ### O jogo possui 6 áreas distintas:
-* Table: na parte superior direita, é o equivalente a mesa, onde os jogadores batalham e jogam cartas para afetar uns aos outros, possui também dois contadores, para contabilizar o bônus dos monstros e jogadores durante uma batalha, bastando colocar o curso em cima de um desses dois contadores e digitar o valor ou apagar um valor que de uma batalha passada.
+* Table: na parte superior direita, é o equivalente a mesa, onde os jogadores batalham e jogam cartas para afetar uns aos outros, possui também dois contadores, para contabilizar o bônus dos monstros e jogadores durante uma batalha, bastando colocar o cursor em cima de um desses dois contadores e digitar o valor ou apagar um valor de uma batalha passada.
 * Players: na parte superior esquerda, mostra o nome dos jogadores conectados, assim como seu nível, numero de cartas na mão e numero de cartas equipadas.
 * Equipments: abaixo da área Players, é uma área exclusiva de cada jogador, mas que pode ser visualizada por todos os jogadores, é referente aos equipamentos e maldições equipados pelo jogador. Por padrão o jogador visualiza seus próprios equipamentos, mas pode visualizar os dos outros jogadores ao passar o mouse por cima do nome dos jogadores na área Players.
 * Hand: é uma área exclusiva de cada jogador onde apenas o jogador consegue visualizar, é referente as cartas que o jogador possui na mão.
@@ -25,7 +25,7 @@ Munchkin Online é um tabuleiro contendo as cartas do jogo munchkin que permite 
 | V                            | Exibe a carta com um tamanho maior*                      |
 | Números                      | Altera o nível do próprio jogador***                     |
 | reset12345                   | Retorna todas as cartas do jogo às pilhas do baralho     |
-| reset54321                   | Retorna as cartas do descarte para às pilhas do baralho  |
+| reset54321                   | Retorna as cartas do descarte às pilhas do baralho       |
 
  
  \* o cursor do mouse deve estar em cima da carta para ter efeito  
