@@ -3,10 +3,10 @@ import pickle
 import threading
 
 class Network:
-    def __init__(self, player_name, ip):
+    def __init__(self, player_name, ip, port):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server = ip
-        self.port = 3389
+        self.port = port
         # self.server = "192.168.1.72"
         # self.port = 5555
         self.addr = (self.server, self.port)

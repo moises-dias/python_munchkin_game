@@ -12,7 +12,8 @@ def main():
         name = name.lower()
         name = name[:6]
         ip = lines[1]
-    network = Network(name, ip)
+        port = int(lines[2])
+    network = Network(name, ip, port)
     #play(network)
     Thread(target = play, args=(network,)).start()
     Thread(target = listen, args=(network,)).start()

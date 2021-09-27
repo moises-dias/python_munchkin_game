@@ -129,11 +129,13 @@ class Cards:
     def reset(self):
         for card in self.cards:
             card.reset(self.t_pos, self.d_pos)
+        random.shuffle(self.cards)
 
     def reset_discarded(self):
         for card in self.cards:
             if card.discarded:
                 card.reset(self.t_pos, self.d_pos)
+        random.shuffle(self.cards)
     
     def click(self, pos, player_id):
         for card in reversed(self.cards):  
